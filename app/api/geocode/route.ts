@@ -29,9 +29,54 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const rawLat = searchParams.get("lat");
   const rawLng = searchParams.get("lng");
+  const address = searchParams.get("address") || searchParams.get("query");
+
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) {
+    console.error("Missing GOOGLE_PLACES_API_KEY environment variable on the server");
+    return NextResponse.json({ error: "Server API configuration missing" }, { status: 500 });
+  }
+
+  // Support forward geocoding if query/address is provided
+  if (address) {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+      );
+      const data = await response.json();
+
+      if (data.status !== "OK") {
+        if (data.status === "ZERO_RESULTS") {
+          return NextResponse.json({ error: "No coordinates found for this destination" }, { status: 404 });
+        }
+        return NextResponse.json({ error: `Google Geocoding error: ${data.status}` }, { status: 502 });
+      }
+
+      const result = data.results[0];
+      const lat = result.geometry.location.lat;
+      const lng = result.geometry.location.lng;
+      const formattedAddress = result.formatted_address;
+
+      // Extract city locality
+      let cityName = "";
+      const component = result.address_components?.find((c: any) =>
+        c.types.includes("locality")
+      );
+      if (component) {
+        cityName = component.long_name;
+      } else {
+        cityName = formattedAddress.split(",")[0];
+      }
+
+      return NextResponse.json({ lat, lng, cityName, formattedAddress });
+    } catch (error) {
+      console.error("Forward geocoding failed:", error);
+      return NextResponse.json({ error: "Failed to geocode address" }, { status: 500 });
+    }
+  }
 
   if (!rawLat || !rawLng) {
-    return NextResponse.json({ error: "Missing lat or lng parameter" }, { status: 400 });
+    return NextResponse.json({ error: "Missing lat, lng, or address parameter" }, { status: 400 });
   }
 
   // Zod validation
@@ -56,11 +101,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-  if (!apiKey) {
-    console.error("Missing GOOGLE_PLACES_API_KEY environment variable on the server");
-    return NextResponse.json({ error: "Server API configuration missing" }, { status: 500 });
-  }
+
 
   try {
     const response = await fetch(

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star, MapPin, ArrowRight, MessageSquare, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTripStore } from "@/stores/tripStore";
+import { buildGoogleMapsUrl } from "@/lib/places";
 import type { PlaceDetail } from "@/lib/places";
 
 const PLACE_COVER_PHOTOS = [
@@ -37,6 +38,42 @@ const MOCK_PICKS = [
     distance: 2500,
     open_now: true,
     image: PLACE_COVER_PHOTOS[2],
+  },
+];
+
+const MOCK_DISCOVER_MORE = [
+  {
+    place_id: "place4",
+    name: "Trevi Fountain",
+    rating: 4.8,
+    distance: 1500,
+    open_now: true,
+    image: PLACE_COVER_PHOTOS[0],
+    types: ["tourist_attraction"],
+    maps_url: buildGoogleMapsUrl("place4"),
+    description: "Iconic 18th-century sculpted fountain where tourists throw coins.",
+  },
+  {
+    place_id: "place5",
+    name: "Piazza Navona",
+    rating: 4.7,
+    distance: 1800,
+    open_now: true,
+    image: PLACE_COVER_PHOTOS[1],
+    types: ["tourist_attraction"],
+    maps_url: buildGoogleMapsUrl("place5"),
+    description: "Elegant square with fountains, outdoor cafes, street artists, and Baroque architecture.",
+  },
+  {
+    place_id: "place6",
+    name: "Vatican Museums",
+    rating: 4.9,
+    distance: 2900,
+    open_now: false,
+    image: PLACE_COVER_PHOTOS[2],
+    types: ["museum"],
+    maps_url: buildGoogleMapsUrl("place6"),
+    description: "Renowned art museums displaying the immense collection amassed by Popes.",
   },
 ];
 
@@ -84,8 +121,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       })
       .then((data: PlaceDetail[]) => {
         if (active) {
-          // If geocoding returns spots, filter/slice to top 3, otherwise use empty
-          setPlaces(data.slice(0, 3));
+          // If geocoding returns spots, filter/slice to top 6, otherwise use empty
+          setPlaces(data.slice(0, 6));
         }
       })
       .catch((err: Error) => {
@@ -112,6 +149,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
 
   // Decide if we display real API places or fallback Stitch mock items
   const activePlaces = places.length > 0 ? places : MOCK_PICKS;
+  const topPicks = activePlaces.slice(0, 3);
+  const discoverPlaces = places.length > 3 ? places.slice(3, 6) : MOCK_DISCOVER_MORE;
 
   return (
     <div className="space-y-6">
@@ -146,7 +185,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
             </div>
           ))
         ) : (
-          activePlaces.map((place, idx) => {
+          topPicks.map((place, idx) => {
             const placeId = place.place_id;
             const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
             const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[idx % PLACE_COVER_PHOTOS.length];
@@ -246,16 +285,101 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       <section className="mt-8 space-y-5">
         <h3 className="font-title-md text-foreground">Discover More</h3>
         <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <div key={idx} className="flex gap-4 items-center p-3 rounded-2xl border border-outline-variant/20 bg-card/60 shadow-sm animate-pulse">
-              <div className="w-20 h-20 rounded-xl bg-muted/80 skeleton flex-shrink-0" />
-              <div className="flex-1 space-y-2.5">
-                <div className="h-4.5 bg-muted/80 skeleton rounded w-2/3" />
-                <div className="h-3.5 bg-muted/80 skeleton rounded w-full" />
-                <div className="h-3.5 bg-muted/80 skeleton rounded w-1/2" />
+          {loading ? (
+            Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="flex gap-4 items-center p-3 rounded-2xl border border-outline-variant/20 bg-card/60 shadow-sm animate-pulse">
+                <div className="w-20 h-20 rounded-xl bg-muted/80 skeleton flex-shrink-0" />
+                <div className="flex-1 space-y-2.5">
+                  <div className="h-4.5 bg-muted/80 skeleton rounded w-2/3" />
+                  <div className="h-3.5 bg-muted/80 skeleton rounded w-full" />
+                  <div className="h-3.5 bg-muted/80 skeleton rounded w-1/2" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            discoverPlaces.map((place, idx) => {
+              const placeId = place.place_id;
+              const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
+              const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[(idx + 3) % PLACE_COVER_PHOTOS.length];
+              const isSaved = savedAttractions.some((a) => a.id === placeId);
+
+              const handleBookmarkToggle = (e: React.MouseEvent) => {
+                e.stopPropagation();
+                if (isSaved) {
+                  removeSavedAttraction(placeId);
+                } else {
+                  saveAttraction({
+                    id: placeId,
+                    name: place.name,
+                    description: (place as any).formatted_address || (place as any).description || (place as any).address || `Recommended spot in Italy`,
+                    locationName: place.name,
+                    rating: place.rating,
+                    image: coverImage,
+                  });
+                }
+              };
+
+              return (
+                <div
+                  key={placeId}
+                  id={`discover-place-${placeId}`}
+                  className="flex gap-4 items-center p-3 rounded-2xl border border-outline-variant/20 bg-card hover:bg-muted/10 shadow-sm transition-all duration-300 group hover:shadow-md cursor-pointer"
+                  onClick={() => handlePlaceTap(place)}
+                >
+                  {/* Left Side: Thumbnail Image */}
+                  <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 relative bg-muted">
+                    <img
+                      src={coverImage}
+                      alt={place.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <button
+                      onClick={handleBookmarkToggle}
+                      id={`discover-bookmark-${placeId}`}
+                      className="absolute top-1 left-1 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
+                      aria-label={isSaved ? `Remove ${place.name}` : `Save ${place.name}`}
+                    >
+                      <Bookmark
+                        className={`h-3.5 w-3.5 ${
+                          isSaved
+                            ? "fill-[#006400] text-[#006400] dark:fill-[#86df72] dark:text-[#86df72]"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Right Side: Details */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex justify-between items-start gap-2">
+                      <h4 className="font-semibold text-sm text-foreground leading-tight truncate group-hover:text-[#006400] dark:group-hover:text-[#86df72] transition-colors">
+                        {place.name}
+                      </h4>
+                      {place.rating !== undefined && (
+                        <span className="flex items-center gap-0.5 text-xs font-bold text-[#006400] dark:text-[#86df72] shrink-0">
+                          <Star className="h-3 w-3 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
+                          {place.rating.toFixed(1)}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {distanceStr && <span>{distanceStr} away</span>}
+                      {place.open_now !== undefined && (
+                        <span className={place.open_now ? "text-[#006400] dark:text-[#86df72] font-medium" : "text-destructive font-medium"}>
+                          {place.open_now ? "Open" : "Closed"}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground truncate pr-2">
+                      {(place as any).description || `Beautiful place to visit near you`}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
 

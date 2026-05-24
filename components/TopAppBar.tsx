@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 
 export default function TopAppBar() {
   return (
@@ -17,12 +17,8 @@ export default function TopAppBar() {
           TripiAgent
         </span>
       </div>
-      <div className="w-10 h-10 rounded-full overflow-hidden border border-[#bfcab7] dark:border-[#1e293b]/30 hover:opacity-90 transition-opacity cursor-pointer shrink-0">
-        <img 
-          alt="User Profile" 
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWVntPN6Sqg4VcRbHnQ9VqjRnIVMDKZg-YU5lc1NvBTaXREO9RNRuaDXet8mrN30aK-jSI63pGAqC82UWDF-1QCfnIj7M-nKrsP_IhcJW8RUTo3z41fZ69AdZulI3KbBEnBODXvv4Q3_ZY2QO3A89gKcw6exhTmok3VveOGcRP_3UIucpEmaC1Yg1WWj6itld8W68nGXNwDDs248shgdrOQwKSD7P28ZQRCQsL3LUaVCk3V66ROJw8J1KPZF6oY3dmQLkE9D8buGrG"
-          className="w-full h-full object-cover"
-        />
+      <div className="w-10 h-10 rounded-full bg-primary/10 dark:bg-zinc-800 text-[#004900] dark:text-[#9df888] flex items-center justify-center border border-[#bfcab7] dark:border-[#1e293b]/30 hover:opacity-90 transition-opacity cursor-pointer shrink-0">
+        <User className="h-5 w-5" />
       </div>
     </header>
   );

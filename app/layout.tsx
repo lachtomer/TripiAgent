@@ -42,8 +42,8 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex justify-center bg-zinc-100 dark:bg-zinc-950">
-        {/* Mobile Viewport Container */}
-        <div className="relative w-full max-w-[390px] min-h-screen bg-background border-x border-border flex flex-col pb-20">
+        {/* Responsive Viewport Container */}
+        <div className="relative w-full max-w-[390px] md:max-w-3xl lg:max-w-5xl xl:max-w-6xl min-h-screen bg-background border-x border-border flex flex-col pb-20">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

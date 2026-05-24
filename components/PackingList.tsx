@@ -254,156 +254,158 @@ export default function PackingList() {
 
       {/* Per-category cards */}
       {categories.length > 0 ? (
-        categories.map((category) => {
-          const items = groups[category];
-          const allChecked = items.every((i) => i.checked);
-          const someChecked = items.some((i) => i.checked);
-          const isCollapsed = !!collapsedCategories[category];
-          const isAddingHere = addingCategory === category;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+          {categories.map((category) => {
+            const items = groups[category];
+            const allChecked = items.every((i) => i.checked);
+            const someChecked = items.some((i) => i.checked);
+            const isCollapsed = !!collapsedCategories[category];
+            const isAddingHere = addingCategory === category;
 
-          return (
-            <Card key={category} className="border border-border bg-card overflow-hidden">
-              {/* Category header — split into two zones to avoid nested <button> */}
-              <div className="w-full px-4 py-3 flex items-center justify-between gap-2 hover:bg-muted/30 transition-colors">
-                {/* Left: collapse toggle */}
-                <button
-                  id={`category-header-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                  onClick={() => toggleCategory(category)}
-                  className="flex items-center gap-2 flex-1 text-left focus:outline-none"
-                  aria-expanded={!isCollapsed}
-                >
-                  {isCollapsed ? (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
-                  )}
-                  <span className="text-sm font-semibold text-foreground">{category}</span>
-                  <span
-                    className={cn(
-                      "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full",
-                      allChecked
-                        ? "bg-[#006400]/15 text-[#006400]"
-                        : someChecked
-                        ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                        : "bg-muted text-muted-foreground"
-                    )}
+            return (
+              <Card key={category} className="border border-border bg-card overflow-hidden">
+                {/* Category header — split into two zones to avoid nested <button> */}
+                <div className="w-full px-4 py-3 flex items-center justify-between gap-2 hover:bg-muted/30 transition-colors">
+                  {/* Left: collapse toggle */}
+                  <button
+                    id={`category-header-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                    onClick={() => toggleCategory(category)}
+                    className="flex items-center gap-2 flex-1 text-left focus:outline-none"
+                    aria-expanded={!isCollapsed}
                   >
-                    {items.filter((i) => i.checked).length}/{items.length}
-                  </span>
-                </button>
-                {/* Right: check-all (separate button, no nesting) */}
-                <button
-                  id={`check-all-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                  onClick={() => handleCheckAll(category, items, !allChecked)}
-                  className="text-[10px] font-semibold text-muted-foreground hover:text-[#006400] transition-colors px-1 py-0.5 shrink-0 focus:outline-none"
-                  title={allChecked ? "Uncheck all" : "Check all"}
-                >
-                  {allChecked ? "Uncheck all" : "Check all"}
-                </button>
-              </div>
-
-              {/* Items list */}
-              {!isCollapsed && (
-                <CardContent className="pt-0 pb-2 divide-y divide-border/60">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      id={`pack-item-${item.id}`}
-                      className="flex items-center justify-between py-3 group"
+                    {isCollapsed ? (
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                    )}
+                    <span className="text-sm font-semibold text-foreground">{category}</span>
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full",
+                        allChecked
+                          ? "bg-[#006400]/15 text-[#006400]"
+                          : someChecked
+                          ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                          : "bg-muted text-muted-foreground"
+                      )}
                     >
-                      <button
-                        id={`toggle-item-${item.id}`}
-                        onClick={() => togglePackingItem(item.id)}
-                        className="flex items-center gap-3 flex-1 text-left select-none focus:outline-none"
-                        aria-checked={item.checked}
-                        role="checkbox"
+                      {items.filter((i) => i.checked).length}/{items.length}
+                    </span>
+                  </button>
+                  {/* Right: check-all (separate button, no nesting) */}
+                  <button
+                    id={`check-all-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                    onClick={() => handleCheckAll(category, items, !allChecked)}
+                    className="text-[10px] font-semibold text-muted-foreground hover:text-[#006400] transition-colors px-1 py-0.5 shrink-0 focus:outline-none"
+                    title={allChecked ? "Uncheck all" : "Check all"}
+                  >
+                    {allChecked ? "Uncheck all" : "Check all"}
+                  </button>
+                </div>
+
+                {/* Items list */}
+                {!isCollapsed && (
+                  <CardContent className="pt-0 pb-2 divide-y divide-border/60">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        id={`pack-item-${item.id}`}
+                        className="flex items-center justify-between py-3 group"
                       >
-                        {item.checked ? (
-                          <CheckSquare className="h-5 w-5 text-[#006400] shrink-0" />
-                        ) : (
-                          <Square className="h-5 w-5 text-muted-foreground shrink-0" />
-                        )}
-                        <span
-                          className={cn(
-                            "text-sm transition-all",
-                            item.checked ? "line-through text-muted-foreground" : "font-medium text-foreground"
-                          )}
+                        <button
+                          id={`toggle-item-${item.id}`}
+                          onClick={() => togglePackingItem(item.id)}
+                          className="flex items-center gap-3 flex-1 text-left select-none focus:outline-none"
+                          aria-checked={item.checked}
+                          role="checkbox"
                         >
-                          {item.name}
-                        </span>
-                      </button>
-                      <button
-                        id={`delete-pack-item-${item.id}`}
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 transition-all focus:outline-none focus:opacity-100"
-                        aria-label={`Delete ${item.name}`}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                          {item.checked ? (
+                            <CheckSquare className="h-5 w-5 text-[#006400] shrink-0" />
+                          ) : (
+                            <Square className="h-5 w-5 text-muted-foreground shrink-0" />
+                          )}
+                          <span
+                            className={cn(
+                              "text-sm transition-all",
+                              item.checked ? "line-through text-muted-foreground" : "font-medium text-foreground"
+                            )}
+                          >
+                            {item.name}
+                          </span>
+                        </button>
+                        <button
+                          id={`delete-pack-item-${item.id}`}
+                          onClick={() => handleDeleteItem(item.id)}
+                          className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive hover:bg-destructive/10 transition-all focus:outline-none focus:opacity-100"
+                          aria-label={`Delete ${item.name}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
 
-                  {/* Add item inline form */}
-                  {isAddingHere ? (
-                    <div
-                      id={`add-item-form-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                      className="py-3 flex items-center gap-2"
-                    >
-                      <Input
-                        id={`new-item-input-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                        placeholder="Item name…"
-                        value={newItemName}
-                        onChange={(e) => setNewItemName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleAddItem(category);
-                          if (e.key === "Escape") {
+                    {/* Add item inline form */}
+                    {isAddingHere ? (
+                      <div
+                        id={`add-item-form-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                        className="py-3 flex items-center gap-2"
+                      >
+                        <Input
+                          id={`new-item-input-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                          placeholder="Item name…"
+                          value={newItemName}
+                          onChange={(e) => setNewItemName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleAddItem(category);
+                            if (e.key === "Escape") {
+                              setAddingCategory(null);
+                              setNewItemName("");
+                            }
+                          }}
+                          className="h-8 text-xs flex-1"
+                          autoFocus
+                        />
+                        <Button
+                          id={`add-item-submit-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                          size="sm"
+                          onClick={() => handleAddItem(category)}
+                          disabled={!newItemName.trim()}
+                          className="h-8 text-xs bg-[#006400] text-white hover:bg-[#004d00]"
+                        >
+                          Add
+                        </Button>
+                        <Button
+                          id={`add-item-cancel-${category.replace(/\s+/g, "-").toLowerCase()}`}
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
                             setAddingCategory(null);
                             setNewItemName("");
-                          }
-                        }}
-                        className="h-8 text-xs flex-1"
-                        autoFocus
-                      />
-                      <Button
-                        id={`add-item-submit-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                        size="sm"
-                        onClick={() => handleAddItem(category)}
-                        disabled={!newItemName.trim()}
-                        className="h-8 text-xs bg-[#006400] text-white hover:bg-[#004d00]"
-                      >
-                        Add
-                      </Button>
-                      <Button
-                        id={`add-item-cancel-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                        size="sm"
-                        variant="ghost"
+                          }}
+                          className="h-8 text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <button
+                        id={`add-item-trigger-${category.replace(/\s+/g, "-").toLowerCase()}`}
                         onClick={() => {
-                          setAddingCategory(null);
+                          setAddingCategory(category);
                           setNewItemName("");
                         }}
-                        className="h-8 text-xs"
+                        className="w-full flex items-center gap-2 py-2.5 text-xs text-muted-foreground hover:text-[#006400] transition-colors focus:outline-none"
                       >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <button
-                      id={`add-item-trigger-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                      onClick={() => {
-                        setAddingCategory(category);
-                        setNewItemName("");
-                      }}
-                      className="w-full flex items-center gap-2 py-2.5 text-xs text-muted-foreground hover:text-[#006400] transition-colors focus:outline-none"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Add item to {category}</span>
-                    </button>
-                  )}
-                </CardContent>
-              )}
-            </Card>
-          );
-        })
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Add item to {category}</span>
+                      </button>
+                    )}
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
+        </div>
       ) : (
         <Card className="border border-dashed border-border bg-card/50">
           <CardContent className="p-8 flex flex-col items-center gap-3 text-center">

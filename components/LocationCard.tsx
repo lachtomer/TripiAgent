@@ -77,16 +77,10 @@ export default function LocationCard() {
       <span className="absolute opacity-0 select-none pointer-events-none" style={{ fontSize: "1px" }}>
         Current Location
       </span>
-      <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-lg group border border-outline-variant/30">
-        {/* Sunset Background Image */}
-        <img
-          className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
-          alt="Breathtaking panoramic view of Rome at sunset"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAhpKUZWvdA5-2hLk7t04lW0WypU9tXQLCNeb2ts7xKHPF8xitdVXm4Tc9s27Ck9D8zalkiE9hYvHNksySpvuDwcQFXB6wHWKxfSLcwvTT16ER2If45_-ldFET4EbI-aYKCQIp85ofWwMIM1jyBYxxAY5OwKGglmC_VkMaACmYfC8WAbhEiDDGS1KFezYV_n4cU-OBpeDM5AuQfMFCdexyJ3uZ-DmYyrKEtznYs5436mT892zqJ62IM2Yc1NtkDXBkPFbOFJycWvl-"
-        />
-        {/* Rich double overlay: warm sunset filter + bottom shadow for legibility */}
-        <div className="absolute inset-0 bg-amber-900/10 mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent"></div>
+      <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-lg group border border-outline-variant/30 bg-gradient-to-br from-[#004d00] via-[#003600] to-[#011c01] dark:from-[#0f172a] dark:to-[#020617]">
+        {/* Ambient overlay light reflections */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
         {/* Refresh button floating top right */}
         {location.cityName && (
