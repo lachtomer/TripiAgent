@@ -1,3 +1,40 @@
+# HANDOFF — Responsive Layouts, Attraction Search & Asset Cleanups
+
+## Step completed
+- ID: Responsive & Search Upgrades
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Upgraded the main container and all pages (Explore, Itinerary, Packing) to support fully responsive multi-column layouts on desktop and tablet screens.
+- Added forward geocoding to `/api/geocode` and implemented the new `AttractionSearch` card component to search attractions/dining by target city and save them to the Attraction Bank.
+- Removed hardcoded avatar images and location background sunset images, replacing them with a Lucide user icon and a dark-green brand gradient.
+- Fixed the permanent loading skeletons in the "Discover More" section of `NearbyPlacesSection.tsx` to render real or mock results.
+- Created `e2e/travelAgentPersona.spec.ts` testing the full flow on the production Vercel app.
+
+## Files touched
+- [`app/layout.tsx`](file:///c:/TripiAgent/app/layout.tsx)
+- [`components/BottomNav.tsx`](file:///c:/TripiAgent/components/BottomNav.tsx)
+- [`app/page.tsx`](file:///c:/TripiAgent/app/page.tsx)
+- [`app/itinerary/page.tsx`](file:///c:/TripiAgent/app/itinerary/page.tsx)
+- [`components/PackingList.tsx`](file:///c:/TripiAgent/components/PackingList.tsx)
+- [`components/NearbyPlacesSection.tsx`](file:///c:/TripiAgent/components/NearbyPlacesSection.tsx)
+- [`components/TopAppBar.tsx`](file:///c:/TripiAgent/components/TopAppBar.tsx)
+- [`components/LocationCard.tsx`](file:///c:/TripiAgent/components/LocationCard.tsx)
+- [`app/api/geocode/route.ts`](file:///c:/TripiAgent/app/api/geocode/route.ts)
+- [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx)
+- [`e2e/travelAgentPersona.spec.ts`](file:///c:/TripiAgent/e2e/travelAgentPersona.spec.ts)
+
+## Test results
+- lint: pass
+- build: pass
+- e2e: pass (1 passed: `travelAgentPersona.spec.ts`)
+
+## Cursor review ask
+- [ ] Review responsive margins and padding on custom layout widths (especially container borders).
+- [ ] Verify production Vercel API key variables for Gemini Places and Weather.
+
+---
+
 # HANDOFF — Steps 4h, 4i, 4j + Real Trip Data
 
 ## Real Trip Data Seeded ✅
@@ -26,8 +63,6 @@ Replace generic Rome/Florence sample itinerary with the actual Jun 25 – Jul 4,
 - Car return hard deadline: Jul 3, 19:00
 
 ---
-
-
 
 ## Step 4h — Editable Itinerary ✅
 
@@ -311,7 +346,6 @@ Implement Saved Attractions, manual custom POI scheduling, a real-time today pla
 | [`components/LogisticsCard.tsx`](file:///c:/TripiAgent/components/LogisticsCard.tsx) | **[NEW]** Created travel bookings card containing outbound/return flight confirmations, car rental vouchers, lockbox codes, and Milan ZTL Area C paid state |
 | [`app/page.tsx`](file:///c:/TripiAgent/app/page.tsx) | Integrated `TodayPlanner` on the main dashboard |
 | [`app/itinerary/page.tsx`](file:///c:/TripiAgent/app/itinerary/page.tsx) | Integrated `LogisticsCard` and `SavedAttractionsList` above the daily schedule list |
-| [`e2e/step10.smoke.spec.ts`](file:///c:/TripiAgent/e2e/step10.smoke.spec.ts) | **[NEW]** Created 4 smoke tests verifying bookmarks, custom POIs, Today Planner, and Logistics Card persistence |
 
 ### Test Results: 4/4 ✅
 
