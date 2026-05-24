@@ -1,0 +1,329 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { 
+  Bookmark, 
+  Plus, 
+  Trash2, 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  ChevronDown, 
+  ChevronUp, 
+  Compass,
+  Check
+} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useTripStore } from "@/stores/tripStore";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+
+// Fallback in case itinerary is not loaded yet
+const MOCK_DAYS = Array.from({ length: 10 }, (_, i) => ({
+  dayNumber: i + 1,
+  date: `Day ${i + 1}`,
+}));
+
+export default function SavedAttractionsList() {
+  const isHydrated = useIsHydrated();
+  const savedAttractions = useTripStore((state) => state.savedAttractions);
+  const saveAttraction = useTripStore((state) => state.saveAttraction);
+  const removeSavedAttraction = useTripStore((state) => state.removeSavedAttraction);
+  const itinerary = useTripStore((state) => state.itinerary);
+  const addAttractionToItinerary = useTripStore((state) => state.addAttractionToItinerary);
+
+  const [collapsed, setCollapsed] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Form states for custom POI
+  const [poiName, setPoiName] = useState("");
+  const [poiLocation, setPoiLocation] = useState("");
+  const [poiNotes, setPoiNotes] = useState("");
+
+  // In-card scheduling state for each attraction: attractionId -> { dayNumber, time }
+  const [scheduleState, setScheduleState] = useState<Record<string, { dayNumber: number; time: string }>>({});
+  // Feedback state to show temporary checkmark: attractionId -> boolean
+  const [successState, setSuccessState] = useState<Record<string, boolean>>({});
+
+  if (!isHydrated) {
+    return (
+      <Card className="border border-outline-variant/30 bg-card/50">
+        <CardContent className="p-4 flex items-center justify-center">
+          <span className="text-xs text-muted-foreground">Loading saved attractions...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const activeDays = itinerary && itinerary.length > 0 
+    ? itinerary.map(d => ({ dayNumber: d.dayNumber, date: d.date || `Day ${d.dayNumber}` })) 
+    : MOCK_DAYS;
+
+  const handleAddCustomPOI = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!poiName.trim()) return;
+
+    const newPoi = {
+      id: `custom-poi-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      name: poiName.trim(),
+      description: poiNotes.trim() || undefined,
+      locationName: poiLocation.trim() || undefined,
+    };
+
+    saveAttraction(newPoi);
+    setPoiName("");
+    setPoiLocation("");
+    setPoiNotes("");
+    setShowAddForm(false);
+  };
+
+  const handleAddToItinerary = (attractionId: string) => {
+    const state = scheduleState[attractionId] || { dayNumber: 1, time: "10:00" };
+    addAttractionToItinerary(state.dayNumber, attractionId, state.time);
+    
+    // Show success feedback
+    setSuccessState((prev) => ({ ...prev, [attractionId]: true }));
+    setTimeout(() => {
+      setSuccessState((prev) => ({ ...prev, [attractionId]: false }));
+    }, 2000);
+  };
+
+  const updateSchedule = (attractionId: string, updates: Partial<{ dayNumber: number; time: string }>) => {
+    setScheduleState((prev) => {
+      const current = prev[attractionId] || { dayNumber: 1, time: "10:00" };
+      return {
+        ...prev,
+        [attractionId]: {
+          ...current,
+          ...updates,
+        },
+      };
+    });
+  };
+
+  return (
+    <Card className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+      <CardHeader 
+        className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <div className="flex-1 space-y-0.5">
+          <div className="flex items-center gap-2">
+            <Bookmark className="h-5 w-5 text-primary dark:text-[#86df72] fill-primary/10 dark:fill-[#86df72]/10" />
+            <CardTitle className="text-sm font-extrabold tracking-tight">Saved Attractions & POIs</CardTitle>
+          </div>
+          <CardDescription className="text-[11px] text-muted-foreground">
+            Bookmark spots or add custom points of interest
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold text-primary dark:text-[#86df72] bg-primary/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded-full border border-primary/10 dark:border-[#86df72]/10">
+            {savedAttractions.length} Saved
+          </span>
+          {collapsed ? (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          )}
+        </div>
+      </CardHeader>
+
+      {!collapsed && (
+        <CardContent className="p-4 pt-0 space-y-4 animate-in fade-in duration-200">
+          {/* Add custom POI button */}
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="text-[#006400] dark:text-[#86df72] text-xs font-bold flex items-center gap-1 hover:underline focus:outline-none cursor-pointer"
+            >
+              {showAddForm ? "Cancel Adding" : "Add Custom Attraction"}
+              <Plus className={`h-3.5 w-3.5 transition-transform duration-200 ${showAddForm ? "rotate-45" : ""}`} />
+            </button>
+          </div>
+
+          {/* Add custom POI form */}
+          {showAddForm && (
+            <form onSubmit={handleAddCustomPOI} className="p-3 bg-muted/20 border border-outline-variant/30 rounded-xl space-y-3">
+              <div className="space-y-1">
+                <label htmlFor="custom-poi-name" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Attraction Name *
+                </label>
+                <Input
+                  id="custom-poi-name"
+                  placeholder="e.g. Sirmione Ferry Pier"
+                  value={poiName}
+                  onChange={(e) => setPoiName(e.target.value)}
+                  className="h-8 text-xs"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="custom-poi-location" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Location / City (Optional)
+                </label>
+                <Input
+                  id="custom-poi-location"
+                  placeholder="e.g. Sirmione"
+                  value={poiLocation}
+                  onChange={(e) => setPoiLocation(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="custom-poi-notes" className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Notes / Description (Optional)
+                </label>
+                <textarea
+                  id="custom-poi-notes"
+                  placeholder="e.g. Buy ferry tickets to Limone early in the morning."
+                  value={poiNotes}
+                  onChange={(e) => setPoiNotes(e.target.value)}
+                  className="w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-xs transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed md:text-sm dark:bg-input/30 min-h-[50px] resize-none"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                id="add-custom-poi-submit"
+                className="w-full bg-[#006400] hover:bg-[#004d00] dark:bg-[#86df72] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 font-semibold h-8 text-xs flex items-center justify-center gap-1.5 rounded-lg cursor-pointer transition-all"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add Custom POI
+              </button>
+            </form>
+          )}
+
+          {/* Saved Attractions List */}
+          {savedAttractions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-6 text-center border border-dashed border-outline-variant/30 rounded-2xl bg-muted/5">
+              <Compass className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-xs font-bold text-muted-foreground">No saved attractions yet</p>
+              <p className="text-[10px] text-muted-foreground/60 max-w-[200px] mt-0.5">
+                Go to Home to bookmark nearby spots or add your custom ones.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {savedAttractions.map((attraction) => {
+                const isCustom = attraction.id.startsWith("custom-poi-");
+                const currentSchedule = scheduleState[attraction.id] || { dayNumber: 1, time: "10:00" };
+                const isSuccess = !!successState[attraction.id];
+
+                return (
+                  <div 
+                    key={attraction.id}
+                    data-attraction-name={attraction.name}
+                    className="flex flex-col p-3 rounded-2xl border border-outline-variant/20 bg-card/60 shadow-sm relative"
+                  >
+                    {/* Header: Title and remove button */}
+                    <div className="flex gap-2.5 items-start justify-between">
+                      {attraction.image && (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                          <img src={attraction.image} alt={attraction.name} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded border shrink-0 ${
+                            isCustom 
+                              ? "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-400" 
+                              : "bg-[#006400]/10 text-[#006400] border-[#006400]/20 dark:text-[#86df72]"
+                          }`}>
+                            {isCustom ? "Custom" : "Explore Spot"}
+                          </span>
+                          {attraction.rating && (
+                            <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-0.5">
+                              ⭐ {attraction.rating.toFixed(1)}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-xs text-foreground truncate mt-1">{attraction.name}</h4>
+                        {attraction.locationName && (
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <MapPin className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{attraction.locationName}</span>
+                          </p>
+                        )}
+                        {attraction.description && (
+                          <p className="text-[10px] text-muted-foreground/80 leading-normal mt-1 line-clamp-2">
+                            {attraction.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => removeSavedAttraction(attraction.id)}
+                        className="text-muted-foreground/60 hover:text-destructive p-1 rounded-lg hover:bg-muted shrink-0 transition-colors cursor-pointer"
+                        aria-label={`Remove ${attraction.name}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Scheduler controls */}
+                    <div className="mt-3 pt-3 border-t border-outline-variant/20 flex flex-wrap gap-2 items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {/* Day Selector */}
+                        <div className="flex items-center gap-1 bg-muted/40 border border-outline-variant/30 rounded-lg px-2 py-1">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                          <select
+                            value={currentSchedule.dayNumber}
+                            onChange={(e) => updateSchedule(attraction.id, { dayNumber: parseInt(e.target.value) })}
+                            className="bg-transparent border-none text-[10px] font-bold focus:outline-none text-foreground cursor-pointer"
+                          >
+                            {activeDays.map((d) => (
+                              <option key={d.dayNumber} value={d.dayNumber} className="bg-card text-foreground text-xs">
+                                Day {d.dayNumber}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Time Input */}
+                        <div className="flex items-center gap-1 bg-muted/40 border border-outline-variant/30 rounded-lg px-2 py-1">
+                          <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                          <input
+                            type="text"
+                            value={currentSchedule.time}
+                            onChange={(e) => updateSchedule(attraction.id, { time: e.target.value })}
+                            placeholder="e.g. 10:00"
+                            className="bg-transparent border-none text-[10px] font-bold w-12 focus:outline-none text-foreground"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Add Button */}
+                      <button
+                        onClick={() => handleAddToItinerary(attraction.id)}
+                        className={`px-3 py-1 font-semibold text-[10px] rounded-lg shadow-sm border flex items-center gap-1 transition-all cursor-pointer ${
+                          isSuccess 
+                            ? "bg-green-600 border-green-600 text-white" 
+                            : "bg-[#006400] dark:bg-[#86df72] hover:bg-[#004d00] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 border-transparent"
+                        }`}
+                      >
+                        {isSuccess ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            <span>Added!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-3.5 w-3.5" />
+                            <span>Add to Day</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      )}
+    </Card>
+  );
+}

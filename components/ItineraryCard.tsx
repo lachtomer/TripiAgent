@@ -1,0 +1,863 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  Trash2, 
+  Plus, 
+  Edit3, 
+  Check, 
+  X, 
+  ChevronDown, 
+  ChevronUp, 
+  Info,
+  CalendarCheck2
+} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useTripStore } from "@/stores/tripStore";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { cn } from "@/lib/utils";
+import type { Activity, ItineraryDay } from "@/types";
+
+export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
+  {
+    dayNumber: 1,
+    date: "Jun 25 – Milan Arrival",
+    activities: [
+      {
+        id: "a1",
+        time: "18:55",
+        title: "Flight 6404 Departs TLV",
+        description: "Depart Tel Aviv (TLV) on flight 6404. Estimated flight time ~4 hrs.",
+        locationName: "Tel Aviv"
+      },
+      {
+        id: "a2",
+        time: "22:10",
+        title: "Arrive Malpensa (MXP)",
+        description: "Land at Milan Malpensa Airport. Proceed to baggage claim and head to accommodation in Ferno.",
+        locationName: "Malpensa, Milan"
+      },
+      {
+        id: "a3",
+        time: "23:00",
+        title: "Check-in: Malpensa Jacuzzi House",
+        description: "Self-check-in via lockbox — code & video instructions sent via WhatsApp. Accommodation for 7 adults in Ferno, right next to the airport.",
+        locationName: "Ferno, Milan"
+      }
+    ]
+  },
+  {
+    dayNumber: 2,
+    date: "Jun 26 – Car Pickup & Drive to Monzambano",
+    activities: [
+      {
+        id: "a4",
+        time: "10:00",
+        title: "Car Rental Pickup – Centauro",
+        description: "Pick up rental car at Malpensa Airport with Centauro. Group E2 — Hyundai Kona or similar. Check fuel level, note any existing damage, confirm drop-off instructions.",
+        locationName: "Malpensa Airport"
+      },
+      {
+        id: "a5",
+        time: "11:30",
+        title: "Drive to Monzambano",
+        description: "Scenic drive ~1.5 hrs from Malpensa to Monzambano on Lake Garda. Follow A8/A4 motorway.",
+        locationName: "Monzambano, Lake Garda"
+      },
+      {
+        id: "a6",
+        time: "13:00",
+        title: "Check-in: Villa Eunice",
+        description: "Home base for 7 nights (Jun 26 – Jul 2). Villa for 7 adults. ⚠️ No smoke/CO detectors reported — consider bringing a portable one.",
+        locationName: "Monzambano, Lake Garda"
+      }
+    ]
+  },
+  {
+    dayNumber: 3,
+    date: "Jun 27 – Monzambano / Lake Garda",
+    activities: [
+      {
+        id: "a7",
+        time: "09:00",
+        title: "Explore Monzambano Village",
+        description: "Morning stroll through the medieval village of Monzambano, visit the ancient castle ruins and enjoy lake views.",
+        locationName: "Monzambano"
+      },
+      {
+        id: "a8",
+        time: "12:00",
+        title: "Lake Garda Swim & Lunch",
+        description: "Head to the lake shore for a swim. Lunch at a lakeside trattoria — try fresh lake fish.",
+        locationName: "Lake Garda"
+      },
+      {
+        id: "a9",
+        time: "17:00",
+        title: "Sunset Aperitivo",
+        description: "Enjoy classic Italian aperitivo hour — Aperol Spritz, local wines, and light bites at a bar with a lake view.",
+        locationName: "Monzambano"
+      }
+    ]
+  },
+  {
+    dayNumber: 4,
+    date: "Jun 28 – Verona Day Trip",
+    activities: [
+      {
+        id: "a10",
+        time: "09:30",
+        title: "Drive to Verona",
+        description: "30-min drive from Monzambano to Verona. Easy parking near Piazza Bra.",
+        locationName: "Verona"
+      },
+      {
+        id: "a11",
+        time: "10:30",
+        title: "Arena di Verona",
+        description: "Visit the stunning 1st-century Roman amphitheater, one of the best preserved in the world.",
+        locationName: "Verona"
+      },
+      {
+        id: "a12",
+        time: "13:00",
+        title: "Juliet's House & Old Town Lunch",
+        description: "Walk to Casa di Giulietta, explore the historic center, and enjoy lunch in the old town piazzas.",
+        locationName: "Verona"
+      }
+    ]
+  },
+  {
+    dayNumber: 5,
+    date: "Jun 29 – Sirmione & Spa",
+    activities: [
+      {
+        id: "a13",
+        time: "10:00",
+        title: "Sirmione Peninsula Drive",
+        description: "Drive 25 min to Sirmione — the famous peninsula jutting into Lake Garda. Park outside the old town walls.",
+        locationName: "Sirmione, Lake Garda"
+      },
+      {
+        id: "a14",
+        time: "11:00",
+        title: "Scaligero Castle & Historic Center",
+        description: "Explore the picturesque medieval Scaligero Castle and walk through the narrow streets of Sirmione's old town.",
+        locationName: "Sirmione"
+      },
+      {
+        id: "a15",
+        time: "15:00",
+        title: "Thermal Spa (Terme di Sirmione)",
+        description: "Relax at Aquaria Thermal Spa — natural sulphurous thermal waters in a lakeside setting. Book in advance.",
+        locationName: "Sirmione"
+      }
+    ]
+  },
+  {
+    dayNumber: 6,
+    date: "Jun 30 – Mantova Day Trip",
+    activities: [
+      {
+        id: "a16",
+        time: "09:30",
+        title: "Drive to Mantova (Mantua)",
+        description: "30-min drive from Monzambano to Mantova — a Renaissance gem surrounded by artificial lakes.",
+        locationName: "Mantova"
+      },
+      {
+        id: "a17",
+        time: "10:30",
+        title: "Palazzo Ducale",
+        description: "Visit the vast Gonzaga ducal palace with its famous Camera degli Sposi (Bridal Chamber) frescoes by Mantegna.",
+        locationName: "Mantova"
+      },
+      {
+        id: "a18",
+        time: "13:30",
+        title: "Lunch in Piazza delle Erbe",
+        description: "Try Mantuan specialties: tortelli di zucca (pumpkin pasta), risotto, and local wines.",
+        locationName: "Mantova"
+      }
+    ]
+  },
+  {
+    dayNumber: 7,
+    date: "Jul 1 – Free Day at Villa Eunice",
+    activities: [
+      {
+        id: "a19",
+        time: "10:00",
+        title: "Relaxed Morning at Villa",
+        description: "Leisurely morning at Villa Eunice — breakfast, garden time, and relaxation before the final full day on the lake.",
+        locationName: "Monzambano"
+      },
+      {
+        id: "a20",
+        time: "14:00",
+        title: "Afternoon Swim & Local Winery",
+        description: "Afternoon swim at the lake followed by a visit to a local Lugana or Bardolino winery for a tasting.",
+        locationName: "Lake Garda"
+      }
+    ]
+  },
+  {
+    dayNumber: 8,
+    date: "Jul 2 – Lake Garda / Borghetto sul Mincio Excursion",
+    activities: [
+      {
+        id: "a21",
+        time: "10:00",
+        title: "Borghetto sul Mincio Excursion",
+        description: "Excursion to Borghetto sul Mincio, one of the most beautiful historic villages in Italy, famous for its watermills and medieval castle. Walk along the Mincio river.",
+        locationName: "Borghetto sul Mincio"
+      },
+      {
+        id: "a22",
+        time: "13:00",
+        title: "Lunch in Borghetto",
+        description: "Enjoy lunch at a local trattoria. Try the famous handmade Tortellini di Valeggio (also known as 'Love Knots').",
+        locationName: "Borghetto sul Mincio"
+      },
+      {
+        id: "a23",
+        time: "16:00",
+        title: "Relax at Villa Eunice & Pre-packing",
+        description: "Return to Villa Eunice for a relaxing afternoon. Enjoy the pool/garden and start organizing luggage for the transition to Milan tomorrow.",
+        locationName: "Monzambano"
+      }
+    ]
+  },
+  {
+    dayNumber: 9,
+    date: "Jul 3 – Drive to Milan, Check-in & Car Return",
+    activities: [
+      {
+        id: "a24",
+        time: "09:30",
+        title: "Check-out: Villa Eunice",
+        description: "Check out of Villa Eunice (Monzambano). Ensure all items are packed, key is returned, and loaded into the rental car.",
+        locationName: "Monzambano"
+      },
+      {
+        id: "a25",
+        time: "10:00",
+        title: "Drive to Milan & ZTL Entry Warning",
+        description: "Drive ~1.5 hours to Milan. ⚠️ ZTL / Area C: Cameras record plates until 19:30 on Fridays. Since you will be entering before 19:30, you must pay the €7.50 entry fee by tomorrow.",
+        locationName: "Milan"
+      },
+      {
+        id: "a26",
+        time: "12:00",
+        title: "Check-in: Splendido Ultimo Piano",
+        description: "Check-in to Milan apartment for 7 adults. Located inside Area C. Parking options: street parking (fee required) or a secure parking lot at Via Ariberto 4.",
+        locationName: "Milan"
+      },
+      {
+        id: "a27",
+        time: "18:00",
+        title: "Car Return – Centauro (Milano)",
+        description: "Return the rental car (Group E2) to the Centauro office at Via Copernico 28/30, 20125 Milano (near Central Station) by the 19:00 hard deadline. Ensure fuel is full and check for damages.",
+        locationName: "Via Copernico 28/30, Milan"
+      },
+      {
+        id: "a28",
+        time: "20:00",
+        title: "Farewell Dinner in Milan",
+        description: "Group farewell dinner in Milan to celebrate the end of a wonderful trip.",
+        locationName: "Milan"
+      }
+    ]
+  },
+  {
+    dayNumber: 10,
+    date: "Jul 4 – Departure",
+    activities: [
+      {
+        id: "a29",
+        time: "08:30",
+        title: "Check-out: Splendido Ultimo Piano",
+        description: "Check out of the Milan apartment. Proceed to Milan Malpensa Airport (MXP) via taxi or Malpensa Express train (~50 min).",
+        locationName: "Milan"
+      },
+      {
+        id: "a30",
+        time: "10:05",
+        title: "Arrive Malpensa Airport – Check-in",
+        description: "Arrive at MXP 3 hours before your flight to complete check-in, baggage drop, and security screening.",
+        locationName: "Malpensa Airport"
+      },
+      {
+        id: "a31",
+        time: "13:05",
+        title: "Flight 6403 Departs MXP → TLV",
+        description: "Board flight 6403 departing MXP at 13:05. Scheduled arrival in Tel Aviv (TLV) at 18:00.",
+        locationName: "Malpensa Airport"
+      }
+    ]
+  }
+];
+
+const getTodayDayNumber = (startDateStr: string | null, totalDays: number): number | null => {
+  if (!startDateStr) return null;
+  const [year, month, day] = startDateStr.split("-").map(Number);
+  const startDate = new Date(year, month - 1, day);
+  startDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffTime = today.getTime() - startDate.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays >= 0 && diffDays < totalDays) {
+    return diffDays + 1;
+  }
+  return null;
+};
+
+export default function ItineraryCard() {
+  const router = useRouter();
+
+  const itinerary = useTripStore((state) => state.itinerary);
+  const setItinerary = useTripStore((state) => state.setItinerary);
+  const tripStartDate = useTripStore((state) => state.tripStartDate);
+  const setTripStartDate = useTripStore((state) => state.setTripStartDate);
+  const setPendingPrompt = useTripStore((state) => state.setPendingPrompt);
+
+  const updateDayTitle = useTripStore((state) => state.updateDayTitle);
+  const addActivity = useTripStore((state) => state.addActivity);
+  const updateActivity = useTripStore((state) => state.updateActivity);
+  const deleteActivity = useTripStore((state) => state.deleteActivity);
+  const isHydrated = useIsHydrated();
+
+  // Editing state for day titles: dayNumber -> boolean
+  const [editingDayTitle, setEditingDayTitle] = useState<Record<number, boolean>>({});
+  const [dayTitleInput, setDayTitleInput] = useState<Record<number, string>>({});
+
+  // Expanded activities: activityId -> boolean
+  const [expandedActivities, setExpandedActivities] = useState<Record<string, boolean>>({});
+
+  // Editing activities: activityId -> boolean
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [editActTime, setEditActTime] = useState("");
+  const [editActTitle, setEditActTitle] = useState("");
+  const [editActDesc, setEditActDesc] = useState("");
+  const [editActLoc, setEditActLoc] = useState("");
+
+  // Adding activities: dayNumber -> boolean
+  const [addingActivityDay, setAddingActivityDay] = useState<number | null>(null);
+  const [newActTime, setNewActTime] = useState("09:00");
+  const [newActTitle, setNewActTitle] = useState("");
+  const [newActDesc, setNewActDesc] = useState("");
+  const [newActLoc, setNewActLoc] = useState("");
+
+
+  useEffect(() => {
+    if (isHydrated && itinerary === null) {
+      setItinerary(DEFAULT_ITALY_ITINERARY);
+    }
+  }, [isHydrated, itinerary, setItinerary]);
+
+  if (!isHydrated) {
+    return (
+      <div className="space-y-4 pb-24">
+        <Card className="border border-border bg-card">
+          <CardContent className="p-4 flex items-center justify-center">
+            <span className="text-xs text-muted-foreground">Loading itinerary planner...</span>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const activeItinerary = itinerary || DEFAULT_ITALY_ITINERARY;
+  const todayDayNumber = getTodayDayNumber(tripStartDate, activeItinerary.length);
+
+  const startEditDayTitle = (dayNumber: number, currentTitle: string) => {
+    setEditingDayTitle((prev) => ({ ...prev, [dayNumber]: true }));
+    setDayTitleInput((prev) => ({ ...prev, [dayNumber]: currentTitle }));
+  };
+
+  const saveDayTitle = (dayNumber: number) => {
+    const newTitle = dayTitleInput[dayNumber]?.trim();
+    if (newTitle) {
+      updateDayTitle(dayNumber, newTitle);
+    }
+    setEditingDayTitle((prev) => ({ ...prev, [dayNumber]: false }));
+  };
+
+  const startEditActivity = (act: Activity) => {
+    setEditingActivityId(act.id);
+    setEditActTime(act.time);
+    setEditActTitle(act.title);
+    setEditActDesc(act.description);
+    setEditActLoc(act.locationName || "");
+  };
+
+  const saveEditActivity = (dayNumber: number, actId: string) => {
+    if (!editActTitle.trim()) return;
+    updateActivity(dayNumber, actId, {
+      time: editActTime,
+      title: editActTitle,
+      description: editActDesc,
+      locationName: editActLoc || undefined
+    });
+    setEditingActivityId(null);
+  };
+
+  const handleAddActivity = (dayNumber: number) => {
+    if (!newActTitle.trim()) return;
+    addActivity(dayNumber, {
+      time: newActTime,
+      title: newActTitle,
+      description: newActDesc,
+      locationName: newActLoc || undefined
+    });
+    setAddingActivityDay(null);
+    setNewActTitle("");
+    setNewActDesc("");
+    setNewActLoc("");
+    setNewActTime("09:00");
+  };
+
+  const handleAskAI = (act: Activity) => {
+    const prompt = `Tell me about ${act.title} near ${act.locationName || "Italy"}. What are the highlights, open times, and travel tips?`;
+    setPendingPrompt(prompt);
+    router.push("/chat");
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Start Date Picker Section */}
+      <Card className="border border-outline-variant/30 bg-card shadow-sm rounded-2xl overflow-hidden transition-all duration-300">
+        <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2.5 text-[#004900] dark:text-[#86df72] shrink-0">
+            <CalendarCheck2 className="h-5 w-5 shrink-0" />
+            <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">Trip Start Date:</span>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Input
+              id="trip-start-date"
+              type="date"
+              value={tripStartDate || ""}
+              onChange={(e) => setTripStartDate(e.target.value || null)}
+              className="h-10 text-xs w-full sm:w-48 border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400] rounded-xl"
+            />
+            {tripStartDate && (
+              <Button
+                id="clear-start-date"
+                variant="ghost"
+                size="sm"
+                onClick={() => setTripStartDate(null)}
+                className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/15 rounded-xl cursor-pointer"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+          {tripStartDate && (
+            <div className="text-xs text-muted-foreground">
+              {todayDayNumber ? (
+                <span className="text-[#004900] dark:text-[#86df72] font-extrabold bg-[#006400]/5 dark:bg-[#86df72]/10 border border-[#006400]/10 dark:border-[#86df72]/10 px-3 py-1.5 rounded-full inline-block">
+                  Today is Day {todayDayNumber} of your trip!
+                </span>
+              ) : (
+                <span className="bg-muted px-3 py-1.5 rounded-full inline-block">Trip has not started yet or has completed.</span>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+ 
+      {/* Daily Cards List */}
+      <div className="space-y-5">
+        {activeItinerary.map((day) => {
+          const isToday = todayDayNumber === day.dayNumber;
+          const isEditingTitle = editingDayTitle[day.dayNumber];
+
+          return (
+            <Card 
+              key={day.dayNumber} 
+              id={`day-card-${day.dayNumber}`}
+              className={cn(
+                "border border-outline-variant/30 bg-card transition-all duration-300 shadow-sm rounded-2xl",
+                isToday ? "ring-2 ring-[#006400] dark:ring-[#86df72]" : ""
+              )}
+            >
+              <CardHeader className="p-4 pb-3 flex flex-row items-center justify-between space-y-0">
+                <div className="flex-1 mr-4">
+                  {isEditingTitle ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id={`edit-day-title-input-${day.dayNumber}`}
+                        value={dayTitleInput[day.dayNumber] || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDayTitleInput((prev) => ({ ...prev, [day.dayNumber]: val }));
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveDayTitle(day.dayNumber);
+                          if (e.key === "Escape") setEditingDayTitle((prev) => ({ ...prev, [day.dayNumber]: false }));
+                        }}
+                        className="h-9 text-xs font-semibold rounded-lg"
+                        autoFocus
+                      />
+                      <Button
+                        id={`save-day-title-btn-${day.dayNumber}`}
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => saveDayTitle(day.dayNumber)}
+                        className="h-9 w-9 text-[#006400] dark:text-[#86df72] hover:bg-primary/5 rounded-lg cursor-pointer"
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        id={`cancel-day-title-btn-${day.dayNumber}`}
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setEditingDayTitle((prev) => ({ ...prev, [day.dayNumber]: false }))}
+                        className="h-9 w-9 text-muted-foreground hover:bg-muted/10 rounded-lg cursor-pointer"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Calendar className="h-4 w-4 text-[#006400] dark:text-[#86df72] shrink-0" />
+                      <button
+                        id={`day-title-label-${day.dayNumber}`}
+                        onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
+                        className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer"
+                      >
+                        {day.date || `Day ${day.dayNumber}`}
+                      </button>
+                      <button
+                        id={`edit-day-title-trigger-${day.dayNumber}`}
+                        onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
+                        className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                        aria-label="Edit day title"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                      </button>
+                      {isToday && (
+                        <span 
+                          id={`today-badge-${day.dayNumber}`}
+                          className="bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                        >
+                          Today
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <CardDescription className="mt-1 text-[11px] text-muted-foreground">Daily activities scheduled</CardDescription>
+                </div>
+
+                <Button
+                  id={`add-activity-btn-${day.dayNumber}`}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAddingActivityDay(addingActivityDay === day.dayNumber ? null : day.dayNumber)}
+                  className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Activity</span>
+                </Button>
+              </CardHeader>
+
+              <CardContent className="p-4 pt-0 space-y-3">
+                {/* Add Activity Inline Form */}
+                {addingActivityDay === day.dayNumber && (
+                  <div 
+                    id={`add-activity-form-${day.dayNumber}`}
+                    className="border border-outline-variant/30 bg-primary/5 dark:bg-[#86df72]/5 rounded-xl p-3.5 space-y-3 animate-in fade-in duration-200"
+                  >
+                    <p className="text-[10px] font-extrabold text-[#006400] dark:text-[#86df72] uppercase tracking-wider">New Activity Details</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-1">
+                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Time</label>
+                        <Input
+                          id={`new-activity-time-${day.dayNumber}`}
+                          type="time"
+                          value={newActTime}
+                          onChange={(e) => setNewActTime(e.target.value)}
+                          className="h-8.5 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Title</label>
+                        <Input
+                          id={`new-activity-title-${day.dayNumber}`}
+                          placeholder="e.g. Pantheon Visit"
+                          value={newActTitle}
+                          onChange={(e) => setNewActTitle(e.target.value)}
+                          className="h-8.5 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Location</label>
+                      <Input
+                        id={`new-activity-location-${day.dayNumber}`}
+                        placeholder="e.g. Rome"
+                        value={newActLoc}
+                        onChange={(e) => setNewActLoc(e.target.value)}
+                        className="h-8.5 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Description</label>
+                      <textarea
+                        id={`new-activity-description-${day.dayNumber}`}
+                        placeholder="Activity details..."
+                        value={newActDesc}
+                        onChange={(e) => setNewActDesc(e.target.value)}
+                        className="flex min-h-[60px] w-full rounded-xl border border-outline-variant/30 bg-card px-3 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-end pt-1">
+                      <Button
+                        id={`new-activity-cancel-${day.dayNumber}`}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setAddingActivityDay(null)}
+                        className="h-8 text-xs font-semibold rounded-lg cursor-pointer"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        id={`new-activity-submit-${day.dayNumber}`}
+                        size="sm"
+                        disabled={!newActTitle.trim()}
+                        onClick={() => handleAddActivity(day.dayNumber)}
+                        className="h-8 px-4 text-xs font-semibold bg-[#006400] text-white hover:bg-[#004d00] rounded-lg cursor-pointer shadow-sm hover:shadow"
+                      >
+                        Add
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Activity List with Connecting Timeline */}
+                {day.activities.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic py-2 pl-2">No activities scheduled. Tap Add Activity above.</p>
+                ) : (
+                  <div className="relative pl-6 space-y-4 pt-2">
+                    {day.activities.map((act, idx) => {
+                      const isExpanded = !!expandedActivities[act.id];
+                      const isEditing = editingActivityId === act.id;
+                      const isLast = idx === day.activities.length - 1;
+
+                      // Check for keywords to display confirm tag
+                      const titleLower = act.title.toLowerCase();
+                      const descLower = act.description.toLowerCase();
+                      const isConfirmed = 
+                        titleLower.includes("flight") ||
+                        titleLower.includes("check-in") ||
+                        titleLower.includes("car rental") ||
+                        titleLower.includes("centauro") ||
+                        titleLower.includes("spa") ||
+                        titleLower.includes("ticket") ||
+                        titleLower.includes("booking") ||
+                        titleLower.includes("apartment") ||
+                        descLower.includes("booking") ||
+                        descLower.includes("confirmed");
+
+                      return (
+                        <div
+                          key={act.id}
+                          id={`activity-row-${act.id}`}
+                          className={cn(
+                            "relative transition-all duration-300",
+                            isLast ? "itinerary-line-last" : "itinerary-line"
+                          )}
+                        >
+                          {/* Left-hand timeline connection dot */}
+                          <div className="absolute left-[14px] top-[18px] w-2.5 h-2.5 rounded-full bg-[#006400] dark:bg-[#86df72] border border-white dark:border-zinc-950 z-10 shadow-sm" />
+
+                          {/* Nested Card wrapper */}
+                          <div className="pl-6">
+                            {isEditing ? (
+                              /* Inline Edit Form */
+                              <div className="p-3.5 space-y-3 bg-card border border-outline-variant/30 rounded-2xl shadow-sm">
+                                <div className="grid grid-cols-3 gap-2">
+                                  <div className="col-span-1">
+                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Time</label>
+                                    <Input
+                                      id={`edit-activity-time-${act.id}`}
+                                      type="time"
+                                      value={editActTime}
+                                      onChange={(e) => setEditActTime(e.target.value)}
+                                      className="h-8 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                                    />
+                                  </div>
+                                  <div className="col-span-2">
+                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Title</label>
+                                    <Input
+                                      id={`edit-activity-title-${act.id}`}
+                                      value={editActTitle}
+                                      onChange={(e) => setEditActTitle(e.target.value)}
+                                      className="h-8 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Location</label>
+                                  <Input
+                                    id={`edit-activity-location-${act.id}`}
+                                    value={editActLoc}
+                                    onChange={(e) => setEditActLoc(e.target.value)}
+                                    className="h-8 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Description</label>
+                                  <textarea
+                                    id={`edit-activity-description-${act.id}`}
+                                    value={editActDesc}
+                                    onChange={(e) => setEditActDesc(e.target.value)}
+                                    className="flex min-h-[60px] w-full rounded-xl border border-outline-variant/30 bg-card px-3 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring text-foreground"
+                                  />
+                                </div>
+                                <div className="flex gap-2 justify-end pt-1">
+                                  <Button
+                                    id={`edit-activity-cancel-${act.id}`}
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setEditingActivityId(null)}
+                                    className="h-8 text-xs font-semibold rounded-lg cursor-pointer"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    id={`edit-activity-save-${act.id}`}
+                                    size="sm"
+                                    disabled={!editActTitle.trim()}
+                                    onClick={() => saveEditActivity(day.dayNumber, act.id)}
+                                    className="h-8 px-4 text-xs font-semibold bg-[#006400] text-white hover:bg-[#004d00] rounded-lg cursor-pointer"
+                                  >
+                                    Save
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              /* Collapsible Activity Row */
+                              <div className="rounded-2xl border border-outline-variant/30 bg-card hover:bg-muted/5 transition-all shadow-sm overflow-hidden">
+                                {/* Header (always visible) */}
+                                <button
+                                  id={`activity-header-${act.id}`}
+                                  onClick={() => {
+                                    setExpandedActivities((prev) => ({
+                                      ...prev,
+                                      [act.id]: !prev[act.id]
+                                    }));
+                                  }}
+                                  className="w-full text-left p-3.5 flex items-center justify-between gap-3 focus:outline-none cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                    <div className="flex items-center gap-1 text-[11px] text-[#006400] dark:text-[#86df72] font-bold bg-[#006400]/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded-full shrink-0 border border-primary/10 dark:border-[#86df72]/10">
+                                      <Clock className="h-3 w-3 shrink-0" />
+                                      <span>{act.time}</span>
+                                    </div>
+                                    <span className="text-xs font-bold text-foreground truncate max-w-[130px] sm:max-w-[180px]">{act.title}</span>
+                                    
+                                    {isConfirmed && (
+                                      <span className="bg-[#006400]/10 dark:bg-[#86df72]/15 text-[#006400] dark:text-[#86df72] text-[9px] font-bold px-2 py-0.5 rounded-full border border-primary/10 dark:border-[#86df72]/10 flex items-center gap-0.5 shrink-0">
+                                        <Check className="h-2.5 w-2.5 shrink-0" />
+                                        Confirmed
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    {act.locationName && (
+                                      <span className="text-[10px] text-muted-foreground truncate hidden xs:block">{act.locationName}</span>
+                                    )}
+                                    {isExpanded ? (
+                                      <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+                                    ) : (
+                                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                                    )}
+                                  </div>
+                                </button>
+
+                                {/* Expanded panel details */}
+                                {isExpanded && (
+                                  <div 
+                                    id={`activity-details-${act.id}`}
+                                    className="px-3.5 pb-3.5 pt-0 border-t border-outline-variant/20 mt-1 space-y-2.5 animate-in slide-in-from-top-1 duration-200"
+                                  >
+                                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed whitespace-pre-wrap">{act.description}</p>
+                                    
+                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                      <div className="flex items-center gap-3">
+                                        {act.locationName && (
+                                          <button
+                                            id={`activity-location-tag-${act.id}`}
+                                            onClick={() => handleAskAI(act)}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-[#006400] dark:text-[#86df72] hover:underline focus:outline-none bg-[#006400]/5 dark:bg-[#86df72]/10 px-2.5 py-1 rounded-lg border border-[#006400]/10 dark:border-[#86df72]/10 cursor-pointer"
+                                            aria-label={`Ask AI about ${act.title} in ${act.locationName}`}
+                                          >
+                                            <MapPin className="h-3 w-3 shrink-0" />
+                                            <span>{act.locationName}</span>
+                                          </button>
+                                        )}
+                                        
+                                        <button
+                                          id={`ask-ai-link-${act.id}`}
+                                          onClick={() => handleAskAI(act)}
+                                          className="flex items-center gap-1 text-[10px] font-bold text-[#006400] dark:text-[#86df72] hover:underline focus:outline-none cursor-pointer"
+                                          aria-label={`Ask AI about ${act.title}`}
+                                        >
+                                          <Info className="h-3 w-3 shrink-0" />
+                                          <span>Ask AI Tips</span>
+                                        </button>
+                                      </div>
+
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          id={`edit-activity-trigger-${act.id}`}
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => startEditActivity(act)}
+                                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-md cursor-pointer"
+                                          aria-label="Edit activity"
+                                        >
+                                          <Edit3 className="h-3.5 w-3.5" />
+                                        </Button>
+                                        <Button
+                                          id={`delete-activity-btn-${act.id}`}
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => deleteActivity(day.dayNumber, act.id)}
+                                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md cursor-pointer"
+                                          aria-label="Delete activity"
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

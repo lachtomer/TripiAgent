@@ -1,0 +1,11 @@
+---
+description: Enforce writing unit tests with Vitest and E2E tests with Playwright for all modifications
+globs: **/*.{ts,tsx}
+---
+
+# Testing Requirements for TripiAgent
+
+- **Unit/Component Testing**: Use Vitest + Testing Library. Colocate tests as `*.test.ts(x)` or inside `__tests__/`.
+- **E2E Testing**: Use Playwright. Located in `e2e/`. Smoke tests must assert 4 tabs navigation, bottom nav visibility, and chat input visible on `/chat`.
+- **Pre-handoff Checks**: Run `npm run lint && npm run test && npm run build` before pushing or completing a step.
+- **Rule**: Any new feature or component change without corresponding tests is considered incomplete unless the user explicitly waives testing.

@@ -1,0 +1,15 @@
+---
+description: TripiAgent file-level reminders (see tripiagent-project-contract for full pin)
+globs: **/*.{ts,tsx,js,jsx}
+alwaysApply: false
+---
+
+# TripiAgent — Code rules
+
+Follow `.cursor/rules/tripiagent-project-contract.mdc` for stack and workflow.
+
+- API routes: Zod-validate inputs; never expose `GEMINI_*` or `GOOGLE_*` or `OPENWEATHER_*` in client bundles.
+- Rate limit `/api/ai` (document serverless in-memory limitation).
+- PWA plugin: production only.
+- No Vercel SPA rewrite of all routes to /.
+- **Local Dev Port**: 9001 only — http://localhost:9001.

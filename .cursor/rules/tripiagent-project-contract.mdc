@@ -1,0 +1,17 @@
+---
+description: TripiAgent project contract — stack, paths, workflow (pin every chat)
+alwaysApply: true
+---
+
+# TripiAgent — Project contract (always apply)
+
+PROJECT: TripiAgent — mobile AI travel PWA for Italy.
+PATH: C:\tripiagent (same as C:\TripiAgent on Windows)
+
+STACK: Next.js App Router, TS, Tailwind, shadcn (Slate), Zustand+persist, @ducanh2912/next-pwa
+DEPLOY: Vercel.
+LOCAL DEV PORT: 9001 only — http://localhost:9001
+API keys server-only. No DB v1. Routes: /, /chat, /itinerary, /pack + /api/*
+Accent #006400. Mobile 390px. Dark mode (next-themes).
+
+WORK: One step only. List files changed. Wait for my "confirmed" before next step.

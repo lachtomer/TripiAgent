@@ -1,0 +1,49 @@
+{
+  "id": "/",
+  "name": "TripiAgent — AI Italy Travel Guide",
+  "short_name": "TripiAgent",
+  "description": "Your smart personal AI travel guide for Italy — itinerary, packing, and local tips in your pocket.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#09090b",
+  "theme_color": "#006400",
+  "lang": "en",
+  "categories": ["travel", "navigation", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Chat with AI",
+      "short_name": "Chat",
+      "url": "/chat",
+      "description": "Ask TripiAgent anything about your Italy trip"
+    },
+    {
+      "name": "My Itinerary",
+      "short_name": "Itinerary",
+      "url": "/itinerary",
+      "description": "View and edit your day-by-day trip plan"
+    },
+    {
+      "name": "Packing List",
+      "short_name": "Pack",
+      "url": "/pack",
+      "description": "AI-powered packing checklist"
+    }
+  ]
+}
