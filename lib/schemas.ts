@@ -45,6 +45,9 @@ export const TripContextSchema = z.object({
   weather: WeatherSnapshotSchema.nullable().optional(),
   itinerarySummary: z.string().nullable().optional(),
   locale: z.string().optional(),
+  isInTrip: z.boolean().optional(),
+  currentCoordinates: LocationCoordsSchema.nullable().optional(),
+  currentTime: z.string().optional(),
 });
 
 export const PackingGenerateSchema = z.object({
@@ -64,3 +67,29 @@ export const AiRequestBodySchema = z.object({
   ).optional(),
   context: TripContextSchema.optional(),
 });
+
+export const FerriesQuerySchema = z.object({
+  origin: z.string().optional(),
+  destination: z.string().optional(),
+});
+
+export const CopilotRequestBodySchema = z.object({
+  dayNumber: z.number(),
+  date: z.string().optional(),
+  itineraryActivities: z.array(
+    z.object({
+      id: z.string(),
+      time: z.string(),
+      title: z.string(),
+      description: z.string(),
+      locationName: z.string().optional(),
+    })
+  ),
+  weatherInfo: z.object({
+    temp: z.number(),
+    description: z.string(),
+  }).optional(),
+  cityName: z.string().optional(),
+});
+
+

@@ -14,7 +14,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   Info,
-  CalendarCheck2
+  CalendarCheck2,
+  AlertTriangle
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -330,12 +331,48 @@ export default function ItineraryCard() {
   const tripStartDate = useTripStore((state) => state.tripStartDate);
   const setTripStartDate = useTripStore((state) => state.setTripStartDate);
   const setPendingPrompt = useTripStore((state) => state.setPendingPrompt);
+  const isPlanning = useTripStore((state) => state.isPlanning);
 
   const updateDayTitle = useTripStore((state) => state.updateDayTitle);
   const addActivity = useTripStore((state) => state.addActivity);
   const updateActivity = useTripStore((state) => state.updateActivity);
   const deleteActivity = useTripStore((state) => state.deleteActivity);
   const isHydrated = useIsHydrated();
+  const location = useTripStore((state) => state.location);
+  const [weatherCondition, setWeatherCondition] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isHydrated && location?.coords) {
+      fetch(`/api/weather?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.condition) {
+            setWeatherCondition(data.condition.toLowerCase());
+          }
+        })
+        .catch((err) => console.error("Error fetching weather in ItineraryCard:", err));
+    }
+  }, [isHydrated, location]);
+
+  const isOutdoorActivity = (title: string, desc: string): boolean => {
+    const text = `${title} ${desc}`.toLowerCase();
+    const outdoorKeywords = ["swim", "beach", "pool", "lake shore", "boat", "walk", "stroll", "hike", "gardens", "park", "explore village", "outdoor"];
+    return outdoorKeywords.some(keyword => text.includes(keyword));
+  };
+
+  const checkRainAlert = (act: Activity, dayNum: number) => {
+    const isOutdoor = isOutdoorActivity(act.title, act.description);
+    const isRainy = weatherCondition?.includes("rain") || weatherCondition?.includes("drizzle") || weatherCondition?.includes("shower");
+    // Simulate rain on Day 3 activity a8 for testing and demo purposes
+    const isSimulatedRain = dayNum === 3 && act.id === "a8";
+    return isOutdoor && (isRainy || isSimulatedRain);
+  };
+
+  const handleAskAISwap = (act: Activity, dayNum: number) => {
+    const prompt = `My outdoor activity '${act.title}' on Day ${dayNum} has a rain alert. What are some good indoor alternative activities in ${act.locationName || "the area"} that we can swap it with?`;
+    setPendingPrompt(prompt);
+    router.push("/chat");
+  };
 
   // Editing state for day titles: dayNumber -> boolean
   const [editingDayTitle, setEditingDayTitle] = useState<Record<number, boolean>>({});
@@ -446,15 +483,17 @@ export default function ItineraryCard() {
             <Input
               id="trip-start-date"
               type="date"
+              disabled={isPlanning}
               value={tripStartDate || ""}
               onChange={(e) => setTripStartDate(e.target.value || null)}
-              className="h-10 text-xs w-full sm:w-48 border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400] rounded-xl"
+              className="h-10 text-xs w-full sm:w-48 border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {tripStartDate && (
               <Button
                 id="clear-start-date"
                 variant="ghost"
                 size="sm"
+                disabled={isPlanning}
                 onClick={() => setTripStartDate(null)}
                 className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/15 rounded-xl cursor-pointer"
               >
@@ -498,6 +537,7 @@ export default function ItineraryCard() {
                       <Input
                         id={`edit-day-title-input-${day.dayNumber}`}
                         value={dayTitleInput[day.dayNumber] || ""}
+                        disabled={isPlanning}
                         onChange={(e) => {
                           const val = e.target.value;
                           setDayTitleInput((prev) => ({ ...prev, [day.dayNumber]: val }));
@@ -513,6 +553,7 @@ export default function ItineraryCard() {
                         id={`save-day-title-btn-${day.dayNumber}`}
                         size="icon"
                         variant="ghost"
+                        disabled={isPlanning}
                         onClick={() => saveDayTitle(day.dayNumber)}
                         className="h-9 w-9 text-[#006400] dark:text-[#86df72] hover:bg-primary/5 rounded-lg cursor-pointer"
                       >
@@ -522,6 +563,7 @@ export default function ItineraryCard() {
                         id={`cancel-day-title-btn-${day.dayNumber}`}
                         size="icon"
                         variant="ghost"
+                        disabled={isPlanning}
                         onClick={() => setEditingDayTitle((prev) => ({ ...prev, [day.dayNumber]: false }))}
                         className="h-9 w-9 text-muted-foreground hover:bg-muted/10 rounded-lg cursor-pointer"
                       >
@@ -533,15 +575,17 @@ export default function ItineraryCard() {
                       <Calendar className="h-4 w-4 text-[#006400] dark:text-[#86df72] shrink-0" />
                       <button
                         id={`day-title-label-${day.dayNumber}`}
+                        disabled={isPlanning}
                         onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
-                        className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer"
+                        className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer disabled:no-underline disabled:cursor-not-allowed"
                       >
                         {day.date || `Day ${day.dayNumber}`}
                       </button>
                       <button
                         id={`edit-day-title-trigger-${day.dayNumber}`}
+                        disabled={isPlanning}
                         onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
-                        className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                        className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                         aria-label="Edit day title"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
@@ -563,6 +607,7 @@ export default function ItineraryCard() {
                   id={`add-activity-btn-${day.dayNumber}`}
                   variant="outline"
                   size="sm"
+                  disabled={isPlanning}
                   onClick={() => setAddingActivityDay(addingActivityDay === day.dayNumber ? null : day.dayNumber)}
                   className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
@@ -669,6 +714,8 @@ export default function ItineraryCard() {
                         descLower.includes("booking") ||
                         descLower.includes("confirmed");
 
+                      const hasRainAlert = checkRainAlert(act, day.dayNumber);
+
                       return (
                         <div
                           key={act.id}
@@ -773,6 +820,11 @@ export default function ItineraryCard() {
                                         Confirmed
                                       </span>
                                     )}
+                                    {hasRainAlert && (
+                                      <span className="bg-amber-500/10 text-amber-600 dark:text-amber-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-0.5 shrink-0">
+                                        🌧️ Rain Alert
+                                      </span>
+                                    )}
                                   </div>
                                   
                                   <div className="flex items-center gap-1.5 shrink-0">
@@ -794,6 +846,22 @@ export default function ItineraryCard() {
                                     className="px-3.5 pb-3.5 pt-0 border-t border-outline-variant/20 mt-1 space-y-2.5 animate-in slide-in-from-top-1 duration-200"
                                   >
                                     <p className="text-xs text-muted-foreground mt-2 leading-relaxed whitespace-pre-wrap">{act.description}</p>
+                                    
+                                    {hasRainAlert && (
+                                      <div className="flex items-center gap-2 mt-2 px-3 py-2.5 bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-500 rounded-xl text-[10px] font-bold w-full">
+                                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                                        <span className="flex-1">Rain forecast during this outdoor activity. Ask AI for indoor alternatives.</span>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleAskAISwap(act, day.dayNumber);
+                                          }}
+                                          className="underline hover:text-amber-700 font-extrabold cursor-pointer shrink-0 ml-2"
+                                        >
+                                          Ask AI Swap
+                                        </button>
+                                      </div>
+                                    )}
                                     
                                     <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                       <div className="flex items-center gap-3">
@@ -825,6 +893,7 @@ export default function ItineraryCard() {
                                           id={`edit-activity-trigger-${act.id}`}
                                           variant="ghost"
                                           size="icon"
+                                          disabled={isPlanning}
                                           onClick={() => startEditActivity(act)}
                                           className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-md cursor-pointer"
                                           aria-label="Edit activity"
@@ -835,6 +904,7 @@ export default function ItineraryCard() {
                                           id={`delete-activity-btn-${act.id}`}
                                           variant="ghost"
                                           size="icon"
+                                          disabled={isPlanning}
                                           onClick={() => deleteActivity(day.dayNumber, act.id)}
                                           className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md cursor-pointer"
                                           aria-label="Delete activity"

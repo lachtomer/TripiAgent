@@ -1,11 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { AiRequestBodySchema } from "@/lib/schemas";
 import { buildSystemPrompt } from "@/lib/gemini";
 import { rateLimiter } from "@/lib/rateLimit";
+import { checkMilanZTL } from "@/lib/ztl";
+import fs from "fs";
+import path from "path";
 
 if (process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
+function searchFerrySchedule(origin: string, destination: string) {
+  try {
+    const jsonPath = path.join(process.cwd(), "public", "data", "lake_garda_ferries_2026.json");
+    const fileContent = fs.readFileSync(jsonPath, "utf-8");
+    const ferryData = JSON.parse(fileContent);
+    const routes = ferryData.routes.filter(
+      (r: { origin: string; destination: string }) =>
+        r.origin.toLowerCase().trim() === origin.toLowerCase().trim() &&
+        r.destination.toLowerCase().trim() === destination.toLowerCase().trim()
+    );
+    return { season: ferryData.season, routes };
+  } catch (error) {
+    console.error("Error reading ferry file in tool call:", error);
+    return { error: "Ferry schedule database is offline." };
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -60,10 +80,40 @@ export async function POST(request: NextRequest) {
     const model = genAI.getGenerativeModel({
       model: modelName,
       systemInstruction,
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: "checkMilanZTL",
+              description: "Check if entering Milan's Area C ZTL requires payment based on time and date. Cost is €7.50.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  timeStr: { type: SchemaType.STRING, description: "Time format HH:MM (e.g., '10:15', '18:55')" },
+                  dateStr: { type: SchemaType.STRING, description: "Date format YYYY-MM-DD or valid date string" }
+                },
+                required: ["timeStr", "dateStr"]
+              }
+            },
+            {
+              name: "searchFerrySchedule",
+              description: "Search seasonal ferry schedules for Lake Garda routes.",
+              parameters: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  origin: { type: SchemaType.STRING, description: "Origin town (e.g., 'Sirmione', 'Desenzano')" },
+                  destination: { type: SchemaType.STRING, description: "Destination town (e.g., 'Desenzano', 'Riva')" }
+                },
+                required: ["origin", "destination"]
+              }
+            }
+          ]
+        }
+      ]
     });
 
     // 5. Structure Chat Contents history for Gemini SDK
-    const contents: { role: string; parts: { text: string }[] }[] = [];
+    const contents: any[] = [];
     if (history && history.length > 0) {
       contents.push(
         ...history.map((item) => ({
@@ -76,6 +126,56 @@ export async function POST(request: NextRequest) {
       role: "user",
       parts: [{ text: message }],
     });
+
+    // Pre-evaluate tool calls if Gemini decides to run functions
+    try {
+      const initialResult = await model.generateContent({
+        contents,
+      });
+
+      const responseText = initialResult.response;
+      const functionCalls = responseText.functionCalls();
+
+      if (functionCalls && functionCalls.length > 0) {
+        contents.push({
+          role: "model",
+          parts: functionCalls.map((fc) => ({
+            functionCall: {
+              name: fc.name,
+              args: fc.args,
+            },
+          })),
+        });
+
+        const functionResponseParts = [];
+        for (const fc of functionCalls) {
+          let result: any;
+          if (fc.name === "checkMilanZTL") {
+            const { timeStr, dateStr } = fc.args as { timeStr: string; dateStr: string };
+            result = checkMilanZTL(timeStr, dateStr);
+          } else if (fc.name === "searchFerrySchedule") {
+            const { origin, destination } = fc.args as { origin: string; destination: string };
+            result = searchFerrySchedule(origin, destination);
+          } else {
+            result = { error: "Unknown function" };
+          }
+
+          functionResponseParts.push({
+            functionResponse: {
+              name: fc.name,
+              response: result,
+            },
+          });
+        }
+
+        contents.push({
+          role: "function",
+          parts: functionResponseParts,
+        });
+      }
+    } catch (e) {
+      console.warn("Tool calling pre-evaluation bypassed or failed:", e);
+    }
 
     // 6. Generate content stream and return as ReadableStream
     const responseStream = new ReadableStream({

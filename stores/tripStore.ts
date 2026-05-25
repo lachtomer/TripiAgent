@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Activity, ChatMessage, ItineraryDay, LocationDetails, PackingItem, SavedAttraction, TravelLogistics } from "@/types";
+import { Activity, ChatMessage, ItineraryDay, LocationDetails, PackingItem, SavedAttraction, TravelLogistics, MorningBriefing, SerendipitySuggestion } from "@/types";
 
 interface TripState {
   location: LocationDetails | null;
@@ -12,6 +12,10 @@ interface TripState {
   tripStartDate: string | null;
   savedAttractions: SavedAttraction[];
   logistics: TravelLogistics;
+  isPlanning: boolean;
+  toast: { message: string; type: "success" | "error" | "info" } | null;
+  morningBriefing: MorningBriefing | null;
+  serendipitySuggestion: SerendipitySuggestion | null;
 
   setLocation: (location: LocationDetails) => void;
   setManualCity: (city: string) => void;
@@ -29,10 +33,15 @@ interface TripState {
   addActivity: (dayNumber: number, activity: Omit<Activity, "id">) => void;
   updateActivity: (dayNumber: number, activityId: string, updated: Partial<Omit<Activity, "id">>) => void;
   deleteActivity: (dayNumber: number, activityId: string) => void;
+  replaceDayPlan: (dayNumber: number, activities: Activity[]) => void;
   saveAttraction: (attraction: SavedAttraction) => void;
   removeSavedAttraction: (id: string) => void;
   addAttractionToItinerary: (dayNumber: number, attractionId: string, time: string) => void;
   updateLogistics: (updated: Partial<TravelLogistics>) => void;
+  setIsPlanning: (val: boolean) => void;
+  setToast: (toast: { message: string; type: "success" | "error" | "info" } | null) => void;
+  setMorningBriefing: (briefing: MorningBriefing | null) => void;
+  setSerendipitySuggestion: (suggestion: SerendipitySuggestion | null) => void;
   resetStore: () => void;
 }
 
@@ -63,6 +72,10 @@ export const useTripStore = create<TripState>()(
       tripStartDate: "2026-06-25",
       savedAttractions: [],
       logistics: initialLogistics,
+      isPlanning: false,
+      toast: null,
+      morningBriefing: null,
+      serendipitySuggestion: null,
       
       setLocation: (location) => set({ location }),
       setManualCity: (cityName) =>
@@ -145,6 +158,19 @@ export const useTripStore = create<TripState>()(
               )
             : null,
         })),
+      replaceDayPlan: (dayNumber, activities) =>
+        set((state) => ({
+          itinerary: state.itinerary
+            ? state.itinerary.map((day) =>
+                day.dayNumber === dayNumber
+                  ? {
+                      ...day,
+                      activities,
+                    }
+                  : day
+              )
+            : null,
+        })),
       saveAttraction: (attraction) =>
         set((state) => {
           if (state.savedAttractions.some((a) => a.id === attraction.id)) return {};
@@ -182,6 +208,10 @@ export const useTripStore = create<TripState>()(
         set((state) => ({
           logistics: { ...state.logistics, ...updated },
         })),
+      setIsPlanning: (val) => set({ isPlanning: val }),
+      setToast: (toast) => set({ toast }),
+      setMorningBriefing: (briefing) => set({ morningBriefing: briefing }),
+      setSerendipitySuggestion: (suggestion) => set({ serendipitySuggestion: suggestion }),
       resetStore: () =>
         set({
           location: null,
@@ -193,6 +223,10 @@ export const useTripStore = create<TripState>()(
           tripStartDate: "2026-06-25",
           savedAttractions: [],
           logistics: initialLogistics,
+          isPlanning: false,
+          toast: null,
+          morningBriefing: null,
+          serendipitySuggestion: null,
         }),
     }),
     {

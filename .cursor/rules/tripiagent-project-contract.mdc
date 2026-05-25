@@ -15,3 +15,5 @@ API keys server-only. No DB v1. Routes: /, /chat, /itinerary, /pack + /api/*
 Accent #006400. Mobile 390px. Dark mode (next-themes).
 
 WORK: One step only. List files changed. Wait for my "confirmed" before next step.
+SPEC-KIT / SDD: Every prompt or feature step must start with a spec in `.specify/` before writing any code. Refuse edits if no spec is present.
+

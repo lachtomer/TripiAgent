@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useLocation } from "@/hooks/useLocation";
 import LocationPermissionBanner from "@/components/LocationPermissionBanner";
 import LocationCard from "@/components/LocationCard";
+import CopilotCards from "@/components/CopilotCards";
 import TodayPlanner from "@/components/TodayPlanner";
 import AttractionSearch from "@/components/AttractionSearch";
 
@@ -30,6 +31,9 @@ export default function Home() {
           <div className="md:col-span-2 space-y-6">
             {/* Location + sunset weather Hero Card */}
             <LocationCard />
+
+            {/* AI Co-Pilot Morning Briefing & Serendipity Cards */}
+            <CopilotCards />
 
             {/* Today Planner (Hour-by-hour timeline) */}
             <TodayPlanner />

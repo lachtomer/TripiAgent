@@ -1,3 +1,178 @@
+# HANDOFF — Step 3b: Travel Copilot Alignment & Value-First Engine
+
+## Step completed
+- ID: Step 3b - Travel Copilot Alignment & Value-First Engine
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Aligned the heavy Travel Copilot prompt requirements with TripiAgent's lightweight, database-less design rules.
+- Extended `types/index.ts` and `stores/tripStore.ts` with `morningBriefing` and `serendipitySuggestion` states, action setters, local storage persistence, and reset states.
+- Created Next.js API route `/api/copilot` using Gemini 2.5 Flash and schema-enforced JSON validation to return exactly one daily greeting briefing and one unique spontaneous recommendation (Serendipity tip) for the day, including proactive Milan ZTL warnings.
+- Built a premium glassmorphic `CopilotCards` UI component containing the briefing widget, spontaneous idea card, on-demand sync button, and "Add to Today" itinerary shortcut. Integrated the cards on the main Home dashboard layout.
+- Added inline rain forecast warning badges on outdoor activities inside `ItineraryCard.tsx` with a direct "Ask AI Swap" link to generate indoor alternative activities in the chat assistant.
+
+## Files touched
+- [`.specify/step_3b_travel_copilot_alignment.md`](file:///c:/TripiAgent/.specify/step_3b_travel_copilot_alignment.md)
+- [`types/index.ts`](file:///c:/TripiAgent/types/index.ts)
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`stores/tripStore.ts`](file:///c:/TripiAgent/stores/tripStore.ts)
+- [`app/api/copilot/route.ts`](file:///c:/TripiAgent/app/api/copilot/route.ts)
+- [`app/api/copilot/route.test.ts`](file:///c:/TripiAgent/app/api/copilot/route.test.ts)
+- [`components/CopilotCards.tsx`](file:///c:/TripiAgent/components/CopilotCards.tsx)
+- [`app/page.tsx`](file:///c:/TripiAgent/app/page.tsx)
+- [`components/ItineraryCard.tsx`](file:///c:/TripiAgent/components/ItineraryCard.tsx)
+
+## Test results
+- lint: warnings only (pre-existing)
+- unit tests: 9/9 passed (Vitest run passed)
+- build: pass (Next.js build succeeded)
+
+## Cursor review ask
+- [ ] Test the on-demand "Consult" button on the Home Dashboard and verify it fetches briefings and serendipity cards.
+- [ ] Confirm "Add to Today" correctly inserts the serendipity item as a custom activity on Day 1.
+- [ ] Verify that Day 3 "Lake Garda Swim & Lunch" displays the inline 🌧️ Rain Alert warning when expanded, and clicking "Ask AI Swap" directs the user to the chat interface with a pre-filled swap query.
+
+---
+
+# HANDOFF — Step 3: Spec-Kit Integration & SDD Ways of Working
+
+## Step completed
+- ID: Step 3 - Spec-Kit Integration & SDD Ways of Working
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Integrated the project workflow with GitHub's Spec-Kit (`github/spec-kit`) by creating a detailed Spec-Driven Development (SDD) guide.
+- Created functional templates for specs (`.specify/templates/spec.md`), plans (`.specify/templates/plan.md`), and tasks (`.specify/templates/tasks.md`).
+- Established the core SDD rules in `AGENTS.md` and updated `.cursor/rules/tripiagent-project-contract.mdc` to guarantee that all future prompt executions must start with a spec in `.specify/` before modifying code.
+- Successfully verified lint, unit test (`npm run test` Vitest), and Next.js webpack production compilation (`npm run build`) states.
+
+## Files touched
+- [`.specify/ways_of_working.md`](file:///c:/TripiAgent/.specify/ways_of_working.md)
+- [`.specify/templates/spec.md`](file:///c:/TripiAgent/.specify/templates/spec.md)
+- [`.specify/templates/plan.md`](file:///c:/TripiAgent/.specify/templates/plan.md)
+- [`.specify/templates/tasks.md`](file:///c:/TripiAgent/.specify/templates/tasks.md)
+- [`AGENTS.md`](file:///c:/TripiAgent/AGENTS.md)
+- [`.cursor/rules/tripiagent-project-contract.mdc`](file:///c:/TripiAgent/.cursor/rules/tripiagent-project-contract.mdc)
+
+## Test results
+- lint: warnings only (pre-existing)
+- unit tests: 7/7 passed (Vitest run passed)
+- build: pass (Next.js build succeeded)
+
+## Cursor review ask
+- [ ] Verify that `.specify/ways_of_working.md` aligns with your desired Spec-Kit workflows.
+- [ ] Confirm that your local Cursor instance correctly parses the new `.cursor/rules/tripiagent-project-contract.mdc` MDC rule requiring specification-first files.
+
+---
+
+# HANDOFF — Step 2c: Tool Binding & Before/After Drawer
+
+## Step completed
+- ID: Step 2c - Tool Binding & Before/After Drawer
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Extended the `TripContext` types and validation schemas with `isInTrip`, `currentCoordinates`, and `currentTime` fields.
+- Declared and registered ZTL check and Ferry search tools with the Gemini model in `app/api/ai/route.ts`.
+- Implemented server-side tool calling resolution to execute tools prior to streaming final text responses.
+- Enforced prompt rules to return JSON replan patches inside markdown blocks at the end of responses.
+- Implemented clean markdown parsing and a custom Before/After comparison drawer `<Sheet>` inside `components/ChatInterface.tsx` to safely preview and apply itinerary batch changes.
+
+## Files touched
+- [`types/index.ts`](file:///c:/TripiAgent/types/index.ts)
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`lib/gemini.ts`](file:///c:/TripiAgent/lib/gemini.ts)
+- [`app/api/ai/route.ts`](file:///c:/TripiAgent/app/api/ai/route.ts)
+- [`components/ChatInterface.tsx`](file:///c:/TripiAgent/components/ChatInterface.tsx)
+
+## Test results
+- lint: warnings only (pre-existing)
+- unit tests: 7/7 passed (Vitest run passed)
+- build: pass (Next.js build succeeded)
+
+## Cursor review ask
+- [ ] Confirm that JSON replan structures are correctly extracted from stream blocks and trigger the Review CTA.
+- [ ] Verify that tool responses are correctly incorporated in the agent's reasoning.
+
+---
+
+# HANDOFF — Step 2b: Ferry Schedules & ZTL Rules
+
+## Step completed
+- ID: Step 2b - Ferry Schedules & ZTL Rules
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Created a static summer ferry schedule database in `public/data/lake_garda_ferries_2026.json`.
+- Implemented `/api/ferries` GET API route with Zod search param validation.
+- Created `lib/ztl.ts` to check Milan Area C congestion zone schedules and active fees (€7.50).
+- Configured Vitest to run in `vitest.config.ts` excluding E2E browser tests and resolving path aliases.
+- Created unit tests in `lib/ztl.test.ts` verifying all ZTL active/inactive rules with **7 passing tests**.
+
+## Files touched
+- [`public/data/lake_garda_ferries_2026.json`](file:///c:/TripiAgent/public/data/lake_garda_ferries_2026.json)
+- [`app/api/ferries/route.ts`](file:///c:/TripiAgent/app/api/ferries/route.ts)
+- [`lib/ztl.ts`](file:///c:/TripiAgent/lib/ztl.ts)
+- [`lib/ztl.test.ts`](file:///c:/TripiAgent/lib/ztl.test.ts)
+- [`vitest.config.ts`](file:///c:/TripiAgent/vitest.config.ts)
+- [`package.json`](file:///c:/TripiAgent/package.json)
+
+## Test results
+- lint: warnings only (pre-existing)
+- unit tests: 7/7 passed (Vitest run passed)
+- build: pass (Next.js build succeeded)
+
+## Cursor review ask
+- [ ] Confirm ZTL utility correctly determines weekend inactive times.
+- [ ] Verify that `/api/ferries` correctly returns filtered results when query parameters are supplied.
+
+---
+
+# HANDOFF — Step 2a: State Sync & Resilience
+
+## Step completed
+- ID: Step 2a - Fix resilience & state sync
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Implemented state sync locks and input freezing to prevent race conditions during agent itinerary planning.
+- Added a browser-side caching layer for agent plan outputs to handle offline and low-connectivity travel situations.
+- Implemented global Toast notifications in the Zustand store and built a custom `<Toast />` component integrated in `layout.tsx`.
+- Verified production webpack builds pass successfully after these additions.
+
+## Files touched
+- [`docs/AGENT_ARCH.md`](file:///c:/TripiAgent/docs/AGENT_ARCH.md)
+- [`AGENTS.md`](file:///c:/TripiAgent/AGENTS.md)
+- [`stores/tripStore.ts`](file:///c:/TripiAgent/stores/tripStore.ts)
+- [`hooks/useChat.ts`](file:///c:/TripiAgent/hooks/useChat.ts)
+- [`components/Toast.tsx`](file:///c:/TripiAgent/components/Toast.tsx)
+- [`components/ItineraryCard.tsx`](file:///c:/TripiAgent/components/ItineraryCard.tsx)
+- [`app/layout.tsx`](file:///c:/TripiAgent/app/layout.tsx)
+
+## Test results
+- lint: warnings only (pre-existing lint errors in other files, our files are clean)
+- build: pass (Next.js build succeeded)
+
+## Cursor review ask
+- [ ] Verify that UI inputs lock correctly when `isPlanning` state is active.
+- [ ] Confirm offline simulated stream caching operates properly when toggling developer tools to Offline mode.
+
+---
+
+# HANDOFF — Antigravity Guideline
+
+## Step completed
+- ID: Add Antigravity Guideline
+- Agent: Antigravity
+
+## Summary
+- Added a guideline for Antigravity in `AGENTS.md` under the "## Antigravity Guidelines" section instructing it to auto-approve tool installations, command executions (such as git), and folder/file access permissions without asking the user each time.
+
+## Files touched
+- [`AGENTS.md`](file:///c:/TripiAgent/AGENTS.md)
+
+---
+
 # HANDOFF — Responsive Layouts, Attraction Search & Asset Cleanups
 
 ## Step completed

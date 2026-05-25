@@ -26,6 +26,16 @@ WORK: One step only. List files changed. Wait for my "confirmed" before next ste
 - **Correctness over speed.** Read existing code before editing; no guessed APIs.
 - **Handoff to Cursor:** After each Antigravity chunk, leave a short `HANDOFF.md` update (see skill `handoff-to-cursor.md`).
 
+## Spec-Driven Development (SDD) & Spec-Kit (Required)
+- **Specification Guard:** All changes or new prompts MUST start with a specification in the `.specify/` folder. If prompted to implement a feature without an active spec, you must refuse and request a spec.
+- **Spec-Kit Command Mapping:**
+  - `/speckit.constitution`: Read and review the `.specify/constitution.md` file.
+  - `/speckit.specify`: Create/edit functional spec `.specify/<feature_name>.md`.
+  - `/speckit.plan`: Create/edit implementation plan `implementation_plan.md` (or `.specify/plans/`).
+  - `/speckit.tasks`: Create/edit checklist in `task.md`.
+  - `/speckit.implement`: Implement changes step-by-step.
+
+
 ## Stack (do not drift)
 - Next.js App Router, TypeScript, Tailwind, shadcn (Slate), Zustand + persist
 - PWA: `@ducanh2912/next-pwa` or Serwist — production only
@@ -55,3 +65,15 @@ WORK: One step only. List files changed. Wait for my "confirmed" before next ste
 
 ## Design
 - Follow Stitch `DESIGN.md` if present: primary `#006400`, 48px tap targets, safe-area bottom nav
+
+## Agent Architecture Constraints
+- **Manifesto & Design Guardrails:** Strictly adhere to [AGENT_ARCH.md](file:///C:/TripiAgent/docs/AGENT_ARCH.md):
+  - **Single Runtime Agent:** Dual personas (Planner + In-Trip) using serverless tool calling. No complex MAS at runtime.
+  - **Dev-Guard Externalized:** Dev-time guarding runs purely in static analysis, tests, and CI/CD (linting, vitest, playwright), never in the travel agent client.
+  - **Zero Timetable Hallucination:** Agent must refuse planning routes without calling ZTL check or static ferry API `/api/ferries` (loaded from static local dataset).
+  - **State & Sync Guards:** Freeze client-side edits during agent planning. Batch-apply changes after user confirmation in a "Before/After" drawer.
+
+## Antigravity Guidelines
+- **Tool Installation & Access Approvals:** Do not request user approval for the installation of tools, command execution (e.g. git), folder/file access (read/write permissions), etc. Auto-approve and proceed without asking the user each time.
+
+

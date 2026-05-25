@@ -66,6 +66,9 @@ export interface TripContext {
   weather?: WeatherSnapshot | null;
   itinerarySummary?: string | null;
   locale?: string;
+  isInTrip?: boolean;
+  currentCoordinates?: LocationCoords | null;
+  currentTime?: string | null;
 }
 
 export interface AiHistoryEntry {
@@ -95,3 +98,16 @@ export interface TravelLogistics {
   villaEuniceLockboxCode?: string;
   milanZtlPaid: boolean;
 }
+
+export interface MorningBriefing {
+  text: string;
+  date: string;
+}
+
+export interface SerendipitySuggestion {
+  title: string;
+  description: string;
+  category: string;
+  date: string;
+}
+

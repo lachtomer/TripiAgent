@@ -17,6 +17,8 @@ export function useChat() {
 
   const location = useTripStore((state) => state.location);
   const itinerary = useTripStore((state) => state.itinerary);
+  const setIsPlanning = useTripStore((state) => state.setIsPlanning);
+  const setToast = useTripStore((state) => state.setToast);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -62,6 +64,7 @@ export function useChat() {
 
       setLoading(true);
       setStreamStarted(false); // reset: show typing dots until first chunk
+      setIsPlanning(true);     // freeze edits on the UI
 
       // 3. Construct TripContext payload
       const now = new Date();
@@ -117,6 +120,7 @@ export function useChat() {
           throw new Error("Failed to initialize stream reader");
         }
 
+        let fullTextResponse = "";
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
@@ -126,7 +130,16 @@ export function useChat() {
             // Mark stream as started on first non-empty chunk
             setStreamStarted(true);
             updateChatMessageText(modelMsgId, chunkText);
+            fullTextResponse += chunkText;
           }
+        }
+
+        // Cache the successful plan response locally in browser
+        try {
+          const cacheKey = "tripiagent_chat_cache_" + text.toLowerCase().trim();
+          localStorage.setItem(cacheKey, fullTextResponse);
+        } catch (e) {
+          console.warn("Failed to write to localStorage plan cache:", e);
         }
 
         // Stream completed — mark unread if not on the chat page
@@ -139,20 +152,45 @@ export function useChat() {
           console.log("AI stream request aborted by client.");
         } else {
           console.error("AI chat error:", error);
-          updateChatMessageText(
-            modelMsgId,
-            `\n\n[Error: ${error.message || "Failed to retrieve response from AI assistant."}]`
-          );
+
+          // Try loading from offline cache
+          const cacheKey = "tripiagent_chat_cache_" + text.toLowerCase().trim();
+          let cachedText: string | null = null;
+          try {
+            cachedText = localStorage.getItem(cacheKey);
+          } catch (e) {
+            console.warn("Failed to read from localStorage plan cache:", e);
+          }
+
+          if (cachedText) {
+            setToast({ message: "Network offline; showing cached plan.", type: "info" });
+            setStreamStarted(true);
+
+            // Simulate chunk-by-chunk streaming of cached response for UX consistency
+            const chunks = cachedText.match(/.{1,30}/g) || [cachedText];
+            for (let i = 0; i < chunks.length; i++) {
+              if (abortController.signal.aborted) break;
+              await new Promise((resolve) => setTimeout(resolve, 30));
+              updateChatMessageText(modelMsgId, chunks[i]);
+            }
+          } else {
+            setToast({ message: "Could not reach agent; using last plan.", type: "error" });
+            updateChatMessageText(
+              modelMsgId,
+              `\n\n[Error: Connection offline. Failed to retrieve response from AI assistant.]`
+            );
+          }
         }
       } finally {
         setLoading(false);
         setStreamStarted(false);
+        setIsPlanning(false); // release planning lock
         if (abortControllerRef.current === abortController) {
           abortControllerRef.current = null;
         }
       }
     },
-    [addChatMessage, updateChatMessageText, setUnreadChat, location, itinerary, messages, pathname]
+    [addChatMessage, updateChatMessageText, setUnreadChat, location, itinerary, messages, pathname, setIsPlanning, setToast]
   );
 
   return {

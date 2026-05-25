@@ -1,0 +1,69 @@
+{
+  "season": "Summer 2026 (June 1 – September 30)",
+  "routes": [
+    {
+      "id": "rg-1",
+      "origin": "Desenzano",
+      "destination": "Sirmione",
+      "durationMinutes": 20,
+      "departures": ["09:00", "11:30", "14:00", "16:30", "18:00"],
+      "type": "Passenger Ferry"
+    },
+    {
+      "id": "rg-2",
+      "origin": "Sirmione",
+      "destination": "Desenzano",
+      "durationMinutes": 20,
+      "departures": ["09:30", "12:00", "14:30", "17:00", "18:30"],
+      "type": "Passenger Ferry"
+    },
+    {
+      "id": "rg-3",
+      "origin": "Sirmione",
+      "destination": "Peschiera",
+      "durationMinutes": 30,
+      "departures": ["10:15", "13:00", "15:45", "17:30"],
+      "type": "Passenger Ferry"
+    },
+    {
+      "id": "rg-4",
+      "origin": "Peschiera",
+      "destination": "Sirmione",
+      "durationMinutes": 30,
+      "departures": ["09:30", "12:15", "15:00", "16:45"],
+      "type": "Passenger Ferry"
+    },
+    {
+      "id": "rg-5",
+      "origin": "Riva",
+      "destination": "Limone",
+      "durationMinutes": 45,
+      "departures": ["08:30", "10:45", "13:15", "15:30", "17:45"],
+      "type": "Passenger & Car Ferry"
+    },
+    {
+      "id": "rg-6",
+      "origin": "Limone",
+      "destination": "Riva",
+      "durationMinutes": 45,
+      "departures": ["09:30", "11:45", "14:15", "16:30", "18:45"],
+      "type": "Passenger & Car Ferry"
+    },
+    {
+      "id": "rg-7",
+      "origin": "Limone",
+      "destination": "Malcesine",
+      "durationMinutes": 20,
+      "departures": ["09:00", "10:15", "11:30", "13:30", "14:45", "16:00", "17:15", "18:30"],
+      "type": "Passenger & Car Ferry"
+    },
+    {
+      "id": "rg-8",
+      "origin": "Malcesine",
+      "destination": "Limone",
+      "durationMinutes": 20,
+      "departures": ["09:30", "10:45", "12:00", "14:00", "15:15", "16:30", "17:45", "19:00"],
+      "type": "Passenger & Car Ferry"
+    }
+  ]
+}

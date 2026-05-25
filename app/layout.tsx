@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import BottomNav from "@/components/BottomNav";
 import TopAppBar from "@/components/TopAppBar";
+import Toast from "@/components/Toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,7 +29,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-};
+ };
 
 export default function RootLayout({
   children,
@@ -50,6 +51,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toast />
             <TopAppBar />
             <main className="flex-1 flex flex-col">{children}</main>
             <BottomNav />
