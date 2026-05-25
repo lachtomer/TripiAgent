@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { itinerarySummary, tripStartDate, cityName, durationDays } = parsed.data;
+  const { itinerarySummary, tripStartDate, cityName, durationDays, weather } = parsed.data;
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -46,10 +46,20 @@ export async function POST(request: NextRequest) {
     ? `Trip starts ${tripStartDate}.`
     : "Trip date not set.";
 
+  const weatherPart = weather
+    ? `The current weather forecast is ${weather.temp}°C, condition: ${weather.condition}.`
+    : "The weather forecast is not set.";
+
   const prompt = `You are a travel packing assistant specialising in Italy trips.
 Generate a comprehensive packing list for a ${duration}-day trip to ${location}.
 ${startDate}
+${weatherPart}
 ${itinerarySummary ? `Itinerary:\n${itinerarySummary}` : ""}
+
+Ensure the packing items are tailored to the weather forecast. Specifically:
+- If the weather forecast indicates rain, showers, storms, or drizzle, make sure to explicitly include rain protection gear like "Umbrella", "Rain Jacket", or "Waterproof Shoes".
+- If the forecast is sunny or hot, prioritize items like "Sunscreen", "Sunglasses", and "Sun hat".
+- If it is cool/cold, prioritize "Warm Layers" and "Jacket".
 
 Return ONLY a valid JSON array (no markdown, no code fences, no explanation) of packing items with this shape:
 [

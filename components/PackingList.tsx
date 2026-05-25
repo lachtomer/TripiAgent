@@ -84,6 +84,22 @@ export default function PackingList() {
     setIsGenerating(true);
     setGenerateError(null);
     try {
+      let weatherPayload = null;
+      if (location?.coords) {
+        try {
+          const wRes = await fetch(`/api/weather?lat=${location.coords.latitude}&lng=${location.coords.longitude}`);
+          if (wRes.ok) {
+            const wJson = await wRes.json();
+            weatherPayload = {
+              temp: wJson.temp ?? 24,
+              condition: wJson.condition ?? "Sunny",
+            };
+          }
+        } catch (e) {
+          console.warn("Failed to fetch weather for packing list", e);
+        }
+      }
+
       const res = await fetch("/api/pack/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,6 +108,7 @@ export default function PackingList() {
           tripStartDate: tripStartDate ?? null,
           cityName: location?.cityName ?? null,
           durationDays: itinerary?.length ?? 5,
+          weather: weatherPayload,
         }),
       });
       if (!res.ok) {

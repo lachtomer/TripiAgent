@@ -55,6 +55,10 @@ export const PackingGenerateSchema = z.object({
   tripStartDate: z.string().nullable().optional(),
   cityName: z.string().nullable().optional(),
   durationDays: z.number().int().min(1).max(30).optional(),
+  weather: z.object({
+    temp: z.number(),
+    condition: z.string(),
+  }).nullable().optional(),
 });
 
 export const AiRequestBodySchema = z.object({
