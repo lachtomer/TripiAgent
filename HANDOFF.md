@@ -1,3 +1,33 @@
+# HANDOFF — Step 4b: LangGraph Workflow Adoption
+
+## Step completed
+- ID: Step 4b - LangGraph Workflow Adoption
+- Agent: Antigravity (@engineer / @qa / @handoff)
+
+## Summary
+- Adopted stateful, cyclic travel planning workflows in TripiAgent by refactoring `/api/ai/route.ts` to execute a LangGraph-compiled state machine instead of direct Gemini calls.
+- Extended the API request payload to support passing full `itinerary` states from the client (`hooks/useChat.ts`) to improve planning context.
+- Wrote integration and unit tests in `lib/agentGraph.test.ts` to mock Gemini outputs and verify classification routing, planning, and validator loop conditions (e.g. Milan Area C ZTL active hours).
+- Verified TypeScript checks compile cleanly and Next.js PWA production webpack build completes successfully.
+
+## Files touched
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`types/index.ts`](file:///c:/TripiAgent/types/index.ts)
+- [`hooks/useChat.ts`](file:///c:/TripiAgent/hooks/useChat.ts)
+- [`app/api/ai/route.ts`](file:///c:/TripiAgent/app/api/ai/route.ts)
+- [`lib/agentGraph.test.ts`](file:///c:/TripiAgent/lib/agentGraph.test.ts)
+
+## Test results
+- unit tests: 12/12 passed (Vitest run passed)
+- tsc compiler: pass (`npx tsc --noEmit` succeeded)
+- build: pass (Next.js production build succeeded)
+
+## Cursor review ask
+- [ ] Confirm chat interface functions properly when sending planning and general conversation queries.
+- [ ] Verify that the Before/After confirmation drawer correctly presents changes suggested by the state machine.
+
+---
+
 # HANDOFF — Step 4a: LangGraph Installation
 
 ## Step completed

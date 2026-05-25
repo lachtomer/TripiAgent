@@ -102,6 +102,7 @@ export function useChat() {
             message: text,
             history: historyPayload,
             context,
+            itinerary,
           }),
           signal: abortController.signal,
         });

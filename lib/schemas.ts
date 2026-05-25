@@ -66,6 +66,7 @@ export const AiRequestBodySchema = z.object({
     })
   ).optional(),
   context: TripContextSchema.optional(),
+  itinerary: z.array(z.any()).nullable().optional(),
 });
 
 export const FerriesQuerySchema = z.object({

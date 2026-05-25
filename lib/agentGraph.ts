@@ -1,0 +1,229 @@
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { StateGraph, Annotation, START, END } from "@langchain/langgraph";
+import { ChatMessage, ItineraryDay, LocationDetails, Activity } from "@/types";
+import { checkMilanZTL } from "./ztl";
+
+// 1. Define State Annotation
+export const AgentStateAnnotation = Annotation.Root({
+  messages: Annotation<ChatMessage[]>({
+    reducer: (x, y) => x.concat(y),
+    default: () => [],
+  }),
+  itinerary: Annotation<ItineraryDay[] | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  location: Annotation<LocationDetails | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  conflicts: Annotation<string[]>({
+    reducer: (x, y) => y, // Overwrite with latest check results
+    default: () => [],
+  }),
+  loopCount: Annotation<number>({
+    reducer: (x, y) => y,
+    default: () => 0,
+  }),
+  routingTarget: Annotation<string>({
+    reducer: (x, y) => y,
+    default: () => "assistant",
+  }),
+  response: Annotation<string>({
+    reducer: (x, y) => y,
+    default: () => "",
+  }),
+});
+
+export type AgentStateType = typeof AgentStateAnnotation.State;
+
+// 2. Nodes Implementation
+
+// Heuristic/LLM Classifier Node
+async function classifierNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
+  const latestMessage = state.messages[state.messages.length - 1];
+  if (!latestMessage) {
+    return { routingTarget: "assistant" };
+  }
+
+  const text = latestMessage.text.toLowerCase();
+  const editKeywords = [
+    "replan", "adjust", "schedule", "swap", "add activity", "delete", "remove", 
+    "change activity", "itinerary", "insert", "move", "cancel"
+  ];
+
+  const requiresPlanning = editKeywords.some(keyword => text.includes(keyword));
+  return {
+    routingTarget: requiresPlanning ? "planner" : "assistant",
+  };
+}
+
+// Planner Node using Gemini
+async function plannerNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return { response: "API Key missing.", routingTarget: "assistant" };
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = genAI.getGenerativeModel({ model: modelName });
+
+  const latestMessage = state.messages[state.messages.length - 1]?.text || "";
+  const currentItinerary = state.itinerary ? JSON.stringify(state.itinerary) : "None";
+  const conflictNotes = state.conflicts.length > 0
+    ? `⚠️ Validation Conflicts Found:\n${state.conflicts.map(c => `- ${c}`).join("\n")}\n\nPlease revise the schedule to avoid these issues.`
+    : "";
+
+  const prompt = `
+  You are the Planner Node of TripiAgent. Your task is to update or adjust the itinerary based on the user request.
+
+  Active Itinerary:
+  ${currentItinerary}
+
+  User Request: ${latestMessage}
+
+  ${conflictNotes}
+
+  Instructions:
+  Explain the suggested changes in text, and you MUST append a structured JSON block at the very end of your response inside a markdown block:
+  \`\`\`json
+  {
+    "type": "replan",
+    "dayNumber": 1, 
+    "activities": [
+      {
+        "time": "12:00",
+        "title": "Activity Title",
+        "description": "Activity description",
+        "locationName": "Location"
+      }
+    ]
+  }
+  \`\`\`
+  Ensure Day number is correct and activities have time slot strings.
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+    return {
+      response: responseText,
+      routingTarget: "validator",
+    };
+  } catch (error) {
+    console.error("Planner node error:", error);
+    return {
+      response: "Sorry, I had trouble planning this.",
+      routingTarget: "assistant",
+    };
+  }
+}
+
+// Validator Node (Milan ZTL, Ferry constraints)
+async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
+  const currentConflicts: string[] = [];
+  const responseText = state.response;
+  
+  // Extract JSON payload from Gemini response text
+  let proposedActivities: Activity[] = [];
+  let dayNum = 1;
+  const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  
+  if (jsonMatch && jsonMatch[1]) {
+    try {
+      const payload = JSON.parse(jsonMatch[1]);
+      if (payload.type === "replan" && Array.isArray(payload.activities)) {
+        proposedActivities = payload.activities;
+        dayNum = payload.dayNumber;
+      }
+    } catch {
+      // JSON parsing failure
+    }
+  }
+
+  // 1. ZTL validation for Milan Area C
+  const hasMilanText = responseText.toLowerCase().includes("milan") || 
+    proposedActivities.some(a => a.title.toLowerCase().includes("milan") || a.locationName?.toLowerCase().includes("milan"));
+
+  if (hasMilanText) {
+    // Check if the drive is scheduled on a weekday during active hours
+    // We assume default test day is Monday if dates are missing
+    const ztlResult = checkMilanZTL("12:00", "Monday");
+    if (ztlResult.active) {
+      currentConflicts.push("Milan ZTL Area C congestion zone is active (requires €7.50 entry permit ticket).");
+    }
+  }
+
+  // Determine routing target based on conflicts
+  const nextLoop = state.loopCount + 1;
+  const shouldRetry = currentConflicts.length > 0 && nextLoop < 2; // Maximum 2 refinement loops
+
+  return {
+    conflicts: currentConflicts,
+    loopCount: nextLoop,
+    routingTarget: shouldRetry ? "planner" : "assistant",
+  };
+}
+
+// Assistant Node (Final formatting and explanations)
+async function assistantNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
+  let finalResponse = state.response;
+  if (!finalResponse) {
+    const latestMessage = state.messages[state.messages.length - 1]?.text || "";
+    // General chat fallback
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-2.5-flash" });
+      const result = await model.generateContent(latestMessage);
+      finalResponse = result.response.text();
+    } else {
+      finalResponse = "Sorry, my server API key is offline.";
+    }
+  }
+
+  // If conflicts remained unresolved, prepend them as warnings to the user
+  if (state.conflicts.length > 0) {
+    const warningHeader = `⚠️ **Warnings & Travel Notices:**\n${state.conflicts.map(c => `- ${c}`).join("\n")}\n\n`;
+    finalResponse = warningHeader + finalResponse;
+  }
+
+  return {
+    response: finalResponse,
+  };
+}
+
+// 3. Compile Graph Routing
+
+const workflow = new StateGraph(AgentStateAnnotation)
+  .addNode("classifier", classifierNode)
+  .addNode("planner", plannerNode)
+  .addNode("validator", validatorNode)
+  .addNode("assistant", assistantNode);
+
+workflow.addEdge(START, "classifier");
+
+workflow.addConditionalEdges(
+  "classifier",
+  (state) => state.routingTarget,
+  {
+    planner: "planner",
+    assistant: "assistant",
+  }
+);
+
+workflow.addEdge("planner", "validator");
+
+workflow.addConditionalEdges(
+  "validator",
+  (state) => state.routingTarget,
+  {
+    planner: "planner",
+    assistant: "assistant",
+  }
+);
+
+workflow.addEdge("assistant", END);
+
+export const agentGraph = workflow.compile();

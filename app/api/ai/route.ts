@@ -1,31 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiRequestBodySchema } from "@/lib/schemas";
-import { buildSystemPrompt } from "@/lib/gemini";
 import { rateLimiter } from "@/lib/rateLimit";
-import { checkMilanZTL } from "@/lib/ztl";
-import fs from "fs";
-import path from "path";
+import { agentGraph } from "@/lib/agentGraph";
+import { ChatMessage, LocationDetails } from "@/types";
 
 if (process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
-
-function searchFerrySchedule(origin: string, destination: string) {
-  try {
-    const jsonPath = path.join(process.cwd(), "public", "data", "lake_garda_ferries_2026.json");
-    const fileContent = fs.readFileSync(jsonPath, "utf-8");
-    const ferryData = JSON.parse(fileContent);
-    const routes = ferryData.routes.filter(
-      (r: { origin: string; destination: string }) =>
-        r.origin.toLowerCase().trim() === origin.toLowerCase().trim() &&
-        r.destination.toLowerCase().trim() === destination.toLowerCase().trim()
-    );
-    return { season: ferryData.season, routes };
-  } catch (error) {
-    console.error("Error reading ferry file in tool call:", error);
-    return { error: "Ferry schedule database is offline." };
-  }
 }
 
 export async function POST(request: NextRequest) {
@@ -58,7 +39,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { message, history, context } = validation.data;
+  const { message, history, context, itinerary } = validation.data;
 
   // 3. Check Gemini API Configuration
   const apiKey = process.env.GEMINI_API_KEY;
@@ -68,132 +49,48 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-
-    // 4. Compile System Instructions incorporating Context
-    const systemInstruction = buildSystemPrompt(context || {
-      coords: null,
-      cityName: null,
-    });
-
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction,
-      tools: [
-        {
-          functionDeclarations: [
-            {
-              name: "checkMilanZTL",
-              description: "Check if entering Milan's Area C ZTL requires payment based on time and date. Cost is €7.50.",
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  timeStr: { type: SchemaType.STRING, description: "Time format HH:MM (e.g., '10:15', '18:55')" },
-                  dateStr: { type: SchemaType.STRING, description: "Date format YYYY-MM-DD or valid date string" }
-                },
-                required: ["timeStr", "dateStr"]
-              }
-            },
-            {
-              name: "searchFerrySchedule",
-              description: "Search seasonal ferry schedules for Lake Garda routes.",
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  origin: { type: SchemaType.STRING, description: "Origin town (e.g., 'Sirmione', 'Desenzano')" },
-                  destination: { type: SchemaType.STRING, description: "Destination town (e.g., 'Desenzano', 'Riva')" }
-                },
-                required: ["origin", "destination"]
-              }
-            }
-          ]
-        }
-      ]
-    });
-
-    // 5. Structure Chat Contents history for Gemini SDK
-    const contents: any[] = [];
-    if (history && history.length > 0) {
-      contents.push(
-        ...history.map((item) => ({
-          role: item.role === "user" ? "user" : "model",
-          parts: [{ text: item.text }],
-        }))
-      );
-    }
-    contents.push({
+    // 4. Map request payload to state
+    const mappedHistory: ChatMessage[] = (history || []).map((h, index) => ({
+      id: `hist-${index}-${Date.now()}`,
+      role: h.role,
+      text: h.text,
+      timestamp: Date.now() - ((history?.length || 0) - index) * 1000,
+    }));
+    
+    mappedHistory.push({
+      id: `msg-${Date.now()}`,
       role: "user",
-      parts: [{ text: message }],
+      text: message,
+      timestamp: Date.now(),
     });
 
-    // Pre-evaluate tool calls if Gemini decides to run functions
-    try {
-      const initialResult = await model.generateContent({
-        contents,
-      });
+    const locationState: LocationDetails | null = context ? {
+      coords: context.coords || null,
+      cityName: context.cityName || null,
+      permissionState: "granted",
+    } : null;
 
-      const responseText = initialResult.response;
-      const functionCalls = responseText.functionCalls();
+    // 5. Invoke LangGraph
+    const finalState = await agentGraph.invoke({
+      messages: mappedHistory,
+      itinerary: itinerary || null,
+      location: locationState,
+      conflicts: [],
+      loopCount: 0,
+      routingTarget: "classifier",
+      response: "",
+    });
 
-      if (functionCalls && functionCalls.length > 0) {
-        contents.push({
-          role: "model",
-          parts: functionCalls.map((fc) => ({
-            functionCall: {
-              name: fc.name,
-              args: fc.args,
-            },
-          })),
-        });
+    const responseText = finalState.response || "No response generated by agent graph.";
 
-        const functionResponseParts = [];
-        for (const fc of functionCalls) {
-          let result: any;
-          if (fc.name === "checkMilanZTL") {
-            const { timeStr, dateStr } = fc.args as { timeStr: string; dateStr: string };
-            result = checkMilanZTL(timeStr, dateStr);
-          } else if (fc.name === "searchFerrySchedule") {
-            const { origin, destination } = fc.args as { origin: string; destination: string };
-            result = searchFerrySchedule(origin, destination);
-          } else {
-            result = { error: "Unknown function" };
-          }
-
-          functionResponseParts.push({
-            functionResponse: {
-              name: fc.name,
-              response: result,
-            },
-          });
-        }
-
-        contents.push({
-          role: "function",
-          parts: functionResponseParts,
-        });
-      }
-    } catch (e) {
-      console.warn("Tool calling pre-evaluation bypassed or failed:", e);
-    }
-
-    // 6. Generate content stream and return as ReadableStream
+    // 6. Return response stream as ReadableStream
     const responseStream = new ReadableStream({
       async start(controller) {
         try {
-          const result = await model.generateContentStream({
-            contents,
-          });
-
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            if (text) {
-              controller.enqueue(new TextEncoder().encode(text));
-            }
-          }
+          controller.enqueue(new TextEncoder().encode(responseText));
           controller.close();
         } catch (err) {
-          console.error("Gemini stream error:", err);
+          console.error("Response stream error:", err);
           controller.error(err);
         }
       },
@@ -207,7 +104,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Gemini AI API connection failed:", error);
+    console.error("LangGraph flow failed:", error);
     return NextResponse.json({ error: "Failed to connect to AI assistant" }, { status: 500 });
   }
 }

@@ -80,6 +80,7 @@ export interface AiRequestBody {
   message: string;
   history?: AiHistoryEntry[];
   context?: TripContext;
+  itinerary?: ItineraryDay[] | null;
 }
 
 export interface SavedAttraction {
