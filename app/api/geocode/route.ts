@@ -40,8 +40,9 @@ export async function GET(request: NextRequest) {
   // Support forward geocoding if query/address is provided
   if (address) {
     try {
+      // Use Google Places API Text Search to bypass Geocoding API restriction on the key
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(address)}&key=${apiKey}`
       );
       const data = await response.json();
 
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
         if (data.status === "ZERO_RESULTS") {
           return NextResponse.json({ error: "No coordinates found for this destination" }, { status: 404 });
         }
-        return NextResponse.json({ error: `Google Geocoding error: ${data.status}` }, { status: 502 });
+        return NextResponse.json({ error: `Google API error: ${data.status}` }, { status: 502 });
       }
 
       const result = data.results[0];
@@ -57,20 +58,12 @@ export async function GET(request: NextRequest) {
       const lng = result.geometry.location.lng;
       const formattedAddress = result.formatted_address;
 
-      // Extract city locality
-      let cityName = "";
-      const component = result.address_components?.find((c: any) =>
-        c.types.includes("locality")
-      );
-      if (component) {
-        cityName = component.long_name;
-      } else {
-        cityName = formattedAddress.split(",")[0];
-      }
+      // Extract city name or formatted address fallback
+      const cityName = result.name || formattedAddress.split(",")[0];
 
       return NextResponse.json({ lat, lng, cityName, formattedAddress });
     } catch (error) {
-      console.error("Forward geocoding failed:", error);
+      console.error("Forward geocoding via Places API failed:", error);
       return NextResponse.json({ error: "Failed to geocode address" }, { status: 500 });
     }
   }
