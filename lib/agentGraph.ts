@@ -1,7 +1,9 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { StateGraph, Annotation, START, END } from "@langchain/langgraph";
-import { ChatMessage, ItineraryDay, LocationDetails, Activity } from "@/types";
+import { ChatMessage, ItineraryDay, LocationDetails, Activity, WeatherSnapshot } from "@/types";
 import { checkMilanZTL } from "./ztl";
+import fs from "fs";
+import path from "path";
 
 // 1. Define State Annotation
 export const AgentStateAnnotation = Annotation.Root({
@@ -24,6 +26,10 @@ export const AgentStateAnnotation = Annotation.Root({
   loopCount: Annotation<number>({
     reducer: (x, y) => y,
     default: () => 0,
+  }),
+  weather: Annotation<WeatherSnapshot | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
   }),
   routingTarget: Annotation<string>({
     reducer: (x, y) => y,
@@ -144,7 +150,7 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
 
   // 1. ZTL validation for Milan Area C
   const hasMilanText = responseText.toLowerCase().includes("milan") || 
-    proposedActivities.some(a => a.title.toLowerCase().includes("milan") || a.locationName?.toLowerCase().includes("milan"));
+    proposedActivities.some(a => a.title.toLowerCase().includes("milan") || (a.locationName && a.locationName.toLowerCase().includes("milan")));
 
   if (hasMilanText) {
     // Check if the drive is scheduled on a weekday during active hours
@@ -152,6 +158,61 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
     const ztlResult = checkMilanZTL("12:00", "Monday");
     if (ztlResult.active) {
       currentConflicts.push("Milan ZTL Area C congestion zone is active (requires €7.50 entry permit ticket).");
+    }
+  }
+
+  // 2. Ferry Validation for Lake Garda
+  const ferryActivities = proposedActivities.filter(a => 
+    a.title.toLowerCase().includes("ferry") || 
+    a.description.toLowerCase().includes("ferry")
+  );
+
+  if (ferryActivities.length > 0) {
+    try {
+      const jsonPath = path.join(process.cwd(), "public", "data", "lake_garda_ferries_2026.json");
+      const fileContent = fs.readFileSync(jsonPath, "utf-8");
+      const ferryData = JSON.parse(fileContent);
+      
+      for (const act of ferryActivities) {
+        const text = (act.title + " " + act.description).toLowerCase();
+        const towns = ["desenzano", "sirmione", "peschiera", "riva", "limone", "malcesine"];
+        const foundTowns = towns.filter(town => text.includes(town));
+        
+        if (foundTowns.length >= 2) {
+          const origin = foundTowns[0];
+          const destination = foundTowns[1];
+          
+          const routeExists = ferryData.routes.some((r: any) => 
+            (r.origin.toLowerCase() === origin && r.destination.toLowerCase() === destination) ||
+            (r.origin.toLowerCase() === destination && r.destination.toLowerCase() === origin)
+          );
+          
+          if (!routeExists) {
+            currentConflicts.push(`Ferry route between ${origin.charAt(0).toUpperCase() + origin.slice(1)} and ${destination.charAt(0).toUpperCase() + destination.slice(1)} does not exist in the Summer 2026 schedule.`);
+          }
+        } else if (foundTowns.length === 1) {
+          currentConflicts.push(`Ferry activity mentions ${foundTowns[0].charAt(0).toUpperCase() + foundTowns[0].slice(1)} but lacks a clear origin/destination town.`);
+        }
+      }
+    } catch (err) {
+      console.error("Ferry validation failed:", err);
+    }
+  }
+
+  // 3. Weather Forecast Validation
+  if (state.weather) {
+    const condition = state.weather.condition.toLowerCase();
+    const isRainy = condition.includes("rain") || condition.includes("shower") || condition.includes("storm") || condition.includes("drizzle");
+    
+    if (isRainy) {
+      const outdoorKeywords = ["swim", "beach", "boat", "hike", "walk", "outdoor", "gardens", "pool", "kayak"];
+      const conflictingOutdoorActivities = proposedActivities.filter(a => 
+        outdoorKeywords.some(kw => a.title.toLowerCase().includes(kw) || a.description.toLowerCase().includes(kw))
+      );
+      
+      for (const act of conflictingOutdoorActivities) {
+        currentConflicts.push(`Outdoor activity "${act.title}" is scheduled despite a rainy weather forecast (${state.weather.condition}).`);
+      }
     }
   }
 

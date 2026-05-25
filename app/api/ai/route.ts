@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
       messages: mappedHistory,
       itinerary: itinerary || null,
       location: locationState,
+      weather: context?.weather || null,
       conflicts: [],
       loopCount: 0,
       routingTarget: "classifier",

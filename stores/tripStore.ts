@@ -16,6 +16,7 @@ interface TripState {
   toast: { message: string; type: "success" | "error" | "info" } | null;
   morningBriefing: MorningBriefing | null;
   serendipitySuggestion: SerendipitySuggestion | null;
+  completedActivityIds: string[];
 
   setLocation: (location: LocationDetails) => void;
   setManualCity: (city: string) => void;
@@ -42,6 +43,7 @@ interface TripState {
   setToast: (toast: { message: string; type: "success" | "error" | "info" } | null) => void;
   setMorningBriefing: (briefing: MorningBriefing | null) => void;
   setSerendipitySuggestion: (suggestion: SerendipitySuggestion | null) => void;
+  toggleActivityCompletion: (activityId: string) => void;
   resetStore: () => void;
 }
 
@@ -76,6 +78,7 @@ export const useTripStore = create<TripState>()(
       toast: null,
       morningBriefing: null,
       serendipitySuggestion: null,
+      completedActivityIds: [],
       
       setLocation: (location) => set({ location }),
       setManualCity: (cityName) =>
@@ -212,6 +215,12 @@ export const useTripStore = create<TripState>()(
       setToast: (toast) => set({ toast }),
       setMorningBriefing: (briefing) => set({ morningBriefing: briefing }),
       setSerendipitySuggestion: (suggestion) => set({ serendipitySuggestion: suggestion }),
+      toggleActivityCompletion: (activityId) =>
+        set((state) => ({
+          completedActivityIds: state.completedActivityIds.includes(activityId)
+            ? state.completedActivityIds.filter((id) => id !== activityId)
+            : [...state.completedActivityIds, activityId],
+        })),
       resetStore: () =>
         set({
           location: null,
@@ -227,6 +236,7 @@ export const useTripStore = create<TripState>()(
           toast: null,
           morningBriefing: null,
           serendipitySuggestion: null,
+          completedActivityIds: [],
         }),
     }),
     {

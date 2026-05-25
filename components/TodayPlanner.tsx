@@ -32,6 +32,8 @@ export default function TodayPlanner() {
   const itinerary = useTripStore((state) => state.itinerary);
   const tripStartDate = useTripStore((state) => state.tripStartDate);
   const setPendingPrompt = useTripStore((state) => state.setPendingPrompt);
+  const completedActivityIds = useTripStore((state) => state.completedActivityIds);
+  const toggleActivityCompletion = useTripStore((state) => state.toggleActivityCompletion);
 
   const [activeDayNum, setActiveDayNum] = useState<number>(1);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -133,17 +135,33 @@ export default function TodayPlanner() {
           </div>
         ) : (
           <div className="relative pl-4 border-l-2 border-primary/20 dark:border-[#86df72]/20 space-y-5 ml-2">
-            {sortedActivities.map((act) => (
-              <div key={act.id} className="relative group">
-                {/* Timeline node dot */}
-                <div className="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full bg-card border-2 border-primary dark:border-[#86df72] group-hover:scale-110 transition-transform duration-200" />
-                
-                {/* Activity details card */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-extrabold text-primary dark:text-[#86df72] bg-primary/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded border border-primary/10 dark:border-[#86df72]/10 shrink-0">
-                      {act.time}
-                    </span>
+            {sortedActivities.map((act) => {
+              const isCompleted = completedActivityIds.includes(act.id);
+              return (
+                <div key={act.id} className="relative group">
+                  {/* Timeline node checkbox */}
+                  <button
+                    onClick={() => toggleActivityCompletion(act.id)}
+                    className={`absolute -left-[23px] top-1.5 w-4 h-4 rounded-full flex items-center justify-center border-2 transition-all duration-200 z-10 ${
+                      isCompleted
+                        ? "bg-primary border-primary text-white dark:bg-[#86df72] dark:border-[#86df72]"
+                        : "bg-card border-primary/50 dark:border-[#86df72]/50 hover:border-primary dark:hover:border-[#86df72]"
+                    }`}
+                    aria-label="Toggle activity completion"
+                  >
+                    {isCompleted && (
+                      <svg className="w-2.5 h-2.5 stroke-current fill-none stroke-[3]" viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </button>
+                  
+                  {/* Activity details card */}
+                  <div className={`space-y-1 transition-all duration-200 ${isCompleted ? "opacity-40 line-through decoration-muted-foreground" : ""}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-extrabold text-primary dark:text-[#86df72] bg-primary/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded border border-primary/10 dark:border-[#86df72]/10 shrink-0">
+                        {act.time}
+                      </span>
                     {act.locationName && (
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 truncate max-w-[150px]">
                         <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -170,9 +188,10 @@ export default function TodayPlanner() {
                     <Sparkles className="h-3 w-3 shrink-0" />
                     Ask AI Guide
                   </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>
