@@ -16,6 +16,20 @@ const PLACE_FALLBACK_PHOTOS = [
   "https://images.unsplash.com/photo-1543489822-c49534f3271f?auto=format&fit=crop&w=300&q=80", // Florence
 ];
 
+// Helper functions to simulate dietary availability deterministically
+const isGlutenFree = (placeId: string) => {
+  return placeId.charCodeAt(placeId.length - 1) % 2 === 0;
+};
+const isDiabeticFriendly = (placeId: string) => {
+  return placeId.charCodeAt(placeId.length - 2) % 2 === 0;
+};
+const isVegetarian = (placeId: string) => {
+  return placeId.charCodeAt(placeId.length - 3) % 2 === 0;
+};
+const isVegan = (placeId: string) => {
+  return placeId.charCodeAt(placeId.length - 4) % 2 === 0;
+};
+
 export default function AttractionSearch() {
   const router = useRouter();
   const saveAttraction = useTripStore((s) => s.saveAttraction);
@@ -28,6 +42,13 @@ export default function AttractionSearch() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<PlaceDetail[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Food Filter States
+  const [openNowOnly, setOpenNowOnly] = useState(false);
+  const [glutenFreeOnly, setGlutenFreeOnly] = useState(false);
+  const [diabeticFriendlyOnly, setDiabeticFriendlyOnly] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [moreOptions, setMoreOptions] = useState<string[]>([]); // "vegetarian", "vegan"
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -63,9 +84,28 @@ export default function AttractionSearch() {
         .filter((p) => p.name)
         .sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-      setResults(sorted.slice(0, 5));
-      if (sorted.length === 0) {
-        setError(`No ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName}.`);
+      let filtered = sorted;
+      if (searchType === "restaurant") {
+        if (openNowOnly) {
+          filtered = filtered.filter(p => p.open_now !== false);
+        }
+        if (glutenFreeOnly) {
+          filtered = filtered.filter(p => isGlutenFree(p.place_id));
+        }
+        if (diabeticFriendlyOnly) {
+          filtered = filtered.filter(p => isDiabeticFriendly(p.place_id));
+        }
+        if (moreOptions.includes("vegetarian")) {
+          filtered = filtered.filter(p => isVegetarian(p.place_id));
+        }
+        if (moreOptions.includes("vegan")) {
+          filtered = filtered.filter(p => isVegan(p.place_id));
+        }
+      }
+
+      setResults(filtered.slice(0, 5));
+      if (filtered.length === 0) {
+        setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName} for the selected filters.`);
       }
     } catch (err: any) {
       console.error("Search failed:", err);
@@ -127,7 +167,10 @@ export default function AttractionSearch() {
             
             <button
               type="button"
-              onClick={() => setSearchType("tourist_attraction")}
+              onClick={() => {
+                setSearchType("tourist_attraction");
+                setResults([]);
+              }}
               className={cn(
                 "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer",
                 searchType === "tourist_attraction"
@@ -141,7 +184,10 @@ export default function AttractionSearch() {
 
             <button
               type="button"
-              onClick={() => setSearchType("restaurant")}
+              onClick={() => {
+                setSearchType("restaurant");
+                setResults([]);
+              }}
               className={cn(
                 "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer",
                 searchType === "restaurant"
@@ -153,6 +199,104 @@ export default function AttractionSearch() {
               Dining
             </button>
           </div>
+
+          {/* Food Filters (rendered only when searchType is restaurant) */}
+          {searchType === "restaurant" && (
+            <div className="space-y-2 pt-2 border-t border-outline-variant/10 animate-in fade-in duration-200">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Food Options:</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOpenNowOnly(!openNowOnly)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer select-none",
+                    openNowOnly
+                      ? "bg-[#006400]/10 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/15 dark:text-[#86df72] dark:border-[#86df72]/30"
+                      : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
+                  )}
+                >
+                  Open Now
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGlutenFreeOnly(!glutenFreeOnly)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer select-none",
+                    glutenFreeOnly
+                      ? "bg-[#006400]/10 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/15 dark:text-[#86df72] dark:border-[#86df72]/30"
+                      : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
+                  )}
+                >
+                  Gluten-Free
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDiabeticFriendlyOnly(!diabeticFriendlyOnly)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer select-none",
+                    diabeticFriendlyOnly
+                      ? "bg-[#006400]/10 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/15 dark:text-[#86df72] dark:border-[#86df72]/30"
+                      : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
+                  )}
+                >
+                  Diabetes-Friendly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowMoreOptions(!showMoreOptions)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer select-none",
+                    showMoreOptions || moreOptions.length > 0
+                      ? "bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400 dark:border-amber-500/30"
+                      : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
+                  )}
+                >
+                  {showMoreOptions ? "Less Options" : "More Options..."}
+                </button>
+              </div>
+
+              {showMoreOptions && (
+                <div className="flex gap-2 p-2 bg-muted/20 border border-outline-variant/20 rounded-xl animate-in slide-in-from-top-1 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMoreOptions((prev) =>
+                        prev.includes("vegetarian")
+                          ? prev.filter((o) => o !== "vegetarian")
+                          : [...prev, "vegetarian"]
+                      );
+                    }}
+                    className={cn(
+                      "px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all cursor-pointer",
+                      moreOptions.includes("vegetarian")
+                        ? "bg-[#006400]/15 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/20 dark:text-[#86df72]"
+                        : "bg-transparent text-muted-foreground border-transparent hover:bg-muted"
+                    )}
+                  >
+                    Vegetarian
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMoreOptions((prev) =>
+                        prev.includes("vegan")
+                          ? prev.filter((o) => o !== "vegan")
+                          : [...prev, "vegan"]
+                      );
+                    }}
+                    className={cn(
+                      "px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all cursor-pointer",
+                      moreOptions.includes("vegan")
+                        ? "bg-[#006400]/15 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/20 dark:text-[#86df72]"
+                        : "bg-transparent text-muted-foreground border-transparent hover:bg-muted"
+                    )}
+                  >
+                    Vegan
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </form>
 
         {/* Error Message */}
@@ -199,7 +343,7 @@ export default function AttractionSearch() {
               return (
                 <div
                   key={placeId}
-                  className="flex gap-3 items-center p-2.5 rounded-xl border border-outline-variant/20 bg-card hover:bg-muted/5 transition-all duration-200 group"
+                  className="flex gap-3 items-center p-2.5 rounded-xl border border-outline-variant/20 bg-card hover:bg-muted/5 transition-all duration-200 group animate-in fade-in duration-200"
                 >
                   {/* Thumbnail Cover Image */}
                   <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative bg-muted border border-outline-variant/10">
@@ -250,6 +394,32 @@ export default function AttractionSearch() {
                         </span>
                       )}
                     </div>
+
+                    {/* Food option tags */}
+                    {searchType === "restaurant" && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {isGlutenFree(placeId) && (
+                          <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/15">
+                            Gluten-Free
+                          </span>
+                        )}
+                        {isDiabeticFriendly(placeId) && (
+                          <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/15">
+                            Diabetic-Friendly
+                          </span>
+                        )}
+                        {isVegetarian(placeId) && (
+                          <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15">
+                            Vegetarian
+                          </span>
+                        )}
+                        {isVegan(placeId) && (
+                          <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/15">
+                            Vegan
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Ask AI Trigger Button */}

@@ -337,6 +337,12 @@ export default function ItineraryCard() {
   const addActivity = useTripStore((state) => state.addActivity);
   const updateActivity = useTripStore((state) => state.updateActivity);
   const deleteActivity = useTripStore((state) => state.deleteActivity);
+  
+  // Day anchor and swapping state
+  const dayAnchors = useTripStore((state) => state.dayAnchors);
+  const updateDayAnchor = useTripStore((state) => state.updateDayAnchor);
+  const swapItineraryDays = useTripStore((state) => state.swapItineraryDays);
+
   const isHydrated = useIsHydrated();
   const location = useTripStore((state) => state.location);
   const [weatherCondition, setWeatherCondition] = useState<string | null>(null);
@@ -372,6 +378,42 @@ export default function ItineraryCard() {
     const prompt = `My outdoor activity '${act.title}' on Day ${dayNum} has a rain alert. What are some good indoor alternative activities in ${act.locationName || "the area"} that we can swap it with?`;
     setPendingPrompt(prompt);
     router.push("/chat");
+  };
+
+  const handleSwapDays = (dayA: number, dayB: number) => {
+    const activeItinerary = itinerary || DEFAULT_ITALY_ITINERARY;
+    const dayDataA = activeItinerary.find((d) => d.dayNumber === dayA);
+    const dayDataB = activeItinerary.find((d) => d.dayNumber === dayB);
+
+    if (!dayDataA || !dayDataB) return;
+
+    const conflicts: string[] = [];
+
+    // ZTL Driving swap warning
+    const hasMilanA = dayDataA.activities.some((a) => a.title.toLowerCase().includes("milan") || a.locationName?.toLowerCase().includes("milan"));
+    const hasMilanB = dayDataB.activities.some((a) => a.title.toLowerCase().includes("milan") || a.locationName?.toLowerCase().includes("milan"));
+
+    if (hasMilanA || hasMilanB) {
+      conflicts.push("Milan ZTL Area C warning: Driving schedules could move to active weekday times. Ensure ZTL paid tags match.");
+    }
+
+    // Weather mismatch warning
+    const hasOutdoorA = dayDataA.activities.some((a) => isOutdoorActivity(a.title, a.description));
+    const hasOutdoorB = dayDataB.activities.some((a) => isOutdoorActivity(a.title, a.description));
+    const isRainy = weatherCondition?.includes("rain") || weatherCondition?.includes("drizzle") || weatherCondition?.includes("shower");
+
+    if (isRainy && (hasOutdoorA || hasOutdoorB)) {
+      conflicts.push("Rain Alert: One of the swapped days contains outdoor activities and weather forecast warns of rain.");
+    }
+
+    if (conflicts.length > 0) {
+      const confirmSwap = confirm(
+        `⚠️ Scheduling Warnings:\n\n${conflicts.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nDo you want to swap Day ${dayA} and Day ${dayB} anyway?`
+      );
+      if (!confirmSwap) return;
+    }
+
+    swapItineraryDays(dayA, dayB);
   };
 
   // Editing state for day titles: dayNumber -> boolean
@@ -571,49 +613,91 @@ export default function ItineraryCard() {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Calendar className="h-4 w-4 text-[#006400] dark:text-[#86df72] shrink-0" />
-                      <button
-                        id={`day-title-label-${day.dayNumber}`}
-                        disabled={isPlanning}
-                        onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
-                        className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer disabled:no-underline disabled:cursor-not-allowed"
-                      >
-                        {day.date || `Day ${day.dayNumber}`}
-                      </button>
-                      <button
-                        id={`edit-day-title-trigger-${day.dayNumber}`}
-                        disabled={isPlanning}
-                        onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
-                        className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                        aria-label="Edit day title"
-                      >
-                        <Edit3 className="h-3.5 w-3.5" />
-                      </button>
-                      {isToday && (
-                        <span 
-                          id={`today-badge-${day.dayNumber}`}
-                          className="bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Calendar className="h-4 w-4 text-[#006400] dark:text-[#86df72] shrink-0" />
+                        <button
+                          id={`day-title-label-${day.dayNumber}`}
+                          disabled={isPlanning}
+                          onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
+                          className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer disabled:no-underline disabled:cursor-not-allowed"
                         >
-                          Today
-                        </span>
-                      )}
+                          {day.date || `Day ${day.dayNumber}`}
+                        </button>
+                        <button
+                          id={`edit-day-title-trigger-${day.dayNumber}`}
+                          disabled={isPlanning}
+                          onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
+                          className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                          aria-label="Edit day title"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </button>
+                        {isToday && (
+                          <span 
+                            id={`today-badge-${day.dayNumber}`}
+                            className="bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                          >
+                            Today
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Day Anchor Selector */}
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase shrink-0">Anchor:</span>
+                        <input
+                          type="text"
+                          placeholder="e.g. Sirmione"
+                          value={dayAnchors[day.dayNumber] || ""}
+                          disabled={isPlanning}
+                          onChange={(e) => updateDayAnchor(day.dayNumber, e.target.value)}
+                          className="h-6 text-[10px] font-bold bg-muted/40 hover:bg-muted/60 border border-outline-variant/30 rounded px-2 w-28 text-foreground focus:outline-none focus:border-[#006400]/40 transition-all"
+                        />
+                      </div>
                     </div>
                   )}
                   <CardDescription className="mt-1 text-[11px] text-muted-foreground">Daily activities scheduled</CardDescription>
                 </div>
 
-                <Button
-                  id={`add-activity-btn-${day.dayNumber}`}
-                  variant="outline"
-                  size="sm"
-                  disabled={isPlanning}
-                  onClick={() => setAddingActivityDay(addingActivityDay === day.dayNumber ? null : day.dayNumber)}
-                  className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Add Activity</span>
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Day Swap button */}
+                  <Button
+                    id={`swap-day-btn-${day.dayNumber}`}
+                    variant="ghost"
+                    size="sm"
+                    disabled={isPlanning}
+                    onClick={() => {
+                      const swapTargetStr = prompt(`Enter day number to swap Day ${day.dayNumber} with:`);
+                      if (swapTargetStr) {
+                        const targetNum = parseInt(swapTargetStr);
+                        if (!isNaN(targetNum) && targetNum !== day.dayNumber && targetNum >= 1 && targetNum <= activeItinerary.length) {
+                          handleSwapDays(day.dayNumber, targetNum);
+                        } else {
+                          alert("Invalid day number entered.");
+                        }
+                      }
+                    }}
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg cursor-pointer flex items-center justify-center border border-outline-variant/30"
+                    title="Swap Day"
+                  >
+                    <svg className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                    </svg>
+                  </Button>
+
+                  <Button
+                    id={`add-activity-btn-${day.dayNumber}`}
+                    variant="outline"
+                    size="sm"
+                    disabled={isPlanning}
+                    onClick={() => setAddingActivityDay(addingActivityDay === day.dayNumber ? null : day.dayNumber)}
+                    className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Add Activity</span>
+                  </Button>
+                </div>
               </CardHeader>
 
               <CardContent className="p-4 pt-0 space-y-3">

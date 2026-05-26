@@ -11,7 +11,9 @@ import {
   ChevronDown, 
   ChevronUp, 
   Compass,
-  Check
+  Check,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +34,14 @@ export default function SavedAttractionsList() {
   const removeSavedAttraction = useTripStore((state) => state.removeSavedAttraction);
   const itinerary = useTripStore((state) => state.itinerary);
   const addAttractionToItinerary = useTripStore((state) => state.addAttractionToItinerary);
+  
+  // User/Admin permissions
+  const currentUser = useTripStore((state) => state.currentUser);
+  const users = useTripStore((state) => state.users);
+  const voteAttraction = useTripStore((state) => state.voteAttraction);
+
+  const activeUser = users.find((u) => u.id === currentUser);
+  const isAdmin = activeUser?.role === "admin";
 
   const [collapsed, setCollapsed] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -69,6 +79,8 @@ export default function SavedAttractionsList() {
       name: poiName.trim(),
       description: poiNotes.trim() || undefined,
       locationName: poiLocation.trim() || undefined,
+      upvotes: [],
+      downvotes: []
     };
 
     saveAttraction(newPoi);
@@ -216,7 +228,7 @@ export default function SavedAttractionsList() {
                   <div 
                     key={attraction.id}
                     data-attraction-name={attraction.name}
-                    className="flex flex-col p-3 rounded-2xl border border-outline-variant/20 bg-card/60 shadow-sm relative"
+                    className="flex flex-col p-3 rounded-2xl border border-outline-variant/20 bg-card/60 shadow-sm relative animate-in fade-in duration-200"
                   >
                     {/* Header: Title and remove button */}
                     <div className="flex gap-2.5 items-start justify-between">
@@ -254,12 +266,48 @@ export default function SavedAttractionsList() {
                         )}
                       </div>
 
+                      {/* Remove button restricted to Admin role */}
+                      {isAdmin && (
+                        <button
+                          onClick={() => removeSavedAttraction(attraction.id)}
+                          className="text-muted-foreground/60 hover:text-destructive p-1 rounded-lg hover:bg-muted shrink-0 transition-colors cursor-pointer"
+                          aria-label={`Remove ${attraction.name}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Voting feedback section */}
+                    <div className="flex gap-2.5 items-center mt-2.5">
                       <button
-                        onClick={() => removeSavedAttraction(attraction.id)}
-                        className="text-muted-foreground/60 hover:text-destructive p-1 rounded-lg hover:bg-muted shrink-0 transition-colors cursor-pointer"
-                        aria-label={`Remove ${attraction.name}`}
+                        onClick={() => {
+                          const hasUpvoted = (attraction.upvotes || []).includes(currentUser);
+                          voteAttraction(attraction.id, hasUpvoted ? null : "up", currentUser);
+                        }}
+                        className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg border transition-all cursor-pointer select-none ${
+                          (attraction.upvotes || []).includes(currentUser)
+                            ? "bg-[#006400]/10 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/15 dark:text-[#86df72] dark:border-[#86df72]/30"
+                            : "bg-background text-muted-foreground border-outline-variant/20 hover:bg-muted"
+                        }`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <ThumbsUp className="h-3 w-3" />
+                        <span>{(attraction.upvotes || []).length}</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          const hasDownvoted = (attraction.downvotes || []).includes(currentUser);
+                          voteAttraction(attraction.id, hasDownvoted ? null : "down", currentUser);
+                        }}
+                        className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg border transition-all cursor-pointer select-none ${
+                          (attraction.downvotes || []).includes(currentUser)
+                            ? "bg-red-500/10 text-red-600 border-red-500/30 dark:text-red-400 dark:border-red-500/30"
+                            : "bg-background text-muted-foreground border-outline-variant/20 hover:bg-muted"
+                        }`}
+                      >
+                        <ThumbsDown className="h-3 w-3" />
+                        <span>{(attraction.downvotes || []).length}</span>
                       </button>
                     </div>
 

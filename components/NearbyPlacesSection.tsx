@@ -93,13 +93,18 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
   const savedAttractions = useTripStore((s) => s.savedAttractions);
   const saveAttraction = useTripStore((s) => s.saveAttraction);
   const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
+  const tripMode = useTripStore((s) => s.tripMode);
+  const isPlanningMode = tripMode === "planning";
 
   const [places, setPlaces] = useState<PlaceDetail[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (lat === undefined || lng === undefined) {
+    const activeLat = isPlanningMode ? 45.6267 : lat;
+    const activeLng = isPlanningMode ? 10.6133 : lng;
+
+    if (activeLat === undefined || activeLng === undefined) {
       setTimeout(() => {
         setPlaces([]);
       }, 0);
@@ -114,7 +119,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       }
     }, 0);
 
-    fetch(`/api/places?lat=${lat}&lng=${lng}&radius=1000`)
+    fetch(`/api/places?lat=${activeLat}&lng=${activeLng}&radius=2500`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load nearby places");
         return r.json();

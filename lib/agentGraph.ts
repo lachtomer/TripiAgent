@@ -39,6 +39,10 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (x, y) => y,
     default: () => "",
   }),
+  dayAnchors: Annotation<Record<number, string>>({
+    reducer: (x, y) => y,
+    default: () => ({}),
+  }),
 });
 
 export type AgentStateType = typeof AgentStateAnnotation.State;
@@ -77,6 +81,7 @@ async function plannerNode(state: AgentStateType): Promise<Partial<AgentStateTyp
 
   const latestMessage = state.messages[state.messages.length - 1]?.text || "";
   const currentItinerary = state.itinerary ? JSON.stringify(state.itinerary) : "None";
+  const dayAnchorsText = state.dayAnchors ? JSON.stringify(state.dayAnchors) : "None";
   const conflictNotes = state.conflicts.length > 0
     ? `⚠️ Validation Conflicts Found:\n${state.conflicts.map(c => `- ${c}`).join("\n")}\n\nPlease revise the schedule to avoid these issues.`
     : "";
@@ -86,6 +91,9 @@ async function plannerNode(state: AgentStateType): Promise<Partial<AgentStateTyp
 
   Active Itinerary:
   ${currentItinerary}
+
+  Day Anchors (User planned base location for each day):
+  ${dayAnchorsText}
 
   User Request: ${latestMessage}
 
@@ -212,6 +220,20 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
       
       for (const act of conflictingOutdoorActivities) {
         currentConflicts.push(`Outdoor activity "${act.title}" is scheduled despite a rainy weather forecast (${state.weather.condition}).`);
+      }
+    }
+  }
+
+  // 4. Crowd Load Validation
+  const crowdedPlaces = ["colosseum", "arena di verona", "sirmione castle", "scaligero castle", "aquaria spa", "vatican", "uffizi"];
+  for (const act of proposedActivities) {
+    const titleLower = act.title.toLowerCase();
+    const isCrowdedPlace = crowdedPlaces.some(cp => titleLower.includes(cp) || (act.locationName && act.locationName.toLowerCase().includes(cp)));
+    
+    if (isCrowdedPlace) {
+      const hour = parseInt(act.time.split(":")[0]);
+      if (!isNaN(hour) && hour >= 10 && hour <= 15) {
+        currentConflicts.push(`High Crowd Warning: "${act.title}" is scheduled during peak hours (${act.time}). Consider moving this to early morning (before 10:00) or late afternoon (after 16:00) to avoid heavy crowds.`);
       }
     }
   }

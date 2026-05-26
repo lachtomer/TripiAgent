@@ -81,6 +81,7 @@ export interface AiRequestBody {
   history?: AiHistoryEntry[];
   context?: TripContext;
   itinerary?: ItineraryDay[] | null;
+  dayAnchors?: Record<number, string>;
 }
 
 export interface SavedAttraction {
@@ -90,6 +91,14 @@ export interface SavedAttraction {
   locationName?: string;
   rating?: number;
   image?: string;
+  upvotes?: string[]; // array of user IDs who upvoted
+  downvotes?: string[]; // array of user IDs who downvoted
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  role: "user" | "admin";
 }
 
 export interface TravelLogistics {

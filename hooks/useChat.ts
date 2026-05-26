@@ -17,6 +17,7 @@ export function useChat() {
 
   const location = useTripStore((state) => state.location);
   const itinerary = useTripStore((state) => state.itinerary);
+  const dayAnchors = useTripStore((state) => state.dayAnchors);
   const setIsPlanning = useTripStore((state) => state.setIsPlanning);
   const setToast = useTripStore((state) => state.setToast);
 
@@ -103,6 +104,7 @@ export function useChat() {
             history: historyPayload,
             context,
             itinerary,
+            dayAnchors,
           }),
           signal: abortController.signal,
         });

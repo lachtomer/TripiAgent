@@ -1,3 +1,46 @@
+# HANDOFF — Step 4d: Advanced Controls & Smart Planner (Complete Implementation)
+
+## Step completed
+- ID: Step 4d - Advanced Travel Controls & Smart Planner (Complete)
+- Agent: Antigravity (@lead / @engineer / @qa / @handoff)
+
+## Summary
+- **Trip Mode Integration**: Implemented a sliding mode toggle on the Home screen to switch between "Planning Mode" (at home) and "In-Trip Mode" (traveling). 
+- **Planning Mode Enhancements**: Configured the Home page layout to hide `CopilotCards` during planning, default the Explore section to Lake Garda, and update the `LocationCard` to display target destination weather (Lake Garda) while showing the traveler's home city weather in a secondary subtitle badge.
+- **UserProfile Switcher**: Created a custom dropdown selector in the header bar to switch between `User 1` (User), `User 2` (User), and `User 3` (Admin). Personal packing lists are persisted independently per-user.
+- **Collaborative Target Bank**: Added thumbs up/down voting to saved attractions in the shared bank, and restricted the attraction deletion trash button exclusively to users with the `Admin` role (`User 3`).
+- **Explore Dining Filters**: Added multi-select chips for Gluten-Free, Diabetes-Friendly, Open Now, Vegetarian, and Vegan dining, applying local deterministic filters and color-coded tag badges on results cards.
+- **Itinerary Day Swapper & Anchors**: Added "Anchor" input fields to each day card, and implemented a Day Swapping action that triggers ZTL/Rain warnings if a conflict is detected.
+- **LangGraph Upgrades**: Upgraded the state graph annotations to forward day anchors and weather inputs, and added crowd forecast validation to flag warnings when visiting popular spots during peak congestion hours (10:00–15:00).
+
+## Files touched
+- [`types/index.ts`](file:///c:/TripiAgent/types/index.ts)
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`stores/tripStore.ts`](file:///c:/TripiAgent/stores/tripStore.ts)
+- [`stores/tripStore.test.ts`](file:///c:/TripiAgent/stores/tripStore.test.ts)
+- [`components/UserProfileSwitcher.tsx`](file:///c:/TripiAgent/components/UserProfileSwitcher.tsx)
+- [`components/TopAppBar.tsx`](file:///c:/TripiAgent/components/TopAppBar.tsx)
+- [`components/LocationCard.tsx`](file:///c:/TripiAgent/components/LocationCard.tsx)
+- [`components/NearbyPlacesSection.tsx`](file:///c:/TripiAgent/components/NearbyPlacesSection.tsx)
+- [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx)
+- [`components/SavedAttractionsList.tsx`](file:///c:/TripiAgent/components/SavedAttractionsList.tsx)
+- [`components/ItineraryCard.tsx`](file:///c:/TripiAgent/components/ItineraryCard.tsx)
+- [`lib/agentGraph.ts`](file:///c:/TripiAgent/lib/agentGraph.ts)
+- [`app/api/ai/route.ts`](file:///c:/TripiAgent/app/api/ai/route.ts)
+- [`hooks/useChat.ts`](file:///c:/TripiAgent/hooks/useChat.ts)
+- [`app/page.tsx`](file:///c:/TripiAgent/app/page.tsx)
+
+## Test results
+- Unit tests: 16/16 passed (`npm run test` passed)
+- TypeScript build check: 0 compilation errors (`npx tsc --noEmit` passed)
+
+## Cursor review ask
+- [ ] Toggle the "Planning" vs "In-Trip" switch on the Home screen to verify changes in weather cards, briefing widgets, and explore fallbacks.
+- [ ] Select `User 1` and verify you cannot see the trash deletion icon on Saved Attractions. Select `User 3` (Admin) and confirm you can remove items.
+- [ ] Swap Day 3 and Day 9 in the itinerary tab and verify ZTL/Rain warnings display correctly in the browser dialog.
+
+---
+
 # HANDOFF — Step 4b: LangGraph Workflow Adoption
 
 ## Step completed

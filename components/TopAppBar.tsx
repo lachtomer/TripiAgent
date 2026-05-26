@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
+import UserProfileSwitcher from "./UserProfileSwitcher";
 
 export default function TopAppBar() {
   return (
@@ -17,9 +18,7 @@ export default function TopAppBar() {
           TripiAgent
         </span>
       </div>
-      <div className="w-10 h-10 rounded-full bg-primary/10 dark:bg-zinc-800 text-[#004900] dark:text-[#9df888] flex items-center justify-center border border-[#bfcab7] dark:border-[#1e293b]/30 hover:opacity-90 transition-opacity cursor-pointer shrink-0">
-        <User className="h-5 w-5" />
-      </div>
+      <UserProfileSwitcher />
     </header>
   );
 }

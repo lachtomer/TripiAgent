@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "@/hooks/useLocation";
 import type { WeatherData } from "@/lib/weather";
+import { useTripStore } from "@/stores/tripStore";
 
 function WeatherIcon({ condition, className }: { condition: string; className?: string }) {
   const c = condition.toLowerCase();
@@ -20,11 +21,19 @@ export default function LocationCard() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [localTime, setLocalTime] = useState("");
+  const [homeWeather, setHomeWeather] = useState<WeatherData | null>(null);
 
-  const cityName = location.cityName || "Rome, Italy";
-  const coords = location.coords;
-  const latitude = coords?.latitude ?? 41.9028; // Default to Rome latitude
-  const longitude = coords?.longitude ?? 12.4964; // Default to Rome longitude
+  const tripMode = useTripStore((s) => s.tripMode);
+  const isPlanningMode = tripMode === "planning";
+
+  const destCityName = "Lake Garda, Italy";
+  const destLat = 45.6267;
+  const destLng = 10.6133;
+
+  const cityName = isPlanningMode ? destCityName : (location.cityName || "Rome, Italy");
+  const homeCityName = location.cityName;
+  const homeLat = location.coords?.latitude;
+  const homeLng = location.coords?.longitude;
 
   // Update clock every minute in Italy timezone
   useEffect(() => {
@@ -53,7 +62,10 @@ export default function LocationCard() {
       if (active) setWeatherLoading(true);
     }, 0);
 
-    fetch(`/api/weather?lat=${latitude}&lng=${longitude}`)
+    const lat = isPlanningMode ? destLat : (location.coords?.latitude ?? 41.9028);
+    const lng = isPlanningMode ? destLng : (location.coords?.longitude ?? 12.4964);
+
+    fetch(`/api/weather?lat=${lat}&lng=${lng}`)
       .then((r) => r.json())
       .then((data: WeatherData) => {
         if (active) setWeather(data);
@@ -70,7 +82,27 @@ export default function LocationCard() {
     return () => {
       active = false;
     };
-  }, [latitude, longitude]);
+  }, [isPlanningMode, location.coords]);
+
+  // Fetch home weather if in planning mode and coords are available
+  useEffect(() => {
+    if (!isPlanningMode || !homeLat || !homeLng) {
+      setHomeWeather(null);
+      return;
+    }
+    let active = true;
+    fetch(`/api/weather?lat=${homeLat}&lng=${homeLng}`)
+      .then((r) => r.json())
+      .then((data: WeatherData) => {
+        if (active) setHomeWeather(data);
+      })
+      .catch((err) => {
+        console.error("Home weather fetch failed:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isPlanningMode, homeLat, homeLng]);
 
   return (
     <section className="w-full">
@@ -104,10 +136,16 @@ export default function LocationCard() {
                 <MapPin className="h-5 w-5 shrink-0 text-[#86df72]" />
                 {cityName}
               </h2>
-              <p className="text-xs text-white/80 font-medium tracking-wide flex items-center gap-1.5">
+              <p className="text-xs text-white/80 font-medium tracking-wide flex items-center gap-1.5 flex-wrap">
                 <span>{localTime || "14:30"}</span>
                 <span className="w-1 h-1 rounded-full bg-white/40"></span>
-                <span>Local Time</span>
+                <span>Destination Time</span>
+                {isPlanningMode && homeCityName && homeWeather && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-white/40"></span>
+                    <span className="text-[#86df72] font-semibold">Home: {homeCityName} ({homeWeather.temp}°C)</span>
+                  </>
+                )}
               </p>
             </div>
             
