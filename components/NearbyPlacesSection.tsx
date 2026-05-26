@@ -212,7 +212,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
             return (
               <div
                 key={placeId}
-                className="min-w-[280px] snap-start bg-card border border-outline-variant/30 hover:border-outline-variant rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98]"
+                onClick={() => handlePlaceTap(place)}
+                className="min-w-[280px] snap-start bg-card border border-outline-variant/30 hover:border-outline-variant rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer"
               >
                 {/* Hero Image */}
                 <div className="relative h-40 w-full overflow-hidden">

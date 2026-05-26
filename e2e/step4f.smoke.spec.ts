@@ -22,6 +22,8 @@ test.describe("Step 4f — Home page", () => {
 
   test("2. LocationPermissionBanner visible when location not granted", async ({ page }) => {
     await page.goto(BASE);
+    // Switch to In-Trip mode so the location permission banner is rendered
+    await page.click("text=In-Trip (Traveling)");
     // Banner should be visible (prompt or denied state)
     const banner = page.locator("text=Allow location").or(
       page.locator("text=Location access denied")

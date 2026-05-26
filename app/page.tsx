@@ -64,8 +64,8 @@ export default function Home() {
             {/* AI Co-Pilot Morning Briefing & Serendipity Cards — Only shown in-trip */}
             {tripMode === "in-trip" && <CopilotCards />}
 
-            {/* Today Planner (Hour-by-hour timeline) */}
-            <TodayPlanner />
+            {/* Today Planner (Hour-by-hour timeline) — Only shown in-trip */}
+            {tripMode === "in-trip" && <TodayPlanner />}
           </div>
           
           <div className="space-y-6">

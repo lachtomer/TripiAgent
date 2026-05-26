@@ -20,6 +20,7 @@ interface GooglePlaceResult {
     open_now?: boolean;
   };
   types?: string[];
+  vicinity?: string;
   geometry?: {
     location?: {
       lat?: number;
@@ -94,6 +95,7 @@ export async function getGoogleNearbyPlaces(
       types: place.types || [],
       distance,
       maps_url: buildGoogleMapsUrl(place.place_id),
+      address: place.vicinity,
     };
   });
 }

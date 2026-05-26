@@ -17,6 +17,9 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     console.log(`Navigating to target environment: ${BASE}`);
     await page.goto(BASE);
     await expect(page.locator("text=TripiAgent")).toBeVisible();
+    
+    // Switch to In-Trip mode so Today's Planner becomes visible
+    await page.click("text=In-Trip (Traveling)");
     await expect(page.locator("text=Today's Planner")).toBeVisible();
 
     // 2. Navigate to Itinerary and enter client booking logistics

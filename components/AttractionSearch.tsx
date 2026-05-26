@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw } from "lucide-react";
+import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
 import { type PlaceDetail } from "@/lib/places";
 import { cn } from "@/lib/utils";
+import { useLocation } from "@/hooks/useLocation";
 
 const PLACE_FALLBACK_PHOTOS = [
   "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=300&q=80", // Colosseum
@@ -37,6 +38,9 @@ export default function AttractionSearch() {
   const savedAttractions = useTripStore((s) => s.savedAttractions);
   const setPendingPrompt = useTripStore((s) => s.setPendingPrompt);
 
+  const { location: userLocation, refreshLocation, loading: locationLoading } = useLocation();
+  const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
+
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState<"tourist_attraction" | "restaurant">("tourist_attraction");
   const [loading, setLoading] = useState(false);
@@ -50,26 +54,12 @@ export default function AttractionSearch() {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [moreOptions, setMoreOptions] = useState<string[]>([]); // "vegetarian", "vegan"
 
-  const handleSearch = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const targetPlace = query.trim();
-    if (!targetPlace) return;
-
+  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null) => {
     setLoading(true);
     setError(null);
     setResults([]);
 
     try {
-      // Step 1: Geocode the city query to get lat & lng
-      const geocodeRes = await fetch(`/api/geocode?query=${encodeURIComponent(targetPlace)}`);
-      if (!geocodeRes.ok) {
-        const errData = await geocodeRes.json().catch(() => ({}));
-        throw new Error(errData.error || `Failed to locate "${targetPlace}"`);
-      }
-      const geocodeData = await geocodeRes.json();
-      const { lat, lng, cityName } = geocodeData;
-
-      // Step 2: Search Google Places near resolved coordinates
       const placesRes = await fetch(
         `/api/places?lat=${lat}&lng=${lng}&radius=2500&type=${searchType}`
       );
@@ -79,7 +69,6 @@ export default function AttractionSearch() {
       }
       const placesData: PlaceDetail[] = await placesRes.json();
       
-      // Filter out places without names and sort by rating if available
       const sorted = placesData
         .filter((p) => p.name)
         .sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -105,13 +94,80 @@ export default function AttractionSearch() {
 
       setResults(filtered.slice(0, 5));
       if (filtered.length === 0) {
-        setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName} for the selected filters.`);
+        setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName || "this location"} for the selected filters.`);
       }
     } catch (err) {
       console.error("Search failed:", err);
       const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
       setError(errMsg);
     } finally {
+      setLoading(false);
+    }
+  }, [searchType, openNowOnly, glutenFreeOnly, diabeticFriendlyOnly, moreOptions]);
+
+  useEffect(() => {
+    if (useCurrentLocPending && userLocation.coords) {
+      const coords = userLocation.coords;
+      const timer = setTimeout(() => {
+        setUseCurrentLocPending(false);
+        const name = userLocation.cityName || "Current Location";
+        setQuery(name);
+        fetchPlacesNearCoords(
+          coords.latitude,
+          coords.longitude,
+          name
+        );
+      }, 0);
+      return () => clearTimeout(timer);
+    } else if (useCurrentLocPending && userLocation.permissionState === "denied") {
+      const timer = setTimeout(() => {
+        setUseCurrentLocPending(false);
+        setError("Location permission denied. Please search by city name.");
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [useCurrentLocPending, userLocation, fetchPlacesNearCoords]);
+
+  const handleUseCurrentLocation = () => {
+    if (userLocation.coords) {
+      const name = userLocation.cityName || "Current Location";
+      setQuery(name);
+      fetchPlacesNearCoords(
+        userLocation.coords.latitude,
+        userLocation.coords.longitude,
+        name
+      );
+    } else {
+      setUseCurrentLocPending(true);
+      refreshLocation();
+    }
+  };
+
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const targetPlace = query.trim();
+    if (!targetPlace) return;
+
+    setLoading(true);
+    setError(null);
+    setResults([]);
+
+    try {
+      // Step 1: Geocode the city query to get lat & lng
+      const geocodeRes = await fetch(`/api/geocode?query=${encodeURIComponent(targetPlace)}`);
+      if (!geocodeRes.ok) {
+        const errData = await geocodeRes.json().catch(() => ({}));
+        throw new Error(errData.error || `Failed to locate "${targetPlace}"`);
+      }
+      const geocodeData = await geocodeRes.json();
+      const { lat, lng, cityName } = geocodeData;
+
+      // Step 2: Search places near coords
+      await fetchPlacesNearCoords(lat, lng, cityName);
+    } catch (err) {
+      console.error("Search failed:", err);
+      const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
+      setError(errMsg);
       setLoading(false);
     }
   };
@@ -138,14 +194,29 @@ export default function AttractionSearch() {
         {/* Search Input Form */}
         <form onSubmit={handleSearch} className="space-y-3">
           <div className="flex gap-2">
-            <Input
-              id="attraction-search-input"
-              type="text"
-              placeholder="Enter city (e.g. Verona, Venice, Florence)..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="h-9.5 text-xs sm:text-sm bg-muted/30 focus-visible:ring-1 focus-visible:ring-[#006400]"
-            />
+            <div className="relative flex-1">
+              <Input
+                id="attraction-search-input"
+                type="text"
+                placeholder="Enter city (e.g. Verona, Venice, Florence)..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="h-9.5 pr-8 text-xs sm:text-sm bg-muted/30 focus-visible:ring-1 focus-visible:ring-[#006400] w-full"
+              />
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                disabled={loading || locationLoading}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-[#006400] dark:hover:text-[#86df72] transition-colors focus:outline-none disabled:opacity-50 cursor-pointer"
+                title="Use current location"
+              >
+                {locationLoading ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <MapPin className="h-3.5 w-3.5" />
+                )}
+              </button>
+            </div>
             <Button
               id="attraction-search-btn"
               type="submit"
@@ -395,6 +466,13 @@ export default function AttractionSearch() {
                         </span>
                       )}
                     </div>
+
+                    {place.address && (
+                      <p className="text-[9px] text-muted-foreground flex items-center gap-0.5 mt-0.5 max-w-[170px] truncate">
+                        <MapPin className="h-2.5 w-2.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate">{place.address}</span>
+                      </p>
+                    )}
 
                     {/* Food option tags */}
                     {searchType === "restaurant" && (

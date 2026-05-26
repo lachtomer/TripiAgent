@@ -13,17 +13,23 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await page.goto(BASE);
     await expect(page.locator("text=Explore Italy")).toBeVisible();
 
-    // 2. Select bookmark button for place1 (Colosseum) and click it
-    const colosseumBookmark = page.locator("#bookmark-place1");
-    await expect(colosseumBookmark).toBeVisible();
-    await colosseumBookmark.click();
+    // 2. Select bookmark button for first place and click it
+    const firstPlaceCard = page.locator(".snap-start").first();
+    await expect(firstPlaceCard).toBeVisible();
+    const placeName = await firstPlaceCard.locator("h4").textContent();
+    expect(placeName).toBeTruthy();
+    console.log(`  → Bookmarking place: ${placeName}`);
+
+    const bookmarkBtn = firstPlaceCard.locator("[id^='bookmark-']").first();
+    await expect(bookmarkBtn).toBeVisible();
+    await bookmarkBtn.click();
 
     // 3. Navigate to Itinerary page
     await page.goto(`${BASE}/itinerary`);
     await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible();
 
-    // 4. Verify Colosseum is in the saved list
-    await expect(page.locator("h4:has-text('Colosseum')")).toBeVisible();
+    // 4. Verify the bookmarked place is in the saved list
+    await expect(page.locator(`h4:has-text("${placeName}")`)).toBeVisible();
   });
 
   test("2. Add a custom POI and schedule it into the itinerary", async ({ page }) => {
@@ -62,6 +68,9 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
 
   test("3. Today Planner is visible and interactive on Home page", async ({ page }) => {
     await page.goto(BASE);
+    
+    // Switch to In-Trip mode so Today's Planner becomes visible
+    await page.click("text=In-Trip (Traveling)");
     
     // 1. Check for Today's Planner header
     await expect(page.locator("text=Today's Planner")).toBeVisible();

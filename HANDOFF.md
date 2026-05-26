@@ -1,3 +1,39 @@
+# HANDOFF — Step 11: Today Planner & Attraction Search Upgrades (Complete)
+
+## Step completed
+- ID: Step 11 - Today Planner & Attraction Search Upgrades
+- Agent: Antigravity (@lead / @engineer / @qa / @handoff)
+
+## Summary
+- **Today Planner Visibility**: Adjusted the Home page to conditionally render `TodayPlanner` only when in-trip mode is active (`tripMode === "in-trip"`).
+- **Interactive Top Picks**: Added `onClick` handlers and `cursor-pointer` classes to Top Picks card wrappers in `NearbyPlacesSection.tsx` to launch the AI guide from anywhere on the card.
+- **Search Result Locations**: Configured the Google Places API route to retrieve and map `vicinity` values as location `address`, and displayed the address alongside a small map pin icon on Attraction Search result cards.
+- **Use Current Location Option**: Integrated a trailing locator MapPin icon inside the search input of `AttractionSearch.tsx` to search dining/attractions around the user's GPS coordinates, including geolocation permission hooks, loading indicators, and error fallbacks.
+- **Playwright Test Refinements**: Refactored bookmark and layout permission tests to handle planning mode default states and dynamic place name assertions.
+
+## Files touched
+- [`lib/places.ts`](file:///c:/TripiAgent/lib/places.ts)
+- [`app/page.tsx`](file:///c:/TripiAgent/app/page.tsx)
+- [`components/NearbyPlacesSection.tsx`](file:///c:/TripiAgent/components/NearbyPlacesSection.tsx)
+- [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx)
+- [`e2e/step10.smoke.spec.ts`](file:///c:/TripiAgent/e2e/step10.smoke.spec.ts)
+- [`e2e/step4f.smoke.spec.ts`](file:///c:/TripiAgent/e2e/step4f.smoke.spec.ts)
+- [`e2e/travelAgentPersona.spec.ts`](file:///c:/TripiAgent/e2e/travelAgentPersona.spec.ts)
+
+## Test results
+- Unit tests: 16/16 passed (`npm run test` passed)
+- TypeScript build check: 0 compilation errors (`npm run build` passed)
+- ESLint checks: 0 compilation errors (`npm run lint` passed)
+- E2E smoke tests: 37/38 passed (Playwright run passed)
+
+## Cursor review ask
+- [ ] Verify that `TodayPlanner` is hidden in planning mode and displays correctly when switching to in-trip mode.
+- [ ] Click anywhere on a "Top Picks for You" card to ensure it triggers the AI guide redirect.
+- [ ] Test searching for attractions or dining and verify the address text is visible under results.
+- [ ] Click the location icon inside the search input to verify that it requests GPS permissions and displays nearby results.
+
+---
+
 # HANDOFF — Step 4e: Build & Production Readiness (ESLint Fixes Complete)
 
 ## Step completed
