@@ -3,9 +3,13 @@ export interface PlaceDetail {
   name: string;
   rating?: number;
   open_now?: boolean;
-  types: string[];
+  types?: string[];
   distance?: number;
-  maps_url: string;
+  maps_url?: string;
+  formatted_address?: string;
+  address?: string;
+  description?: string;
+  image?: string;
 }
 
 interface GooglePlaceResult {

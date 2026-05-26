@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Star, MapPin, Bookmark, Sparkles, Utensils, Landmark, RefreshCw } from "lucide-react";
+import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
-import { buildGoogleMapsUrl, type PlaceDetail } from "@/lib/places";
+import { type PlaceDetail } from "@/lib/places";
 import { cn } from "@/lib/utils";
 
 const PLACE_FALLBACK_PHOTOS = [
@@ -107,9 +107,10 @@ export default function AttractionSearch() {
       if (filtered.length === 0) {
         setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName} for the selected filters.`);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Search failed:", err);
-      setError(err.message || "An unexpected error occurred during search.");
+      const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
@@ -332,7 +333,7 @@ export default function AttractionSearch() {
                   saveAttraction({
                     id: placeId,
                     name: place.name,
-                    description: (place as any).formatted_address || (place as any).address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
+                    description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
                     locationName: place.name,
                     rating: place.rating,
                     image: coverImage,

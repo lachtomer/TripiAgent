@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, MapPin, Calendar, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { DEFAULT_ITALY_ITINERARY } from "@/components/ItineraryCard";
@@ -42,14 +42,17 @@ export default function TodayPlanner() {
 
   useEffect(() => {
     if (isHydrated) {
-      const todayNum = getTodayDayNumber(tripStartDate, activeItinerary.length);
-      if (todayNum !== null) {
-        setActiveDayNum(todayNum);
-        setIsPreviewMode(false);
-      } else {
-        setActiveDayNum(1); // Default to Day 1 preview if not on the trip dates
-        setIsPreviewMode(true);
-      }
+      const timer = setTimeout(() => {
+        const todayNum = getTodayDayNumber(tripStartDate, activeItinerary.length);
+        if (todayNum !== null) {
+          setActiveDayNum(todayNum);
+          setIsPreviewMode(false);
+        } else {
+          setActiveDayNum(1); // Default to Day 1 preview if not on the trip dates
+          setIsPreviewMode(true);
+        }
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isHydrated, tripStartDate, activeItinerary.length]);
 
@@ -57,7 +60,7 @@ export default function TodayPlanner() {
     return (
       <Card className="border border-outline-variant/30 bg-card/50">
         <CardContent className="p-4 flex items-center justify-center">
-          <span className="text-xs text-muted-foreground animate-pulse">Loading today's schedule...</span>
+          <span className="text-xs text-muted-foreground animate-pulse">Loading today&apos;s schedule...</span>
         </CardContent>
       </Card>
     );
@@ -80,7 +83,7 @@ export default function TodayPlanner() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary dark:text-[#86df72]" />
-            <CardTitle className="text-sm font-extrabold tracking-tight">Today's Planner</CardTitle>
+            <CardTitle className="text-sm font-extrabold tracking-tight">Today&apos;s Planner</CardTitle>
           </div>
           <button
             onClick={() => router.push("/itinerary")}

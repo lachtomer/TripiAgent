@@ -26,11 +26,14 @@ export default function LogisticsCard() {
   // Sync store -> local state on hydration or store updates
   useEffect(() => {
     if (isHydrated && logistics) {
-      setFlightTlvMxp(logistics.flightTlvMxpCode || "");
-      setFlightMxpTlv(logistics.flightMxpTlvCode || "");
-      setCarRentalCode(logistics.carRentalVoucherCode || "");
-      setLockboxCode(logistics.villaEuniceLockboxCode || "");
-      setZtlPaid(!!logistics.milanZtlPaid);
+      const timer = setTimeout(() => {
+        setFlightTlvMxp(logistics.flightTlvMxpCode || "");
+        setFlightMxpTlv(logistics.flightMxpTlvCode || "");
+        setCarRentalCode(logistics.carRentalVoucherCode || "");
+        setLockboxCode(logistics.villaEuniceLockboxCode || "");
+        setZtlPaid(!!logistics.milanZtlPaid);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isHydrated, logistics]);
 

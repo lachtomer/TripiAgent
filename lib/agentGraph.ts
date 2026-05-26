@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { StateGraph, Annotation, START, END } from "@langchain/langgraph";
 import { ChatMessage, ItineraryDay, LocationDetails, Activity, WeatherSnapshot } from "@/types";
 import { checkMilanZTL } from "./ztl";
@@ -141,7 +141,6 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
   
   // Extract JSON payload from Gemini response text
   let proposedActivities: Activity[] = [];
-  let dayNum = 1;
   const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
   
   if (jsonMatch && jsonMatch[1]) {
@@ -149,7 +148,6 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
       const payload = JSON.parse(jsonMatch[1]);
       if (payload.type === "replan" && Array.isArray(payload.activities)) {
         proposedActivities = payload.activities;
-        dayNum = payload.dayNumber;
       }
     } catch {
       // JSON parsing failure
@@ -190,7 +188,11 @@ async function validatorNode(state: AgentStateType): Promise<Partial<AgentStateT
           const origin = foundTowns[0];
           const destination = foundTowns[1];
           
-          const routeExists = ferryData.routes.some((r: any) => 
+          interface FerryRoute {
+            origin: string;
+            destination: string;
+          }
+          const routeExists = ferryData.routes.some((r: FerryRoute) => 
             (r.origin.toLowerCase() === origin && r.destination.toLowerCase() === destination) ||
             (r.origin.toLowerCase() === destination && r.destination.toLowerCase() === origin)
           );

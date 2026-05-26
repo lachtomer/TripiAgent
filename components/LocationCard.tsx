@@ -87,8 +87,10 @@ export default function LocationCard() {
   // Fetch home weather if in planning mode and coords are available
   useEffect(() => {
     if (!isPlanningMode || !homeLat || !homeLng) {
-      setHomeWeather(null);
-      return;
+      const timer = setTimeout(() => {
+        setHomeWeather(null);
+      }, 0);
+      return () => clearTimeout(timer);
     }
     let active = true;
     fetch(`/api/weather?lat=${homeLat}&lng=${homeLng}`)

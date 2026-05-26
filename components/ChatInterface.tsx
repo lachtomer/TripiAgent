@@ -296,7 +296,7 @@ export default function ChatInterface() {
               Review Proposed Replan: Day {activeReplan?.dayNumber}
             </SheetTitle>
             <SheetDescription className="text-xs text-muted-foreground mt-0.5">
-              Compare your current schedule with the agent's proposed adjustments before applying.
+              Compare your current schedule with the agent&apos;s proposed adjustments before applying.
             </SheetDescription>
           </SheetHeader>
 

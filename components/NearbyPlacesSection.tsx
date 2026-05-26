@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star, MapPin, ArrowRight, MessageSquare, Bookmark } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useTripStore } from "@/stores/tripStore";
 import { buildGoogleMapsUrl } from "@/lib/places";
 import type { PlaceDetail } from "@/lib/places";
@@ -14,7 +13,7 @@ const PLACE_COVER_PHOTOS = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuB6iXbPX1PKwEz4d0sNbGxz6ch-IWmESbPPkx8JIfVT4Bb0Iz0_4M7kE50D__NPnp8tx0L8eSeOKBsPeSs51-_Eeoki_vwNPJwEerYfSs-aZocRO5rGvbCKTu5tmsSS06TcnzLKuwsye0E0ymDUtUFsT3DoEp6pZJyz_qHqWMXaShP_SMCMOaeIjpocnRsM7vf0sCVypt33xf5OWFnCPk8AdCjBmMsyZSrDTefG_KB-CG-76gMSKlLbOjX_tYPqLS8YjLWDYUasXTAm",
 ];
 
-const MOCK_PICKS = [
+const MOCK_PICKS: PlaceDetail[] = [
   {
     place_id: "place1", // Using place1 to match E2E mock expectations
     name: "Colosseum",
@@ -41,7 +40,7 @@ const MOCK_PICKS = [
   },
 ];
 
-const MOCK_DISCOVER_MORE = [
+const MOCK_DISCOVER_MORE: PlaceDetail[] = [
   {
     place_id: "place4",
     name: "Trevi Fountain",
@@ -98,7 +97,6 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
 
   const [places, setPlaces] = useState<PlaceDetail[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const activeLat = isPlanningMode ? 45.6267 : lat;
@@ -115,7 +113,6 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
     setTimeout(() => {
       if (active) {
         setLoading(true);
-        setError(null);
       }
     }, 0);
 
@@ -131,7 +128,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
         }
       })
       .catch((err: Error) => {
-        if (active) setError(err.message);
+        console.error("Failed to load nearby places:", err);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -140,7 +137,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
     return () => {
       active = false;
     };
-  }, [lat, lng]);
+  }, [lat, lng, isPlanningMode]);
 
   const handlePlaceTap = (place: { name: string }) => {
     const prompt = `Tell me more about ${place.name}. What should I know before visiting? Any tips?`;
@@ -204,7 +201,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                 saveAttraction({
                   id: placeId,
                   name: place.name,
-                  description: (place as any).formatted_address || (place as any).address || `Recommended spot in Italy`,
+                  description: place.formatted_address || place.address || `Recommended spot in Italy`,
                   locationName: place.name,
                   rating: place.rating,
                   image: coverImage,
@@ -316,7 +313,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                   saveAttraction({
                     id: placeId,
                     name: place.name,
-                    description: (place as any).formatted_address || (place as any).description || (place as any).address || `Recommended spot in Italy`,
+                    description: place.formatted_address || place.description || place.address || `Recommended spot in Italy`,
                     locationName: place.name,
                     rating: place.rating,
                     image: coverImage,
@@ -378,7 +375,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     </div>
 
                     <p className="text-[11px] text-muted-foreground truncate pr-2">
-                      {(place as any).description || `Beautiful place to visit near you`}
+                      {place.description || `Beautiful place to visit near you`}
                     </p>
                   </div>
                 </div>

@@ -44,14 +44,10 @@ export default function CopilotCards() {
 
   const activeItinerary = itinerary && itinerary.length > 0 ? itinerary : DEFAULT_ITALY_ITINERARY;
 
-  // Calculate today's day number
-  const [activeDayNum, setActiveDayNum] = useState<number>(1);
-  useEffect(() => {
-    if (isHydrated) {
-      const todayNum = getTodayDayNumber(tripStartDate, activeItinerary.length);
-      setActiveDayNum(todayNum !== null ? todayNum : 1);
-    }
-  }, [isHydrated, tripStartDate, activeItinerary.length]);
+  // Calculate today's day number as a derived value to avoid set-state-in-effect warning
+  const activeDayNum = isHydrated
+    ? (getTodayDayNumber(tripStartDate, activeItinerary.length) ?? 1)
+    : 1;
 
   const currentDay = activeItinerary.find((d) => d.dayNumber === activeDayNum) || activeItinerary[0];
 

@@ -128,10 +128,11 @@ export async function POST(request: NextRequest) {
     const responseText = result.response.text();
 
     return NextResponse.json(JSON.parse(responseText));
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in Travel Copilot route:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to generate copilot update.", details: error.message || String(error) },
+      { error: "Failed to generate copilot update.", details: errorMessage },
       { status: 500 }
     );
   }
