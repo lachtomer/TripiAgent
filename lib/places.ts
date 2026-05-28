@@ -79,7 +79,7 @@ export async function getGoogleNearbyPlaces(
 
   const results = data.results || [];
 
-  return results.slice(0, 5).map((place: GooglePlaceResult) => {
+  return results.map((place: GooglePlaceResult) => {
     const placeLat = place.geometry?.location?.lat;
     const placeLng = place.geometry?.location?.lng;
     const distance =

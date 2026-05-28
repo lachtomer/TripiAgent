@@ -61,7 +61,7 @@ export default function AttractionSearch() {
 
     try {
       const placesRes = await fetch(
-        `/api/places?lat=${lat}&lng=${lng}&radius=2500&type=${searchType}`
+        `/api/places?lat=${lat}&lng=${lng}&radius=5000&type=${searchType}`
       );
       if (!placesRes.ok) {
         const errData = await placesRes.json().catch(() => ({}));

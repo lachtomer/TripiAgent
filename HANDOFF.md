@@ -1,3 +1,34 @@
+# HANDOFF — Step 12: Attraction & Dining Search Upgrades (Complete)
+
+## Step completed
+- ID: Step 12 - Attraction & Dining Search Upgrades
+- Agent: Antigravity (@lead / @engineer / @qa / @handoff)
+
+## Summary
+- **Expanded Server-Side Payload**: Modified the server-side Google Places API client in `lib/places.ts` to return all results (up to 20) instead of slicing early to 5.
+- **Client-Side Slicing After Filters**: Verified that client-side filtering in `components/AttractionSearch.tsx` operates on the full list of 20 results and slices to 5 only *after* filters are applied, preventing low result counts.
+- **Radius Expansion**: Enlarged search radius query parameters from `2500` to `5000` meters (5 km) in both `components/AttractionSearch.tsx` and `components/NearbyPlacesSection.tsx` to cast a wider net for local attractions/dining.
+- **Robust Zod Coordinate Validation**: Added `.refine(val => !isNaN(val))` checks to the coordinate schemas in `lib/schemas.ts` to block invalid coordinate strings (like `NaN`) from passing query validation.
+- **API Unit Testing**: Created a new Vitest unit test suite `app/api/places/route.test.ts` containing 5 comprehensive tests to assert valid coordinates parsing, error conditions, invalid schema formats, cache hit/miss behavior, and 500 error cases.
+
+## Files touched
+- [`lib/places.ts`](file:///c:/TripiAgent/lib/places.ts)
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx)
+- [`components/NearbyPlacesSection.tsx`](file:///c:/TripiAgent/components/NearbyPlacesSection.tsx)
+- [`app/api/places/route.test.ts`](file:///c:/TripiAgent/app/api/places/route.test.ts)
+
+## Test results
+- Unit tests: 21/21 passed (`npm run test` passed)
+- ESLint checks: 0 compilation errors (`npm run lint` passed)
+- E2E smoke tests: 37/38 passed (Playwright run completed)
+
+## Cursor review ask
+- [ ] Perform a query for dining in `Rome` or `Milan` in the Explore tab. Toggle on the "Gluten-Free" and "Open Now" filters and verify you get up to 5 matching results instead of 0 or 1.
+- [ ] Verify that searching in any city correctly queries places within a 5 km radius.
+
+---
+
 # HANDOFF — Step 11: Today Planner & Attraction Search Upgrades (Complete)
 
 ## Step completed

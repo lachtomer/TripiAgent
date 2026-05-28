@@ -116,7 +116,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       }
     }, 0);
 
-    fetch(`/api/places?lat=${activeLat}&lng=${activeLng}&radius=2500`)
+    fetch(`/api/places?lat=${activeLat}&lng=${activeLng}&radius=5000`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load nearby places");
         return r.json();

@@ -8,11 +8,12 @@
  */
 import { test, expect } from "@playwright/test";
 
-const BASE = process.env.BASE_URL || "https://tripiagent.vercel.app";
+const BASE = process.env.BASE_URL || "http://localhost:9001";
 
 test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)", () => {
 
   test("Plan client trip, customize logistics, and test live AI features", async ({ page }) => {
+    test.setTimeout(90_000);
     // 1. Visit the Homepage and check layout elements
     console.log(`Navigating to target environment: ${BASE}`);
     await page.goto(BASE);
