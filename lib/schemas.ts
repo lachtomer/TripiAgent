@@ -24,6 +24,7 @@ export const PlacesQuerySchema = z.object({
   lat: z.string().transform((val) => parseFloat(val)).refine((val) => !isNaN(val)),
   lng: z.string().transform((val) => parseFloat(val)).refine((val) => !isNaN(val)),
   type: z.string().optional(),
+  keyword: z.string().optional(),
   radius: z.string().optional().transform((val) => val ? parseInt(val, 10) : 500).refine((val) => !isNaN(val)),
 });
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw, MapPin } from "lucide-react";
+import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw, MapPin, CalendarPlus, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { type PlaceDetail } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import { useLocation } from "@/hooks/useLocation";
+import { DEFAULT_ITALY_ITINERARY } from "./ItineraryCard";
 
 const PLACE_FALLBACK_PHOTOS = [
   "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=300&q=80", // Colosseum
@@ -37,6 +38,15 @@ export default function AttractionSearch() {
   const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
   const savedAttractions = useTripStore((s) => s.savedAttractions);
   const setPendingPrompt = useTripStore((s) => s.setPendingPrompt);
+  const addActivity = useTripStore((s) => s.addActivity);
+  const itinerary = useTripStore((s) => s.itinerary);
+  const setItinerary = useTripStore((s) => s.setItinerary);
+
+  useEffect(() => {
+    if (itinerary === null) {
+      setItinerary(DEFAULT_ITALY_ITINERARY);
+    }
+  }, [itinerary, setItinerary]);
 
   const { location: userLocation, refreshLocation, loading: locationLoading } = useLocation();
   const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
@@ -46,6 +56,11 @@ export default function AttractionSearch() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<PlaceDetail[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // Custom states for precision search & direct itinerary binding
+  const [localWeather, setLocalWeather] = useState<string | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [extractedKeyword, setExtractedKeyword] = useState<string | undefined>(undefined);
 
   // Food Filter States
   const [openNowOnly, setOpenNowOnly] = useState(false);
@@ -54,14 +69,16 @@ export default function AttractionSearch() {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [moreOptions, setMoreOptions] = useState<string[]>([]); // "vegetarian", "vegan"
 
-  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null) => {
+  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null, keyword?: string) => {
     setLoading(true);
     setError(null);
     setResults([]);
+    setLocalWeather(null);
 
     try {
+      const keywordParam = keyword ? `&keyword=${encodeURIComponent(keyword)}` : "";
       const placesRes = await fetch(
-        `/api/places?lat=${lat}&lng=${lng}&radius=5000&type=${searchType}`
+        `/api/places?lat=${lat}&lng=${lng}&radius=5000&type=${searchType}${keywordParam}`
       );
       if (!placesRes.ok) {
         const errData = await placesRes.json().catch(() => ({}));
@@ -96,6 +113,19 @@ export default function AttractionSearch() {
       if (filtered.length === 0) {
         setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName || "this location"} for the selected filters.`);
       }
+
+      // Fetch local weather to check for rain alerts
+      try {
+        const weatherRes = await fetch(`/api/weather?lat=${lat}&lng=${lng}`);
+        if (weatherRes.ok) {
+          const weatherData = await weatherRes.json();
+          if (weatherData?.condition) {
+            setLocalWeather(weatherData.condition.toLowerCase());
+          }
+        }
+      } catch (weatherErr) {
+        console.warn("Could not fetch weather for search warning check:", weatherErr);
+      }
     } catch (err) {
       console.error("Search failed:", err);
       const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
@@ -112,6 +142,7 @@ export default function AttractionSearch() {
         setUseCurrentLocPending(false);
         const name = userLocation.cityName || "Current Location";
         setQuery(name);
+        setExtractedKeyword(undefined);
         fetchPlacesNearCoords(
           coords.latitude,
           coords.longitude,
@@ -129,6 +160,7 @@ export default function AttractionSearch() {
   }, [useCurrentLocPending, userLocation, fetchPlacesNearCoords]);
 
   const handleUseCurrentLocation = () => {
+    setExtractedKeyword(undefined);
     if (userLocation.coords) {
       const name = userLocation.cityName || "Current Location";
       setQuery(name);
@@ -145,25 +177,36 @@ export default function AttractionSearch() {
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const targetPlace = query.trim();
-    if (!targetPlace) return;
+    const queryStr = query.trim();
+    if (!queryStr) return;
 
     setLoading(true);
     setError(null);
     setResults([]);
 
+    let searchCity = queryStr;
+    let keyword: string | undefined = undefined;
+
+    const inIndex = queryStr.toLowerCase().indexOf(" in ");
+    if (inIndex !== -1) {
+      keyword = queryStr.substring(0, inIndex).trim();
+      searchCity = queryStr.substring(inIndex + 4).trim();
+    }
+
+    setExtractedKeyword(keyword);
+
     try {
       // Step 1: Geocode the city query to get lat & lng
-      const geocodeRes = await fetch(`/api/geocode?query=${encodeURIComponent(targetPlace)}`);
+      const geocodeRes = await fetch(`/api/geocode?query=${encodeURIComponent(searchCity)}`);
       if (!geocodeRes.ok) {
         const errData = await geocodeRes.json().catch(() => ({}));
-        throw new Error(errData.error || `Failed to locate "${targetPlace}"`);
+        throw new Error(errData.error || `Failed to locate "${searchCity}"`);
       }
       const geocodeData = await geocodeRes.json();
       const { lat, lng, cityName } = geocodeData;
 
       // Step 2: Search places near coords
-      await fetchPlacesNearCoords(lat, lng, cityName);
+      await fetchPlacesNearCoords(lat, lng, cityName, keyword);
     } catch (err) {
       console.error("Search failed:", err);
       const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
@@ -474,6 +517,32 @@ export default function AttractionSearch() {
                       </p>
                     )}
 
+                    {/* Active trip warning badges */}
+                    {(() => {
+                      const addressStr = (place.address || place.formatted_address || "").toLowerCase();
+                      const isPlaceInMilan = addressStr.includes("milan") || addressStr.includes("milano");
+                      const isOutdoorPlace = searchType === "tourist_attraction";
+                      const isRainy = localWeather?.includes("rain") || localWeather?.includes("drizzle") || localWeather?.includes("shower");
+
+                      if (isPlaceInMilan || (isOutdoorPlace && isRainy)) {
+                        return (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {isPlaceInMilan && (
+                              <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/15">
+                                ⚠️ ZTL Area C
+                              </span>
+                            )}
+                            {isOutdoorPlace && isRainy && (
+                              <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-destructive/10 text-destructive border border-destructive/15">
+                                🌧️ Rain Alert
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+
                     {/* Food option tags */}
                     {searchType === "restaurant" && (
                       <div className="flex flex-wrap gap-1 pt-1">
@@ -501,14 +570,65 @@ export default function AttractionSearch() {
                     )}
                   </div>
 
-                  {/* Ask AI Trigger Button */}
-                  <button
-                    onClick={() => handlePlaceTap(place)}
-                    className="h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all shrink-0 cursor-pointer focus:outline-none"
-                    title="Ask AI Guide"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0 relative">
+                    {/* Direct Timeline Binding Dropdown */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenDropdownId(openDropdownId === placeId ? null : placeId);
+                      }}
+                      id={`direct-add-${placeId}`}
+                      className={cn(
+                        "h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none",
+                        openDropdownId === placeId && "border-[#006400] text-[#006400] dark:border-[#86df72] dark:text-[#86df72] bg-[#006400]/5 dark:bg-[#86df72]/5"
+                      )}
+                      title="Add directly to itinerary day"
+                    >
+                      <CalendarPlus className="h-4 w-4" />
+                    </button>
+
+                    {openDropdownId === placeId && (
+                      <div
+                        className="absolute right-0 top-9.5 z-50 bg-card border border-outline-variant/40 rounded-xl shadow-lg p-2 min-w-[130px] space-y-1 animate-in fade-in slide-in-from-top-1 duration-150"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="text-[9px] font-extrabold text-muted-foreground px-2 py-0.5 uppercase tracking-wide">Schedule to:</p>
+                        <div className="max-h-[140px] overflow-y-auto pr-1">
+                          {itinerary && itinerary.map((day) => (
+                            <button
+                              key={day.dayNumber}
+                              id={`direct-add-day-${day.dayNumber}-${placeId}`}
+                              onClick={() => {
+                                addActivity(day.dayNumber, {
+                                  time: "12:00", // Default activity time
+                                  title: place.name,
+                                  description: place.formatted_address || place.address || `Recommended spot in Italy`,
+                                  locationName: place.name,
+                                });
+                                useTripStore.getState().setToast({
+                                  message: `Added "${place.name}" to Day ${day.dayNumber}`,
+                                  type: "success",
+                                });
+                                setOpenDropdownId(null);
+                              }}
+                              className="w-full text-left text-[11px] font-bold px-2 py-1.5 rounded-lg hover:bg-[#006400]/10 hover:text-[#006400] dark:hover:bg-[#86df72]/15 dark:hover:text-[#86df72] transition-colors cursor-pointer text-foreground"
+                            >
+                              Day {day.dayNumber}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Ask AI Trigger Button */}
+                    <button
+                      onClick={() => handlePlaceTap(place)}
+                      className="h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none"
+                      title="Ask AI Guide"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               );
             })

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PlacesQuerySchema } from "@/lib/schemas";
-import { getGoogleNearbyPlaces, PlaceDetail } from "@/lib/places";
+import { getProgressiveNearbyPlaces, PlaceDetail } from "@/lib/places";
 
 if (process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
   const rawLat = searchParams.get("lat");
   const rawLng = searchParams.get("lng");
   const rawType = searchParams.get("type") || undefined;
+  const rawKeyword = searchParams.get("keyword") || undefined;
   const rawRadius = searchParams.get("radius") || undefined;
 
   if (!rawLat || !rawLng) {
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
     lat: rawLat,
     lng: rawLng,
     type: rawType,
+    keyword: rawKeyword,
     radius: rawRadius,
   });
 
@@ -38,12 +40,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid query parameters format" }, { status: 400 });
   }
 
-  const { lat, lng, type, radius } = validation.data;
+  const { lat, lng, type, keyword, radius } = validation.data;
 
   // Round coordinates to 3 decimals for cache grouping (approx 110m precision)
   const roundedLat = Number(lat.toFixed(3));
   const roundedLng = Number(lng.toFixed(3));
-  const cacheKey = `${roundedLat},${roundedLng},${type || ""},${radius}`;
+  const cacheKey = `${roundedLat},${roundedLng},${type || ""},${keyword || ""},${radius}`;
 
   const now = Date.now();
   if (placesCache.has(cacheKey)) {
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const placesData = await getGoogleNearbyPlaces(lat, lng, radius, type, apiKey);
+    const placesData = await getProgressiveNearbyPlaces(lat, lng, type, apiKey, keyword);
 
     // Save to cache
     placesCache.set(cacheKey, {

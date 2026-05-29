@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { GET } from "./route";
 import { NextRequest } from "next/server";
-import { getGoogleNearbyPlaces } from "@/lib/places";
+import { getGoogleNearbyPlaces, getProgressiveNearbyPlaces } from "@/lib/places";
 
-// Mock the Google Places helper function
+// Mock the Google Places helper functions
 vi.mock("@/lib/places", async () => {
   const actual = await vi.importActual<typeof import("@/lib/places")>("@/lib/places");
   return {
     ...actual,
     getGoogleNearbyPlaces: vi.fn(),
+    getProgressiveNearbyPlaces: vi.fn(),
   };
 });
 
@@ -18,6 +19,13 @@ describe("GET /api/places", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.GOOGLE_PLACES_API_KEY = "mock-google-key";
+    
+    // Delegate getProgressiveNearbyPlaces to getGoogleNearbyPlaces mock by default
+    vi.mocked(getProgressiveNearbyPlaces).mockImplementation(
+      async (lat, lng, type, apiKey, keyword) => {
+        return getGoogleNearbyPlaces(lat, lng, 5000, type, apiKey, keyword);
+      }
+    );
   });
 
   afterEach(() => {
@@ -31,13 +39,14 @@ describe("GET /api/places", () => {
     ];
     vi.mocked(getGoogleNearbyPlaces).mockResolvedValue(mockPlaces);
 
-    const request = new NextRequest("http://localhost:9001/api/places?lat=45.4642&lng=9.1900&radius=2000&type=tourist_attraction");
+    const request = new NextRequest("http://localhost:9001/api/places?lat=45.4642&lng=9.1900&radius=2000&type=tourist_attraction&keyword=Gelato");
     const response = await GET(request);
 
     expect(response.status).toBe(200);
     const data = await response.json();
     expect(data).toEqual(mockPlaces);
-    expect(getGoogleNearbyPlaces).toHaveBeenCalledWith(45.4642, 9.1900, 2000, "tourist_attraction", "mock-google-key");
+    expect(getProgressiveNearbyPlaces).toHaveBeenCalledWith(45.4642, 9.1900, "tourist_attraction", "mock-google-key", "Gelato");
+    expect(getGoogleNearbyPlaces).toHaveBeenCalledWith(45.4642, 9.1900, 5000, "tourist_attraction", "mock-google-key", "Gelato");
   });
 
   it("should return 400 if lat or lng are missing", async () => {
