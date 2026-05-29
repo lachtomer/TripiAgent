@@ -28,7 +28,7 @@ describe("places utilities", () => {
       const radius = parseInt(urlObj.searchParams.get("radius") || "0", 10);
       fetchedRadii.push(radius);
 
-      let results: any[] = [];
+      let results: { place_id: string; name: string; geometry: { location: { lat: number; lng: number } } }[] = [];
       if (radius === 1000) {
         // Return 1 result (sparse, should trigger retry)
         results = [{ place_id: "p1", name: "Spot 1", geometry: { location: { lat: 45.4, lng: 9.1 } } }];

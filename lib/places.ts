@@ -112,7 +112,7 @@ export async function getProgressiveNearbyPlaces(
   // Progressive radius scan: 1000m -> 2500m -> 5000m
   // Ensures maximum precision/walkability while complying with 100-point rule scope.
   try {
-    let results = await getGoogleNearbyPlaces(lat, lng, 1000, type, apiKey, keyword);
+    const results = await getGoogleNearbyPlaces(lat, lng, 1000, type, apiKey, keyword);
     if (results.length >= 3) {
       return results;
     }
@@ -121,7 +121,7 @@ export async function getProgressiveNearbyPlaces(
   }
 
   try {
-    let results = await getGoogleNearbyPlaces(lat, lng, 2500, type, apiKey, keyword);
+    const results = await getGoogleNearbyPlaces(lat, lng, 2500, type, apiKey, keyword);
     if (results.length >= 3) {
       return results;
     }
