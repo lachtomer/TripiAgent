@@ -1,3 +1,34 @@
+# HANDOFF — Step 13: Explore & Search Precision & UX Upgrades (Complete)
+
+## Step completed
+- ID: Step 13 - Explore & Search UX Upgrades
+- Agent: Antigravity (@lead / @engineer / @qa / @handoff)
+
+## Summary
+- **Semantic Keyword Extraction:** Updated `components/AttractionSearch.tsx` to parse queries like `"Pizza in Milan"` or `"Gelato in Rome"`, geocoding the city and querying the Places API with the keyword parameter.
+- **Progressive Radius Scan:** Implemented progressive scaling on `/api/places` from `1000m` -> `2500m` -> `5000m` to ensure localized search results while complying with the 100-point rule scope.
+- **Direct Timeline Binding:** Added a `CalendarPlus` quick-add button and dropdown card lists on result cards, enabling scheduling directly into any day of the 10-day itinerary via the Zustand store `addActivity` action.
+- **Trip Context Warnings:** Integrated inline badging on results cards mapping Milan addresses to ZTL Area C warnings, and outdoor attractions to active rain forecast warnings based on searched coordinates.
+- **Unit and E2E Tests:** Added a dedicated test suite `lib/places.test.ts` for progressive radius scaling and Haversine distance, updated places route unit tests, and created a new Playwright smoke test `e2e/step13.smoke.spec.ts`. All 24 unit tests and the Playwright test suite pass cleanly.
+
+## Files touched
+- [`lib/schemas.ts`](file:///c:/TripiAgent/lib/schemas.ts)
+- [`lib/places.ts`](file:///c:/TripiAgent/lib/places.ts)
+- [`lib/places.test.ts`](file:///c:/TripiAgent/lib/places.test.ts)
+- [`app/api/places/route.ts`](file:///c:/TripiAgent/app/api/places/route.ts)
+- [`app/api/places/route.test.ts`](file:///c:/TripiAgent/app/api/places/route.test.ts)
+- [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx)
+- [`e2e/step13.smoke.spec.ts`](file:///c:/TripiAgent/e2e/step13.smoke.spec.ts)
+- [`.specify/step_13_explore_and_search_ux_upgrades.md`](file:///c:/TripiAgent/.specify/step_13_explore_and_search_ux_upgrades.md)
+
+## Test results
+- Unit tests: 24/24 passed (`npm run test` passed)
+- TypeScript build check: 0 compilation errors (`npx tsc --noEmit` passed)
+- E2E smoke tests: 1/1 passed (`npx playwright test e2e/step13.smoke.spec.ts` passed)
+- Production Build: 0 errors (`npm run build` compiled successfully)
+
+---
+
 # HANDOFF — Step 12: Attraction & Dining Search Upgrades (Complete)
 
 ## Step completed
