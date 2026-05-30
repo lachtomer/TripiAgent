@@ -1,19 +1,17 @@
-# Task Checklist: ESLint Fixes, Committing, and Deployment
+# Task Checklist: Search Results Pagination ("Next Batch")
 
-## 1. ESLint Fixes & Local Build
-- [x] Clean up unused variables and catch blocks (0 lint warnings)
-- [x] Verify Next.js production build compiles cleanly (`npm run build`)
+## 1. Implement Pagination State & Logic
+- [x] Add state variables `allResults` and `visibleCount` in `components/AttractionSearch.tsx`
+- [x] Derive the rendering list `results` inline: `const results = allResults.slice(0, visibleCount);`
+- [x] Update `fetchPlacesNearCoords` to save the full filtered array and reset `visibleCount` to 5
+- [x] Handle empty list checks and errors using the derived `allResults` rather than `results`
 
-## 2. Version Control & Git push
-- [x] Exclude `/test-results/` directory in `.gitignore`
-- [x] Create feature branch `feat/step-14-15-polishes`
-- [x] Stage all modifications and untracked files
-- [x] Commit changes using Conventional Commits guidelines
-- [x] Push feature branch to remote origin repository
+## 2. Interactive Pagination UI
+- [x] Render a "Show More Results" button at the bottom of the list when `allResults.length > visibleCount`
+- [x] Style the button using the Stitch layout constraints (outlined border, primary green text, chevron-down icon)
+- [x] Bind `onClick` handler to increment `visibleCount` by 5 (capped at `allResults.length`)
 
-## 3. Remote Deployment & Merge
-- [x] Open Merge Request on GitLab to merge `feat/step-14-15-polishes` into `main`
-- [x] Verify GitLab CI pipeline passes cleanly
-- [x] Merge MR into `main`
-- [x] Validate Vercel production deployment status
-- [x] Ensure all server-side environment variables are correctly populated on Vercel
+## 3. Verification & Testing
+- [x] Create E2E test `e2e/step16.smoke.spec.ts` asserting pagination behavior
+- [x] Verify unit tests and lint checks run cleanly (`npm run lint && npm run test`)
+- [x] Verify production compilation (`npm run build`)

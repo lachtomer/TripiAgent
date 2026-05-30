@@ -41,6 +41,8 @@ export const translations = {
     saveToBank: "Save to Attraction Bank",
     removeFromSaved: "Remove from Saved",
     askAiGuide: "Ask AI Guide",
+    showMoreResults: "Show More Results",
+    showingCount: "Showing {visible} of {total}",
 
     // LocationCard
     destinationTime: "Destination Time",
@@ -187,6 +189,8 @@ export const translations = {
     saveToBank: "שמור לבנק האטרקציות",
     removeFromSaved: "הסר מהשמורים",
     askAiGuide: "שאל מדריך בינה מלאכותית",
+    showMoreResults: "הצג תוצאות נוספות",
+    showingCount: "מציג {visible} מתוך {total}",
 
     // LocationCard
     destinationTime: "זמן יעד",

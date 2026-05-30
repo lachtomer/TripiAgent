@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Search, RefreshCw, MapPin, Landmark, Utensils, Bookmark, Star, CalendarPlus, Sparkles } from "lucide-react";
+import { Search, RefreshCw, MapPin, Landmark, Utensils, Bookmark, Star, CalendarPlus, Sparkles, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +57,9 @@ export default function AttractionSearch() {
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState<"tourist_attraction" | "restaurant">("tourist_attraction");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<PlaceDetail[]>([]);
+  const [allResults, setAllResults] = useState<PlaceDetail[]>([]);
+  const [visibleCount, setVisibleCount] = useState<number>(5);
+  const results = allResults.slice(0, visibleCount);
   const [error, setError] = useState<string | null>(null);
   
   // Custom states for precision search & direct itinerary binding
@@ -75,7 +77,8 @@ export default function AttractionSearch() {
   const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null, keyword?: string) => {
     setLoading(true);
     setError(null);
-    setResults([]);
+    setAllResults([]);
+    setVisibleCount(5);
     setLocalWeather(null);
 
     try {
@@ -112,7 +115,8 @@ export default function AttractionSearch() {
         }
       }
 
-      setResults(filtered.slice(0, 5));
+      setAllResults(filtered);
+      setVisibleCount(5);
       if (filtered.length === 0) {
         setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName || "this location"} for the selected filters.`);
       }
@@ -185,7 +189,8 @@ export default function AttractionSearch() {
 
     setLoading(true);
     setError(null);
-    setResults([]);
+    setAllResults([]);
+    setVisibleCount(5);
 
     let searchCity = queryStr;
     let keyword: string | undefined = undefined;
@@ -288,7 +293,8 @@ export default function AttractionSearch() {
               type="button"
               onClick={() => {
                 setSearchType("tourist_attraction");
-                setResults([]);
+                setAllResults([]);
+                setVisibleCount(5);
               }}
               className={cn(
                 "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer",
@@ -305,7 +311,8 @@ export default function AttractionSearch() {
               type="button"
               onClick={() => {
                 setSearchType("restaurant");
-                setResults([]);
+                setAllResults([]);
+                setVisibleCount(5);
               }}
               className={cn(
                 "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer",
@@ -634,6 +641,21 @@ export default function AttractionSearch() {
                 </div>
               );
             })
+          )}
+          {allResults.length > visibleCount && (
+            <button
+              onClick={() => setVisibleCount((prev) => Math.min(prev + 5, allResults.length))}
+              id="show-more-results-btn"
+              className="w-full mt-2 py-2.5 px-4 border border-outline-variant/30 hover:border-outline-variant rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-[#006400] dark:text-[#86df72] bg-muted/5 hover:bg-muted/15 transition-all active:scale-[0.99] cursor-pointer focus:outline-none"
+            >
+              <ChevronDown className="h-4 w-4 shrink-0" />
+              <span>
+                {t.showMoreResults}
+              </span>
+              <span className="text-[10px] font-medium opacity-70">
+                ({t.showingCount.replace("{visible}", visibleCount.toString()).replace("{total}", allResults.length.toString())})
+              </span>
+            </button>
           )}
         </div>
       </CardContent>
