@@ -12,8 +12,8 @@
 - [x] Push feature branch to remote origin repository
 
 ## 3. Remote Deployment & Merge
-- [ ] Open Merge Request on GitLab to merge `feat/step-14-15-polishes` into `main`
-- [ ] Verify GitLab CI pipeline passes cleanly
-- [ ] Merge MR into `main`
-- [ ] Validate Vercel production deployment status
-- [ ] Ensure all server-side environment variables are correctly populated on Vercel
+- [x] Open Merge Request on GitLab to merge `feat/step-14-15-polishes` into `main`
+- [x] Verify GitLab CI pipeline passes cleanly
+- [x] Merge MR into `main`
+- [x] Validate Vercel production deployment status
+- [x] Ensure all server-side environment variables are correctly populated on Vercel
