@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star, MapPin, ArrowRight, MessageSquare, Bookmark } from "lucide-react";
 import { useTripStore } from "@/stores/tripStore";
+import Image from "next/image";
 import { buildGoogleMapsUrl } from "@/lib/places";
 import type { PlaceDetail } from "@/lib/places";
+import { useTranslation } from "@/lib/translations";
 
 const PLACE_COVER_PHOTOS = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAiB8CHimE3CmDarZ9rOmpp9XxARrPcXOAvgPyoQSMR6KTQRd2ns20hpw1uK4BXCqe5LC4xK2Y4zKEJQwj1iThdXRw0r7WPM-khHj7Bv1FNPFvs9ZQTlzCFG22V2vGOHn4aUsq2hFYYyRXD7Y0wQ1sqfmxFGfPz8CE0CadhHnxaJHFW6lRzyLakACJYPqPCj2oZ11RzLWTb-1ijGAY-2QOcnd6nMIWuQ8-W2UuNaB25iQ-MqfFPeaZdb_3BflsAqZYaiIETxjMcLzS1",
@@ -76,9 +78,9 @@ const MOCK_DISCOVER_MORE: PlaceDetail[] = [
   },
 ];
 
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${meters}m`;
-  return `${(meters / 1000).toFixed(1)} km`;
+function formatDistance(meters: number, locale: string): string {
+  if (meters < 1000) return `${meters}${locale === "he" ? " מ'" : "m"}`;
+  return `${(meters / 1000).toFixed(1)} ${locale === "he" ? 'ק"מ' : "km"}`;
 }
 
 interface NearbyPlacesSectionProps {
@@ -94,6 +96,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
   const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
   const tripMode = useTripStore((s) => s.tripMode);
   const isPlanningMode = tripMode === "planning";
+  const { t, locale } = useTranslation();
 
   const [places, setPlaces] = useState<PlaceDetail[]>([]);
   const [loading, setLoading] = useState(false);
@@ -149,6 +152,14 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
     router.push("/chat");
   };
 
+  const handleViewAllClick = () => {
+    const searchInput = document.getElementById("attraction-search-input");
+    if (searchInput) {
+      searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      searchInput.focus();
+    }
+  };
+
   // Decide if we display real API places or fallback Stitch mock items
   const activePlaces = places.length > 0 ? places : MOCK_PICKS;
   const topPicks = activePlaces.slice(0, 3);
@@ -160,11 +171,15 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       <div>
         <div className="flex items-center justify-between">
           <h3 className="font-title-md text-foreground">
-            Top Picks for You
-            <span className="sr-only">Nearby Highlights</span>
+            {t.topPicks}
+            <span className="sr-only">{t.nearbyHighlights}</span>
           </h3>
-          <button className="text-[#006400] dark:text-[#86df72] text-sm font-bold flex items-center gap-0.5 hover:underline focus:outline-none cursor-pointer">
-            View all <ArrowRight className="h-4 w-4" />
+          <button
+            onClick={handleViewAllClick}
+            id="view-all-nearby"
+            className="text-[#006400] dark:text-[#86df72] text-sm font-bold flex items-center gap-0.5 hover:underline focus:outline-none cursor-pointer"
+          >
+            {t.viewAll} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
           </button>
         </div>
       </div>
@@ -189,7 +204,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
         ) : (
           topPicks.map((place, idx) => {
             const placeId = place.place_id;
-            const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
+            const distanceStr = place.distance !== undefined ? formatDistance(place.distance, locale) : "";
             const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[idx % PLACE_COVER_PHOTOS.length];
 
             const isSaved = savedAttractions.some((a) => a.id === placeId);
@@ -217,15 +232,16 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
               >
                 {/* Hero Image */}
                 <div className="relative h-40 w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  <Image
                     src={coverImage}
                     alt={place.name}
+                    fill
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   <button
                     onClick={handleBookmarkToggle}
                     id={`bookmark-${placeId}`}
-                    className="absolute top-3 left-3 bg-white/95 dark:bg-zinc-900/90 text-foreground hover:scale-105 active:scale-95 transition-all p-1.5 rounded-lg border border-outline-variant/30 flex items-center justify-center shadow-sm cursor-pointer z-10"
+                    className="absolute top-3 start-3 bg-white/95 dark:bg-zinc-900/90 text-foreground hover:scale-105 active:scale-95 transition-all p-1.5 rounded-lg border border-outline-variant/30 flex items-center justify-center shadow-sm cursor-pointer z-10"
                     aria-label={isSaved ? `Remove ${place.name} from saved` : `Save ${place.name}`}
                   >
                     <Bookmark
@@ -237,7 +253,10 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     />
                   </button>
                   {place.rating !== undefined && (
-                    <span className="absolute top-3 right-3 bg-white/90 dark:bg-[#181d16]/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-[#006400] dark:text-[#86df72] border border-outline-variant/30 flex items-center gap-1 shadow-sm">
+                    <span 
+                      dir="ltr"
+                      className="absolute top-3 end-3 bg-white/90 dark:bg-[#181d16]/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-[#006400] dark:text-[#86df72] border border-outline-variant/30 flex items-center gap-1 shadow-sm"
+                    >
                       <Star className="h-3 w-3 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
                       {place.rating.toFixed(1)}
                     </span>
@@ -248,22 +267,27 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                 <div className="p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start gap-2 mb-1">
-                      <h4 className="font-semibold text-[17px] text-foreground leading-tight truncate max-w-[170px] drop-shadow-sm">
-                        {place.name}
-                      </h4>
+                      <div dir="ltr" className="text-start truncate flex-1">
+                        <h4 className="font-semibold text-[17px] text-foreground leading-tight truncate drop-shadow-sm">
+                          {place.name}
+                        </h4>
+                      </div>
                       {place.open_now !== undefined && (
                         <span className={`text-[10px] font-extrabold uppercase tracking-wider mt-0.5 shrink-0 ${
                           place.open_now ? "text-[#006400] dark:text-[#86df72]" : "text-destructive dark:text-red-400"
                         }`}>
-                          {place.open_now ? "Open Now" : "Closed"}
+                          {place.open_now ? t.openNowState : t.closedState}
                         </span>
                       )}
                     </div>
                     
                     {distanceStr && (
-                      <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1.5">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1.5" dir={locale === "he" ? "rtl" : "ltr"}>
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span>{distanceStr} away</span>
+                        <span className="flex gap-1" dir="ltr">
+                          <span>{distanceStr}</span>
+                          <span className="text-[10px]">{t.away}</span>
+                        </span>
                       </p>
                     )}
                   </div>
@@ -274,8 +298,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     className="w-full mt-4 py-2.5 bg-[#006400] dark:bg-[#86df72] hover:bg-[#004d00] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 font-semibold text-xs rounded-xl shadow-sm hover:shadow transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer"
                     aria-label={`Ask AI about ${place.name}`}
                   >
-                    <span>Explore Guide</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <span>{t.exploreGuide}</span>
+                    <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
                   </button>
                 </div>
               </div>
@@ -286,7 +310,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
 
       {/* Discover More Section */}
       <section className="mt-8 space-y-5">
-        <h3 className="font-title-md text-foreground">Discover More</h3>
+        <h3 className="font-title-md text-foreground">{t.discoverMore}</h3>
         <div className="space-y-4">
           {loading ? (
             Array.from({ length: 3 }).map((_, idx) => (
@@ -302,7 +326,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
           ) : (
             discoverPlaces.map((place, idx) => {
               const placeId = place.place_id;
-              const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
+              const distanceStr = place.distance !== undefined ? formatDistance(place.distance, locale) : "";
               const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[(idx + 3) % PLACE_COVER_PHOTOS.length];
               const isSaved = savedAttractions.some((a) => a.id === placeId);
 
@@ -331,15 +355,17 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                 >
                   {/* Left Side: Thumbnail Image */}
                   <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 relative bg-muted">
-                    <img
+                    <Image
                       src={coverImage}
                       alt={place.name}
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <button
                       onClick={handleBookmarkToggle}
                       id={`discover-bookmark-${placeId}`}
-                      className="absolute top-1 left-1 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
+                      className="absolute top-1 start-1 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
                       aria-label={isSaved ? `Remove ${place.name}` : `Save ${place.name}`}
                     >
                       <Bookmark
@@ -355,29 +381,38 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                   {/* Right Side: Details */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex justify-between items-start gap-2">
-                      <h4 className="font-semibold text-sm text-foreground leading-tight truncate group-hover:text-[#006400] dark:group-hover:text-[#86df72] transition-colors">
-                        {place.name}
-                      </h4>
+                      <div dir="ltr" className="text-start truncate flex-1">
+                        <h4 className="font-semibold text-sm text-foreground leading-tight truncate group-hover:text-[#006400] dark:group-hover:text-[#86df72] transition-colors">
+                          {place.name}
+                        </h4>
+                      </div>
                       {place.rating !== undefined && (
-                        <span className="flex items-center gap-0.5 text-xs font-bold text-[#006400] dark:text-[#86df72] shrink-0">
+                        <span dir="ltr" className="flex items-center gap-0.5 text-xs font-bold text-[#006400] dark:text-[#86df72] shrink-0">
                           <Star className="h-3 w-3 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
                           {place.rating.toFixed(1)}
                         </span>
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      {distanceStr && <span>{distanceStr} away</span>}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground" dir={locale === "he" ? "rtl" : "ltr"}>
+                      {distanceStr && (
+                        <span className="flex gap-1" dir="ltr">
+                          <span>{distanceStr}</span>
+                          <span className="text-[10px]">{t.away}</span>
+                        </span>
+                      )}
                       {place.open_now !== undefined && (
                         <span className={place.open_now ? "text-[#006400] dark:text-[#86df72] font-medium" : "text-destructive font-medium"}>
-                          {place.open_now ? "Open" : "Closed"}
+                          {place.open_now ? t.openState : t.closedState}
                         </span>
                       )}
                     </div>
 
-                    <p className="text-[11px] text-muted-foreground truncate pr-2">
-                      {place.description || `Beautiful place to visit near you`}
-                    </p>
+                    <div dir="ltr" className="text-start">
+                      <p className="text-[11px] text-muted-foreground truncate pr-2">
+                        {place.description || t.beautifulPlace}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );
@@ -390,7 +425,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
       <button
         id="contextual-chat-fab"
         onClick={handleFABClick}
-        className="fixed right-6 bottom-24 w-14 h-14 bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 cursor-pointer border border-[#86df72]/10 hover:shadow-2xl"
+        className="fixed end-6 bottom-24 w-14 h-14 bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 cursor-pointer border border-[#86df72]/10 hover:shadow-2xl"
         aria-label="Open AI chat guide"
       >
         <MessageSquare className="h-6 w-6" />

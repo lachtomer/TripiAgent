@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { MapPin, MessageCircle, Calendar, Luggage } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTripStore } from "@/stores/tripStore";
+import { useTranslation } from "@/lib/translations";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const unreadChat = useTripStore((s) => s.unreadChat);
+  const { t } = useTranslation();
 
   const navItems = [
-    { label: "Explore", href: "/", icon: MapPin },
-    { label: "Chat", href: "/chat", icon: MessageCircle },
-    { label: "Itinerary", href: "/itinerary", icon: Calendar },
-    { label: "Pack", href: "/pack", icon: Luggage },
+    { key: "explore", label: t.explore, href: "/", icon: MapPin },
+    { key: "chat", label: t.chat, href: "/chat", icon: MessageCircle },
+    { key: "itinerary", label: t.itinerary, href: "/itinerary", icon: Calendar },
+    { key: "pack", label: t.pack, href: "/pack", icon: Luggage },
   ];
 
   return (
@@ -33,7 +35,7 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              id={`nav-link-${item.label.toLowerCase()}`}
+              id={`nav-link-${item.key}`}
               className={cn(
                 "relative flex h-14 min-w-[56px] flex-col items-center justify-center rounded-xl transition-all duration-200 px-3 cursor-pointer",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -54,7 +56,7 @@ export default function BottomNav() {
                 {showDot && (
                   <span
                     id="chat-unread-dot"
-                    className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary dark:bg-[#86df72] ring-2 ring-background dark:ring-zinc-950 animate-pulse"
+                    className="absolute -top-0.5 -end-0.5 h-2.5 w-2.5 rounded-full bg-primary dark:bg-[#86df72] ring-2 ring-background dark:ring-zinc-950 animate-pulse"
                     aria-label="New message"
                   />
                 )}

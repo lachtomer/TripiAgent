@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Navigation, Info } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 
 export default function MapPreview() {
   return (

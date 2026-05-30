@@ -59,6 +59,8 @@ interface TripState {
   updateDayAnchor: (dayNumber: number, anchor: string) => void;
   voteAttraction: (attractionId: string, vote: "up" | "down" | null, userId: string) => void;
   swapItineraryDays: (dayA: number, dayB: number) => void;
+  locale: "en" | "he";
+  setLocale: (locale: "en" | "he") => void;
 }
 
 const initialPackingList: PackingItem[] = [
@@ -106,6 +108,7 @@ export const useTripStore = create<TripState>()(
       userPackingLists: { u1: initialPackingList },
       tripMode: "planning",
       dayAnchors: {},
+      locale: "en",
       
       setLocation: (location) => set({ location }),
       setManualCity: (cityName) =>
@@ -296,6 +299,7 @@ export const useTripStore = create<TripState>()(
           userPackingLists: { u1: initialPackingList },
           tripMode: "planning",
           dayAnchors: {},
+          locale: "en",
         }),
 
       // New actions implementations
@@ -366,6 +370,7 @@ export const useTripStore = create<TripState>()(
             toast: { message: `Swapped Day ${dayNumberA} and Day ${dayNumberB} successfully`, type: "success" },
           };
         }),
+      setLocale: (locale) => set({ locale }),
     }),
     {
       name: "tripiagent-trip-storage",

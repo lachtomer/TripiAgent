@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Key, Plane, Car, Lock, ShieldCheck, Check, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Plane, Car, Lock, ShieldCheck, AlertCircle, ChevronDown, ChevronUp, Check, Key } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useTranslation } from "@/lib/translations";
 
 export default function LogisticsCard() {
   const isHydrated = useIsHydrated();
   const logistics = useTripStore((state) => state.logistics);
   const updateLogistics = useTripStore((state) => state.updateLogistics);
+  const { t, locale } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(true); // Collapsed by default to save page height
   const [showSavedFeedback, setShowSavedFeedback] = useState(false);
@@ -41,7 +43,7 @@ export default function LogisticsCard() {
     return (
       <Card className="border border-outline-variant/30 bg-card/50">
         <CardContent className="p-4 flex items-center justify-center">
-          <span className="text-xs text-muted-foreground">Loading travel logistics...</span>
+          <span className="text-xs text-muted-foreground">{t.loadingLogistics}</span>
         </CardContent>
       </Card>
     );
@@ -63,7 +65,7 @@ export default function LogisticsCard() {
   };
 
   return (
-    <Card className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}
@@ -71,16 +73,16 @@ export default function LogisticsCard() {
         <div className="flex-1 space-y-0.5">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary dark:text-[#86df72]" />
-            <CardTitle className="text-sm font-extrabold tracking-tight">Logistics & Bookings</CardTitle>
+            <CardTitle className="text-sm font-extrabold tracking-tight">{t.travelLogistics}</CardTitle>
           </div>
           <CardDescription className="text-[11px] text-muted-foreground">
-            Voucher references, flight codes & lockboxes
+            {t.logisticsDescription}
           </CardDescription>
         </div>
         <div className="flex items-center gap-3">
           {ztlPaid && (
             <span className="text-[9px] font-extrabold bg-[#006400]/10 text-[#006400] dark:bg-[#86df72]/10 dark:text-[#86df72] px-2 py-0.5 rounded border border-[#006400]/20 dark:border-[#86df72]/20 uppercase">
-              ZTL Paid
+              {t.ztlPaidBadge}
             </span>
           )}
           {collapsed ? (
@@ -98,29 +100,31 @@ export default function LogisticsCard() {
             <div className="space-y-1">
               <label htmlFor="logistics-flight-tlv-mxp" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <Plane className="h-3 w-3 text-primary dark:text-[#86df72]" />
-                Outbound Flight (TLV → MXP)
+                {t.outboundFlight}
               </label>
               <Input
                 id="logistics-flight-tlv-mxp"
                 placeholder="e.g. LY381 / QW92B1"
                 value={flightTlvMxp}
                 onChange={(e) => setFlightTlvMxp(e.target.value)}
-                className="h-8 text-xs font-semibold"
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
               />
             </div>
 
             {/* Flight return */}
             <div className="space-y-1">
               <label htmlFor="logistics-flight-mxp-tlv" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                <Plane className="h-3 w-3 text-primary dark:text-[#86df72] rotate-180" />
-                Return Flight (MXP → TLV)
+                <Plane className={`h-3 w-3 text-primary dark:text-[#86df72] ${locale === 'he' ? '' : 'rotate-180'}`} />
+                {t.returnFlight}
               </label>
               <Input
                 id="logistics-flight-mxp-tlv"
                 placeholder="e.g. LY382 / ZX71P9"
                 value={flightMxpTlv}
                 onChange={(e) => setFlightMxpTlv(e.target.value)}
-                className="h-8 text-xs font-semibold"
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
               />
             </div>
 
@@ -128,14 +132,15 @@ export default function LogisticsCard() {
             <div className="space-y-1">
               <label htmlFor="logistics-car-rental-voucher" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <Car className="h-3 w-3 text-primary dark:text-[#86df72]" />
-                Centauro Car Voucher
+                {t.carRentalVoucher}
               </label>
               <Input
                 id="logistics-car-rental-voucher"
                 placeholder="e.g. CTR-9817263-IT"
                 value={carRentalCode}
                 onChange={(e) => setCarRentalCode(e.target.value)}
-                className="h-8 text-xs font-semibold"
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
               />
             </div>
 
@@ -143,14 +148,15 @@ export default function LogisticsCard() {
             <div className="space-y-1">
               <label htmlFor="logistics-lockbox-code" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <Lock className="h-3 w-3 text-primary dark:text-[#86df72]" />
-                Villa Eunice Lockbox / Keys
+                {t.villaLockboxLabel}
               </label>
               <Input
                 id="logistics-lockbox-code"
                 placeholder="e.g. Code: 2026 / Key Box C"
                 value={lockboxCode}
                 onChange={(e) => setLockboxCode(e.target.value)}
-                className="h-8 text-xs font-semibold"
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
               />
             </div>
 
@@ -165,12 +171,12 @@ export default function LogisticsCard() {
               />
               <div className="space-y-1 select-none flex-1">
                 <label htmlFor="logistics-milan-ztl-paid" className="text-xs font-bold text-foreground cursor-pointer">
-                  Milan ZTL Area C Fee Paid (€7.50)
+                  {t.milanZtlLabel}
                 </label>
                 <p className="text-[10px] text-muted-foreground leading-normal flex items-start gap-1">
                   <AlertCircle className="h-3 w-3 mt-0.5 text-amber-500 shrink-0" />
                   <span>
-                    Required for Friday, July 3rd entry before 19:30. Must register and pay online by Saturday night.
+                    {t.ztlDescription}
                   </span>
                 </p>
               </div>
@@ -189,12 +195,12 @@ export default function LogisticsCard() {
               {showSavedFeedback ? (
                 <>
                   <Check className="h-4 w-4 animate-bounce" />
-                  Booking Details Saved
+                  {t.detailsSaved}
                 </>
               ) : (
                 <>
                   <Key className="h-4 w-4" />
-                  Save Logistics
+                  {t.saveLogistics}
                 </>
               )}
             </Button>

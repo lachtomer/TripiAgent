@@ -24,6 +24,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { cn } from "@/lib/utils";
 import type { Activity, ItineraryDay } from "@/types";
+import { useTranslation } from "@/lib/translations";
 
 export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
   {
@@ -325,6 +326,7 @@ const getTodayDayNumber = (startDateStr: string | null, totalDays: number): numb
 
 export default function ItineraryCard() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const itinerary = useTripStore((state) => state.itinerary);
   const setItinerary = useTripStore((state) => state.setItinerary);
@@ -449,7 +451,7 @@ export default function ItineraryCard() {
       <div className="space-y-4 pb-24">
         <Card className="border border-border bg-card">
           <CardContent className="p-4 flex items-center justify-center">
-            <span className="text-xs text-muted-foreground">Loading itinerary planner...</span>
+            <span className="text-xs text-muted-foreground">{t.loadingItinerary}</span>
           </CardContent>
         </Card>
       </div>
@@ -519,7 +521,7 @@ export default function ItineraryCard() {
         <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-center gap-2.5 text-[#004900] dark:text-[#86df72] shrink-0">
             <CalendarCheck2 className="h-5 w-5 shrink-0" />
-            <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">Trip Start Date:</span>
+            <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">{t.tripStartDate}</span>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Input
@@ -539,7 +541,7 @@ export default function ItineraryCard() {
                 onClick={() => setTripStartDate(null)}
                 className="h-10 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/15 rounded-xl cursor-pointer"
               >
-                Clear
+                {t.clear}
               </Button>
             )}
           </div>
@@ -547,10 +549,10 @@ export default function ItineraryCard() {
             <div className="text-xs text-muted-foreground">
               {todayDayNumber ? (
                 <span className="text-[#004900] dark:text-[#86df72] font-extrabold bg-[#006400]/5 dark:bg-[#86df72]/10 border border-[#006400]/10 dark:border-[#86df72]/10 px-3 py-1.5 rounded-full inline-block">
-                  Today is Day {todayDayNumber} of your trip!
+                  {t.todayIsDay.replace("{day}", String(todayDayNumber))}
                 </span>
               ) : (
-                <span className="bg-muted px-3 py-1.5 rounded-full inline-block">Trip has not started yet or has completed.</span>
+                <span className="bg-muted px-3 py-1.5 rounded-full inline-block">{t.tripNotStarted}</span>
               )}
             </div>
           )}
@@ -564,16 +566,16 @@ export default function ItineraryCard() {
           const isEditingTitle = editingDayTitle[day.dayNumber];
 
           return (
-            <Card 
-              key={day.dayNumber} 
+            <Card
+              key={day.dayNumber}
               id={`day-card-${day.dayNumber}`}
               className={cn(
                 "border border-outline-variant/30 bg-card transition-all duration-300 shadow-sm rounded-2xl",
-                isToday ? "ring-2 ring-[#006400] dark:ring-[#86df72]" : ""
+                isToday ? "ring-2 ring-[#006400]" : ""
               )}
             >
               <CardHeader className="p-4 pb-3 flex flex-row items-center justify-between space-y-0">
-                <div className="flex-1 mr-4">
+                <div className="flex-1 me-4">
                   {isEditingTitle ? (
                     <div className="flex items-center gap-2">
                       <Input
@@ -590,6 +592,7 @@ export default function ItineraryCard() {
                         }}
                         className="h-9 text-xs font-semibold rounded-lg"
                         autoFocus
+                        dir="auto"
                       />
                       <Button
                         id={`save-day-title-btn-${day.dayNumber}`}
@@ -620,7 +623,7 @@ export default function ItineraryCard() {
                           id={`day-title-label-${day.dayNumber}`}
                           disabled={isPlanning}
                           onClick={() => startEditDayTitle(day.dayNumber, day.date || `Day ${day.dayNumber}`)}
-                          className="text-sm font-extrabold text-foreground text-left hover:underline focus:outline-none cursor-pointer disabled:no-underline disabled:cursor-not-allowed"
+                          className="text-sm font-extrabold text-foreground text-start hover:underline focus:outline-none cursor-pointer disabled:no-underline disabled:cursor-not-allowed"
                         >
                           {day.date || `Day ${day.dayNumber}`}
                         </button>
@@ -638,14 +641,14 @@ export default function ItineraryCard() {
                             id={`today-badge-${day.dayNumber}`}
                             className="bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
                           >
-                            Today
+                            {t.today}
                           </span>
                         )}
                       </div>
-
+ 
                       {/* Day Anchor Selector */}
                       <div className="flex items-center gap-1.5 pt-0.5">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase shrink-0">Anchor:</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase shrink-0">{t.anchor}</span>
                         <input
                           type="text"
                           placeholder="e.g. Sirmione"
@@ -653,12 +656,16 @@ export default function ItineraryCard() {
                           disabled={isPlanning}
                           onChange={(e) => updateDayAnchor(day.dayNumber, e.target.value)}
                           className="h-6 text-[10px] font-bold bg-muted/40 hover:bg-muted/60 border border-outline-variant/30 rounded px-2 w-28 text-foreground focus:outline-none focus:border-[#006400]/40 transition-all"
+                          dir="auto"
                         />
                       </div>
                     </div>
                   )}
-                  <CardDescription className="mt-1 text-[11px] text-muted-foreground">Daily activities scheduled</CardDescription>
+                  <CardDescription className="mt-1 text-[11px] text-muted-foreground">{t.dailyActivities}</CardDescription>
                 </div>
+                </CardHeader>
+
+
 
                 <div className="flex items-center gap-2 shrink-0">
                   {/* Day Swap button */}
@@ -668,18 +675,18 @@ export default function ItineraryCard() {
                     size="sm"
                     disabled={isPlanning}
                     onClick={() => {
-                      const swapTargetStr = prompt(`Enter day number to swap Day ${day.dayNumber} with:`);
+                      const swapTargetStr = prompt(t.enterDayToSwap.replace("{day}", String(day.dayNumber)));
                       if (swapTargetStr) {
                         const targetNum = parseInt(swapTargetStr);
                         if (!isNaN(targetNum) && targetNum !== day.dayNumber && targetNum >= 1 && targetNum <= activeItinerary.length) {
                           handleSwapDays(day.dayNumber, targetNum);
                         } else {
-                          alert("Invalid day number entered.");
+                          alert(t.invalidDayNumber);
                         }
                       }
                     }}
                     className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg cursor-pointer flex items-center justify-center border border-outline-variant/30"
-                    title="Swap Day"
+                    title={t.swapDay}
                   >
                     <svg className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -695,10 +702,10 @@ export default function ItineraryCard() {
                     className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
-                    <span>Add Activity</span>
+                    <span>{t.addActivity}</span>
                   </Button>
                 </div>
-              </CardHeader>
+              
 
               <CardContent className="p-4 pt-0 space-y-3">
                 {/* Add Activity Inline Form */}
@@ -707,10 +714,10 @@ export default function ItineraryCard() {
                     id={`add-activity-form-${day.dayNumber}`}
                     className="border border-outline-variant/30 bg-primary/5 dark:bg-[#86df72]/5 rounded-xl p-3.5 space-y-3 animate-in fade-in duration-200"
                   >
-                    <p className="text-[10px] font-extrabold text-[#006400] dark:text-[#86df72] uppercase tracking-wider">New Activity Details</p>
+                    <p className="text-[10px] font-extrabold text-[#006400] dark:text-[#86df72] uppercase tracking-wider">{t.newActivityDetails}</p>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="col-span-1">
-                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Time</label>
+                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.timeLabel}</label>
                         <Input
                           id={`new-activity-time-${day.dayNumber}`}
                           type="time"
@@ -720,34 +727,37 @@ export default function ItineraryCard() {
                         />
                       </div>
                       <div className="col-span-2">
-                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Title</label>
+                        <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.titleLabel}</label>
                         <Input
                           id={`new-activity-title-${day.dayNumber}`}
                           placeholder="e.g. Pantheon Visit"
                           value={newActTitle}
                           onChange={(e) => setNewActTitle(e.target.value)}
                           className="h-8.5 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                          dir="auto"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Location</label>
+                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.locationLabel}</label>
                       <Input
                         id={`new-activity-location-${day.dayNumber}`}
                         placeholder="e.g. Rome"
                         value={newActLoc}
                         onChange={(e) => setNewActLoc(e.target.value)}
                         className="h-8.5 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                        dir="auto"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Description</label>
+                      <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.descriptionLabel}</label>
                       <textarea
                         id={`new-activity-description-${day.dayNumber}`}
                         placeholder="Activity details..."
                         value={newActDesc}
                         onChange={(e) => setNewActDesc(e.target.value)}
                         className="flex min-h-[60px] w-full rounded-xl border border-outline-variant/30 bg-card px-3 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
+                        dir="auto"
                       />
                     </div>
                     <div className="flex gap-2 justify-end pt-1">
@@ -758,7 +768,7 @@ export default function ItineraryCard() {
                         onClick={() => setAddingActivityDay(null)}
                         className="h-8 text-xs font-semibold rounded-lg cursor-pointer"
                       >
-                        Cancel
+                        {t.cancelBtn}
                       </Button>
                       <Button
                         id={`new-activity-submit-${day.dayNumber}`}
@@ -767,7 +777,7 @@ export default function ItineraryCard() {
                         onClick={() => handleAddActivity(day.dayNumber)}
                         className="h-8 px-4 text-xs font-semibold bg-[#006400] text-white hover:bg-[#004d00] rounded-lg cursor-pointer shadow-sm hover:shadow"
                       >
-                        Add
+                        {t.addBtn}
                       </Button>
                     </div>
                   </div>
@@ -775,9 +785,9 @@ export default function ItineraryCard() {
 
                 {/* Activity List with Connecting Timeline */}
                 {day.activities.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic py-2 pl-2">No activities scheduled. Tap Add Activity above.</p>
+                  <p className="text-xs text-muted-foreground italic py-2 ps-2">{t.noActivities}</p>
                 ) : (
-                  <div className="relative pl-6 space-y-4 pt-2">
+                  <div className="relative ps-6 space-y-4 pt-2">
                     {day.activities.map((act, idx) => {
                       const isExpanded = !!expandedActivities[act.id];
                       const isEditing = editingActivityId === act.id;
@@ -810,16 +820,16 @@ export default function ItineraryCard() {
                           )}
                         >
                           {/* Left-hand timeline connection dot */}
-                          <div className="absolute left-[14px] top-[18px] w-2.5 h-2.5 rounded-full bg-[#006400] dark:bg-[#86df72] border border-white dark:border-zinc-950 z-10 shadow-sm" />
+                          <div className="absolute start-[14px] top-[18px] w-2.5 h-2.5 rounded-full bg-[#006400] dark:bg-[#86df72] border border-white dark:border-zinc-950 z-10 shadow-sm" />
 
                           {/* Nested Card wrapper */}
-                          <div className="pl-6">
+                          <div className="ps-6">
                             {isEditing ? (
                               /* Inline Edit Form */
                               <div className="p-3.5 space-y-3 bg-card border border-outline-variant/30 rounded-2xl shadow-sm">
                                 <div className="grid grid-cols-3 gap-2">
                                   <div className="col-span-1">
-                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Time</label>
+                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.timeLabel}</label>
                                     <Input
                                       id={`edit-activity-time-${act.id}`}
                                       type="time"
@@ -829,31 +839,34 @@ export default function ItineraryCard() {
                                     />
                                   </div>
                                   <div className="col-span-2">
-                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Title</label>
+                                    <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.titleLabel}</label>
                                     <Input
                                       id={`edit-activity-title-${act.id}`}
                                       value={editActTitle}
                                       onChange={(e) => setEditActTitle(e.target.value)}
                                       className="h-8 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                                      dir="auto"
                                     />
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Location</label>
+                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.locationLabel}</label>
                                   <Input
                                     id={`edit-activity-location-${act.id}`}
                                     value={editActLoc}
                                     onChange={(e) => setEditActLoc(e.target.value)}
                                     className="h-8 text-xs border-outline-variant bg-card text-foreground focus-visible:ring-1 focus-visible:ring-[#006400]"
+                                    dir="auto"
                                   />
                                 </div>
                                 <div>
-                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">Description</label>
+                                  <label className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider">{t.descriptionLabel}</label>
                                   <textarea
                                     id={`edit-activity-description-${act.id}`}
                                     value={editActDesc}
                                     onChange={(e) => setEditActDesc(e.target.value)}
                                     className="flex min-h-[60px] w-full rounded-xl border border-outline-variant/30 bg-card px-3 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring text-foreground"
+                                    dir="auto"
                                   />
                                 </div>
                                 <div className="flex gap-2 justify-end pt-1">
@@ -864,7 +877,7 @@ export default function ItineraryCard() {
                                     onClick={() => setEditingActivityId(null)}
                                     className="h-8 text-xs font-semibold rounded-lg cursor-pointer"
                                   >
-                                    Cancel
+                                    {t.cancelBtn}
                                   </Button>
                                   <Button
                                     id={`edit-activity-save-${act.id}`}
@@ -873,7 +886,7 @@ export default function ItineraryCard() {
                                     onClick={() => saveEditActivity(day.dayNumber, act.id)}
                                     className="h-8 px-4 text-xs font-semibold bg-[#006400] text-white hover:bg-[#004d00] rounded-lg cursor-pointer"
                                   >
-                                    Save
+                                    {t.saveBtn}
                                   </Button>
                                 </div>
                               </div>
@@ -889,31 +902,31 @@ export default function ItineraryCard() {
                                       [act.id]: !prev[act.id]
                                     }));
                                   }}
-                                  className="w-full text-left p-3.5 flex items-center justify-between gap-3 focus:outline-none cursor-pointer"
+                                  className="w-full text-start p-3.5 flex items-center justify-between gap-3 focus:outline-none cursor-pointer"
                                 >
                                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                                    <div className="flex items-center gap-1 text-[11px] text-[#006400] dark:text-[#86df72] font-bold bg-[#006400]/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded-full shrink-0 border border-primary/10 dark:border-[#86df72]/10">
+                                    <div dir="ltr" className="flex items-center gap-1 text-[11px] text-[#006400] dark:text-[#86df72] font-bold bg-[#006400]/5 dark:bg-[#86df72]/10 px-2 py-0.5 rounded-full shrink-0 border border-primary/10 dark:border-[#86df72]/10 text-start">
                                       <Clock className="h-3 w-3 shrink-0" />
                                       <span>{act.time}</span>
                                     </div>
-                                    <span className="text-xs font-bold text-foreground truncate max-w-[130px] sm:max-w-[180px]">{act.title}</span>
+                                    <span dir="ltr" className="text-xs font-bold text-foreground truncate max-w-[130px] sm:max-w-[180px] text-start">{act.title}</span>
                                     
                                     {isConfirmed && (
                                       <span className="bg-[#006400]/10 dark:bg-[#86df72]/15 text-[#006400] dark:text-[#86df72] text-[9px] font-bold px-2 py-0.5 rounded-full border border-primary/10 dark:border-[#86df72]/10 flex items-center gap-0.5 shrink-0">
                                         <Check className="h-2.5 w-2.5 shrink-0" />
-                                        Confirmed
+                                        {t.confirmed}
                                       </span>
                                     )}
                                     {hasRainAlert && (
                                       <span className="bg-amber-500/10 text-amber-600 dark:text-amber-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-0.5 shrink-0">
-                                        🌧️ Rain Alert
+                                        {t.rainAlert}
                                       </span>
                                     )}
                                   </div>
                                   
                                   <div className="flex items-center gap-1.5 shrink-0">
                                     {act.locationName && (
-                                      <span className="text-[10px] text-muted-foreground truncate hidden xs:block">{act.locationName}</span>
+                                      <span dir="ltr" className="text-[10px] text-muted-foreground truncate hidden xs:block text-start">{act.locationName}</span>
                                     )}
                                     {isExpanded ? (
                                       <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
@@ -929,20 +942,20 @@ export default function ItineraryCard() {
                                     id={`activity-details-${act.id}`}
                                     className="px-3.5 pb-3.5 pt-0 border-t border-outline-variant/20 mt-1 space-y-2.5 animate-in slide-in-from-top-1 duration-200"
                                   >
-                                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed whitespace-pre-wrap">{act.description}</p>
+                                    <p dir="ltr" className="text-xs text-muted-foreground mt-2 leading-relaxed whitespace-pre-wrap text-start">{act.description}</p>
                                     
                                     {hasRainAlert && (
                                       <div className="flex items-center gap-2 mt-2 px-3 py-2.5 bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-500 rounded-xl text-[10px] font-bold w-full">
                                         <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                                        <span className="flex-1">Rain forecast during this outdoor activity. Ask AI for indoor alternatives.</span>
+                                        <span className="flex-1">{t.rainForecast}</span>
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             handleAskAISwap(act, day.dayNumber);
                                           }}
-                                          className="underline hover:text-amber-700 font-extrabold cursor-pointer shrink-0 ml-2"
+                                          className="underline hover:text-amber-700 font-extrabold cursor-pointer shrink-0 ms-2"
                                         >
-                                          Ask AI Swap
+                                          {t.askAiSwap}
                                         </button>
                                       </div>
                                     )}
@@ -957,7 +970,7 @@ export default function ItineraryCard() {
                                             aria-label={`Ask AI about ${act.title} in ${act.locationName}`}
                                           >
                                             <MapPin className="h-3 w-3 shrink-0" />
-                                            <span>{act.locationName}</span>
+                                            <span dir="ltr" className="text-start">{act.locationName}</span>
                                           </button>
                                         )}
                                         
@@ -968,7 +981,7 @@ export default function ItineraryCard() {
                                           aria-label={`Ask AI about ${act.title}`}
                                         >
                                           <Info className="h-3 w-3 shrink-0" />
-                                          <span>Ask AI Tips</span>
+                                          <span>{t.askAiTips}</span>
                                         </button>
                                       </div>
 

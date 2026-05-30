@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Sparkles, X, Plus, Check, RefreshCw, AlertCircle, Sun } from "lucide-react";
+import { useState } from "react";
+import { Sparkles, X, Plus, Check, RefreshCw, Sun } from "lucide-react";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { DEFAULT_ITALY_ITINERARY } from "@/components/ItineraryCard";

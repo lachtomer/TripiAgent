@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { 
   Bookmark, 
   Plus, 
@@ -16,7 +16,8 @@ import {
   ThumbsDown
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
 import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
@@ -234,7 +235,7 @@ export default function SavedAttractionsList() {
                     <div className="flex gap-2.5 items-start justify-between">
                       {attraction.image && (
                         <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                          <img src={attraction.image} alt={attraction.name} className="w-full h-full object-cover" />
+                          <Image src={attraction.image} alt={attraction.name} width={48} height={48} className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

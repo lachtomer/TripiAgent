@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import BottomNav from "@/components/BottomNav";
 import TopAppBar from "@/components/TopAppBar";
 import Toast from "@/components/Toast";
+import DynamicDirectionHandler from "@/components/DynamicDirectionHandler";
 import "./globals.css";
 
 const inter = Inter({
@@ -51,6 +52,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <DynamicDirectionHandler />
             <Toast />
             <TopAppBar />
             <main className="flex-1 flex flex-col">{children}</main>
