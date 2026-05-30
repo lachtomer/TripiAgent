@@ -117,4 +117,17 @@ describe("tripStore Zustand store", () => {
     expect(useTripStore.getState().dayAnchors[1]).toBe("Milan");
     expect(useTripStore.getState().dayAnchors[2]).toBe("Rome");
   });
+
+  it("should handle locale changes and reset correctly", () => {
+    const store = useTripStore.getState();
+    expect(store.locale).toBe("en"); // Default is en
+    
+    // Set locale to he
+    store.setLocale("he");
+    expect(useTripStore.getState().locale).toBe("he");
+    
+    // Reset store resets locale to en
+    useTripStore.getState().resetStore();
+    expect(useTripStore.getState().locale).toBe("en");
+  });
 });

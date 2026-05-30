@@ -196,7 +196,7 @@
 .itinerary-line::before {
   content: "";
   position: absolute;
-  left: 19px;
+  inset-inline-start: 19px;
   top: 40px;
   bottom: -20px;
   width: 2px;

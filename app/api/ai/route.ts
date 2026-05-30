@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { AiRequestBodySchema } from "@/lib/schemas";
 import { rateLimiter } from "@/lib/rateLimit";
 import { agentGraph } from "@/lib/agentGraph";

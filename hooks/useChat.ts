@@ -193,7 +193,7 @@ export function useChat() {
         }
       }
     },
-    [addChatMessage, updateChatMessageText, setUnreadChat, location, itinerary, messages, pathname, setIsPlanning, setToast]
+    [addChatMessage, updateChatMessageText, setUnreadChat, location, itinerary, dayAnchors, messages, pathname, setIsPlanning, setToast]
   );
 
   return {

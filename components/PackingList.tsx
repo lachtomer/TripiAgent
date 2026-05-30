@@ -20,6 +20,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { PackingItem } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/translations";
 
 // --- Helpers ---
 const CATEGORY_ORDER = [
@@ -57,14 +58,13 @@ export default function PackingList() {
   const location = useTripStore((s) => s.location);
 
   const isHydrated = useIsHydrated();
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
   const [addingCategory, setAddingCategory] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
-
-
 
   const checkedCount = packingList.filter((i) => i.checked).length;
   const totalCount = packingList.length;
@@ -170,7 +170,7 @@ export default function PackingList() {
     return (
       <Card className="border border-border bg-card">
         <CardContent className="p-4 flex items-center justify-center h-24">
-          <span className="text-xs text-muted-foreground">Loading packing list...</span>
+          <span className="text-xs text-muted-foreground">{t.loadingPacking}</span>
         </CardContent>
       </Card>
     );
@@ -186,12 +186,12 @@ export default function PackingList() {
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
             <Luggage className="h-4 w-4 text-[#006400]" />
-            Packing Checklist
+            {t.packingChecklist}
           </CardTitle>
           <CardDescription>
             {totalCount === 0
-              ? "Generate an AI-powered list or add items manually"
-              : `${checkedCount} of ${totalCount} packed`}
+              ? t.packingDescription
+              : t.packedCount.replace("{checked}", String(checkedCount)).replace("{total}", String(totalCount))}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 pt-0">
@@ -199,9 +199,9 @@ export default function PackingList() {
           {totalCount > 0 && (
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{progress}% packed</span>
+                <span>{t.progressPercent.replace("{progress}", String(progress))}</span>
                 <span className={cn(progress === 100 ? "text-[#006400] font-semibold" : "")}>
-                  {progress === 100 ? "🎉 All packed!" : `${totalCount - checkedCount} remaining`}
+                  {progress === 100 ? t.allPacked : t.remainingCount.replace("{count}", String(totalCount - checkedCount))}
                 </span>
               </div>
               <div
@@ -232,12 +232,12 @@ export default function PackingList() {
               {isGenerating ? (
                 <>
                   <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                  Generating…
+                  {t.generating}
                 </>
               ) : (
                 <>
                   <Sparkles className="h-3.5 w-3.5" />
-                  {packingList.length > 0 ? "Regenerate with AI" : "Generate with AI"}
+                  {packingList.length > 0 ? t.regenerateWithAi : t.generateWithAi}
                 </>
               )}
             </Button>
@@ -255,7 +255,7 @@ export default function PackingList() {
                 )}
               >
                 <X className="h-3.5 w-3.5" />
-                {confirmClear ? "Confirm clear?" : "Clear All"}
+                {confirmClear ? t.confirmClear : t.clearAll}
               </Button>
             )}
           </div>
@@ -278,6 +278,7 @@ export default function PackingList() {
             const someChecked = items.some((i) => i.checked);
             const isCollapsed = !!collapsedCategories[category];
             const isAddingHere = addingCategory === category;
+            const categoryTranslated = t[category as keyof typeof t] || category;
 
             return (
               <Card key={category} className="border border-border bg-card overflow-hidden">
@@ -287,7 +288,7 @@ export default function PackingList() {
                   <button
                     id={`category-header-${category.replace(/\s+/g, "-").toLowerCase()}`}
                     onClick={() => toggleCategory(category)}
-                    className="flex items-center gap-2 flex-1 text-left focus:outline-none"
+                    className="flex items-center gap-2 flex-1 text-start focus:outline-none"
                     aria-expanded={!isCollapsed}
                   >
                     {isCollapsed ? (
@@ -295,7 +296,7 @@ export default function PackingList() {
                     ) : (
                       <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
                     )}
-                    <span className="text-sm font-semibold text-foreground">{category}</span>
+                    <span className="text-sm font-semibold text-foreground">{categoryTranslated}</span>
                     <span
                       className={cn(
                         "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full",
@@ -314,9 +315,9 @@ export default function PackingList() {
                     id={`check-all-${category.replace(/\s+/g, "-").toLowerCase()}`}
                     onClick={() => handleCheckAll(category, items, !allChecked)}
                     className="text-[10px] font-semibold text-muted-foreground hover:text-[#006400] transition-colors px-1 py-0.5 shrink-0 focus:outline-none"
-                    title={allChecked ? "Uncheck all" : "Check all"}
+                    title={allChecked ? t.uncheckAll : t.checkAll}
                   >
-                    {allChecked ? "Uncheck all" : "Check all"}
+                    {allChecked ? t.uncheckAll : t.checkAll}
                   </button>
                 </div>
 
@@ -332,7 +333,7 @@ export default function PackingList() {
                         <button
                           id={`toggle-item-${item.id}`}
                           onClick={() => togglePackingItem(item.id)}
-                          className="flex items-center gap-3 flex-1 text-left select-none focus:outline-none"
+                          className="flex items-center gap-3 flex-1 text-start select-none focus:outline-none"
                           aria-checked={item.checked}
                           role="checkbox"
                         >
@@ -342,6 +343,7 @@ export default function PackingList() {
                             <Square className="h-5 w-5 text-muted-foreground shrink-0" />
                           )}
                           <span
+                            dir="ltr"
                             className={cn(
                               "text-sm transition-all",
                               item.checked ? "line-through text-muted-foreground" : "font-medium text-foreground"
@@ -369,7 +371,7 @@ export default function PackingList() {
                       >
                         <Input
                           id={`new-item-input-${category.replace(/\s+/g, "-").toLowerCase()}`}
-                          placeholder="Item name…"
+                          placeholder={t.itemNamePlaceholder}
                           value={newItemName}
                           onChange={(e) => setNewItemName(e.target.value)}
                           onKeyDown={(e) => {
@@ -381,6 +383,7 @@ export default function PackingList() {
                           }}
                           className="h-8 text-xs flex-1"
                           autoFocus
+                          dir="auto"
                         />
                         <Button
                           id={`add-item-submit-${category.replace(/\s+/g, "-").toLowerCase()}`}
@@ -389,7 +392,7 @@ export default function PackingList() {
                           disabled={!newItemName.trim()}
                           className="h-8 text-xs bg-[#006400] text-white hover:bg-[#004d00]"
                         >
-                          Add
+                          {t.addBtn}
                         </Button>
                         <Button
                           id={`add-item-cancel-${category.replace(/\s+/g, "-").toLowerCase()}`}
@@ -401,7 +404,7 @@ export default function PackingList() {
                           }}
                           className="h-8 text-xs"
                         >
-                          Cancel
+                          {t.cancelBtn}
                         </Button>
                       </div>
                     ) : (
@@ -414,7 +417,7 @@ export default function PackingList() {
                         className="w-full flex items-center gap-2 py-2.5 text-xs text-muted-foreground hover:text-[#006400] transition-colors focus:outline-none"
                       >
                         <Plus className="h-3.5 w-3.5" />
-                        <span>Add item to {category}</span>
+                        <span>{t.addItemToCategory.replace("{category}", String(categoryTranslated))}</span>
                       </button>
                     )}
                   </CardContent>
@@ -428,9 +431,9 @@ export default function PackingList() {
           <CardContent className="p-8 flex flex-col items-center gap-3 text-center">
             <Luggage className="h-8 w-8 text-muted-foreground/50" />
             <div>
-              <p className="text-sm font-medium text-muted-foreground">No items yet</p>
+              <p className="text-sm font-medium text-muted-foreground">{t.noItemsYet}</p>
               <p className="text-xs text-muted-foreground/70 mt-1">
-                Tap &ldquo;Generate with AI&rdquo; to build a smart list from your itinerary
+                {t.noItemsYetDescription}
               </p>
             </div>
           </CardContent>

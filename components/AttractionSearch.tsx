@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Star, Bookmark, Sparkles, Utensils, Landmark, RefreshCw, MapPin, CalendarPlus, Plus } from "lucide-react";
+import Image from "next/image";
+import { Search, RefreshCw, MapPin, Landmark, Utensils, Bookmark, Star, CalendarPlus, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { type PlaceDetail } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import { useLocation } from "@/hooks/useLocation";
 import { DEFAULT_ITALY_ITINERARY } from "./ItineraryCard";
+import { useTranslation } from "@/lib/translations";
 
 const PLACE_FALLBACK_PHOTOS = [
   "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=300&q=80", // Colosseum
@@ -50,6 +52,7 @@ export default function AttractionSearch() {
 
   const { location: userLocation, refreshLocation, loading: locationLoading } = useLocation();
   const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState<"tourist_attraction" | "restaurant">("tourist_attraction");
@@ -60,7 +63,7 @@ export default function AttractionSearch() {
   // Custom states for precision search & direct itinerary binding
   const [localWeather, setLocalWeather] = useState<string | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-  const [extractedKeyword, setExtractedKeyword] = useState<string | undefined>(undefined);
+  
 
   // Food Filter States
   const [openNowOnly, setOpenNowOnly] = useState(false);
@@ -142,7 +145,7 @@ export default function AttractionSearch() {
         setUseCurrentLocPending(false);
         const name = userLocation.cityName || "Current Location";
         setQuery(name);
-        setExtractedKeyword(undefined);
+  
         fetchPlacesNearCoords(
           coords.latitude,
           coords.longitude,
@@ -160,7 +163,7 @@ export default function AttractionSearch() {
   }, [useCurrentLocPending, userLocation, fetchPlacesNearCoords]);
 
   const handleUseCurrentLocation = () => {
-    setExtractedKeyword(undefined);
+
     if (userLocation.coords) {
       const name = userLocation.cityName || "Current Location";
       setQuery(name);
@@ -193,7 +196,7 @@ export default function AttractionSearch() {
       searchCity = queryStr.substring(inIndex + 4).trim();
     }
 
-    setExtractedKeyword(keyword);
+    
 
     try {
       // Step 1: Geocode the city query to get lat & lng
@@ -226,10 +229,10 @@ export default function AttractionSearch() {
       <CardHeader className="p-4 bg-muted/10 border-b border-outline-variant/20">
         <CardTitle className="text-sm font-extrabold tracking-tight flex items-center gap-1.5 text-foreground">
           <Search className="h-4.5 w-4.5 text-[#006400] dark:text-[#86df72]" />
-          Explore & Search Italy
+          {t.searchTitle}
         </CardTitle>
         <CardDescription className="text-[11px]">
-          Find attractions or restaurants in any city and add them to your bank
+          {t.searchDescription}
         </CardDescription>
       </CardHeader>
 
@@ -241,16 +244,17 @@ export default function AttractionSearch() {
               <Input
                 id="attraction-search-input"
                 type="text"
-                placeholder="Enter city (e.g. Verona, Venice, Florence)..."
+                dir="auto"
+                placeholder={t.searchPlaceholder}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="h-9.5 pr-8 text-xs sm:text-sm bg-muted/30 focus-visible:ring-1 focus-visible:ring-[#006400] w-full"
+                className="h-9.5 pe-8 ps-3 text-xs sm:text-sm bg-muted/30 focus-visible:ring-1 focus-visible:ring-[#006400] w-full"
               />
               <button
                 type="button"
                 onClick={handleUseCurrentLocation}
                 disabled={loading || locationLoading}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-[#006400] dark:hover:text-[#86df72] transition-colors focus:outline-none disabled:opacity-50 cursor-pointer"
+                className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-[#006400] dark:hover:text-[#86df72] transition-colors focus:outline-none disabled:opacity-50 cursor-pointer"
                 title="Use current location"
               >
                 {locationLoading ? (
@@ -272,13 +276,13 @@ export default function AttractionSearch() {
               ) : (
                 <Search className="h-4 w-4" />
               )}
-              Search
+              {t.searchBtn}
             </Button>
           </div>
 
           {/* Search Category Toggle Chips */}
           <div className="flex gap-2 justify-start items-center pt-0.5">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase mr-1">Type:</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase me-1 shrink-0">{t.typeLabel}</span>
             
             <button
               type="button"
@@ -294,7 +298,7 @@ export default function AttractionSearch() {
               )}
             >
               <Landmark className="h-3.5 w-3.5" />
-              Attractions
+              {t.attractions}
             </button>
 
             <button
@@ -311,14 +315,14 @@ export default function AttractionSearch() {
               )}
             >
               <Utensils className="h-3.5 w-3.5" />
-              Dining
+              {t.dining}
             </button>
           </div>
 
           {/* Food Filters (rendered only when searchType is restaurant) */}
           {searchType === "restaurant" && (
             <div className="space-y-2 pt-2 border-t border-outline-variant/10 animate-in fade-in duration-200">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">Food Options:</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">{t.foodOptions}</span>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -330,7 +334,7 @@ export default function AttractionSearch() {
                       : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
                   )}
                 >
-                  Open Now
+                  {t.openNow}
                 </button>
                 <button
                   type="button"
@@ -342,7 +346,7 @@ export default function AttractionSearch() {
                       : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
                   )}
                 >
-                  Gluten-Free
+                  {t.glutenFree}
                 </button>
                 <button
                   type="button"
@@ -354,7 +358,7 @@ export default function AttractionSearch() {
                       : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
                   )}
                 >
-                  Diabetes-Friendly
+                  {t.diabeticFriendly}
                 </button>
                 <button
                   type="button"
@@ -366,7 +370,7 @@ export default function AttractionSearch() {
                       : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
                   )}
                 >
-                  {showMoreOptions ? "Less Options" : "More Options..."}
+                  {showMoreOptions ? t.lessOptionsBtn : t.moreOptionsBtn}
                 </button>
               </div>
 
@@ -388,7 +392,7 @@ export default function AttractionSearch() {
                         : "bg-transparent text-muted-foreground border-transparent hover:bg-muted"
                     )}
                   >
-                    Vegetarian
+                    {t.vegetarian}
                   </button>
                   <button
                     type="button"
@@ -406,7 +410,7 @@ export default function AttractionSearch() {
                         : "bg-transparent text-muted-foreground border-transparent hover:bg-muted"
                     )}
                   >
-                    Vegan
+                    {t.vegan}
                   </button>
                 </div>
               )}
@@ -462,17 +466,13 @@ export default function AttractionSearch() {
                 >
                   {/* Thumbnail Cover Image */}
                   <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative bg-muted border border-outline-variant/10">
-                    <img
-                      src={coverImage}
-                      alt={place.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    <Image src={coverImage} alt={place.name} fill className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     {/* Add to Bank Button */}
                     <button
                       onClick={handleBookmarkToggle}
                       id={`search-bookmark-${placeId}`}
-                      className="absolute top-0.5 left-0.5 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1 rounded-md border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
-                      title={isSaved ? "Remove from Saved" : "Save to Attraction Bank"}
+                      className="absolute top-0.5 start-0.5 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
+                      title={isSaved ? t.removeFromSaved : t.saveToBank}
                     >
                       <Bookmark
                         className={cn(
@@ -488,33 +488,35 @@ export default function AttractionSearch() {
                   {/* Info details */}
                   <div className="flex-1 min-w-0 space-y-0.5">
                     <div className="flex justify-between items-start gap-1">
-                      <h4 className="font-bold text-xs text-foreground truncate pr-1">
-                        {place.name}
-                      </h4>
+                      <div dir="ltr" className="text-start truncate flex-1">
+                        <h4 className="font-bold text-xs text-foreground truncate pr-1">
+                          {place.name}
+                        </h4>
+                      </div>
                       {place.rating !== undefined && (
-                        <span className="flex items-center gap-0.5 text-[10px] font-bold text-[#006400] dark:text-[#86df72] shrink-0">
+                        <span dir="ltr" className="flex items-center gap-0.5 text-[10px] font-bold text-[#006400] dark:text-[#86df72] shrink-0">
                           <Star className="h-2.5 w-2.5 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
                           {place.rating.toFixed(1)}
                         </span>
                       )}
                     </div>
                     
-                    <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                    <div className="flex items-center justify-between gap-1.5 pt-0.5" dir={locale === "he" ? "rtl" : "ltr"}>
                       <span className="text-[10px] text-muted-foreground truncate max-w-[130px]">
-                        {place.types?.[0]?.replace(/_/g, " ") || (searchType === "restaurant" ? "dining" : "attraction")}
+                        {place.types?.[0]?.replace(/_/g, " ") || (searchType === "restaurant" ? t.dining : t.attractions)}
                       </span>
                       {place.open_now !== undefined && (
                         <span className={cn("text-[9px] font-extrabold uppercase tracking-wide", place.open_now ? "text-[#006400] dark:text-[#86df72]" : "text-destructive")}>
-                          {place.open_now ? "Open" : "Closed"}
+                          {place.open_now ? t.openState : t.closedState}
                         </span>
                       )}
                     </div>
 
                     {place.address && (
-                      <p className="text-[9px] text-muted-foreground flex items-center gap-0.5 mt-0.5 max-w-[170px] truncate">
+                      <div dir="ltr" className="text-start flex items-center gap-0.5 mt-0.5 truncate">
                         <MapPin className="h-2.5 w-2.5 shrink-0 text-muted-foreground" />
-                        <span className="truncate">{place.address}</span>
-                      </p>
+                        <span className="text-[9px] text-muted-foreground truncate">{place.address}</span>
+                      </div>
                     )}
 
                     {/* Active trip warning badges */}
@@ -548,22 +550,22 @@ export default function AttractionSearch() {
                       <div className="flex flex-wrap gap-1 pt-1">
                         {isGlutenFree(placeId) && (
                           <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/15">
-                            Gluten-Free
+                            {t.glutenFree}
                           </span>
                         )}
                         {isDiabeticFriendly(placeId) && (
                           <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/15">
-                            Diabetic-Friendly
+                            {t.diabeticFriendly}
                           </span>
                         )}
                         {isVegetarian(placeId) && (
                           <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15">
-                            Vegetarian
+                            {t.vegetarian}
                           </span>
                         )}
                         {isVegan(placeId) && (
                           <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/15">
-                            Vegan
+                            {t.vegan}
                           </span>
                         )}
                       </div>
@@ -582,17 +584,17 @@ export default function AttractionSearch() {
                         "h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none",
                         openDropdownId === placeId && "border-[#006400] text-[#006400] dark:border-[#86df72] dark:text-[#86df72] bg-[#006400]/5 dark:bg-[#86df72]/5"
                       )}
-                      title="Add directly to itinerary day"
+                      title={t.scheduleTo}
                     >
                       <CalendarPlus className="h-4 w-4" />
                     </button>
 
                     {openDropdownId === placeId && (
                       <div
-                        className="absolute right-0 top-9.5 z-50 bg-card border border-outline-variant/40 rounded-xl shadow-lg p-2 min-w-[130px] space-y-1 animate-in fade-in slide-in-from-top-1 duration-150"
+                        className="absolute end-0 top-9.5 z-50 bg-card border border-outline-variant/40 rounded-xl shadow-lg p-2 min-w-[130px] space-y-1 animate-in fade-in slide-in-from-top-1 duration-150"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <p className="text-[9px] font-extrabold text-muted-foreground px-2 py-0.5 uppercase tracking-wide">Schedule to:</p>
+                        <p className="text-[9px] font-extrabold text-muted-foreground px-2 py-0.5 uppercase tracking-wide">{t.scheduleTo}</p>
                         <div className="max-h-[140px] overflow-y-auto pr-1">
                           {itinerary && itinerary.map((day) => (
                             <button
@@ -606,12 +608,12 @@ export default function AttractionSearch() {
                                   locationName: place.name,
                                 });
                                 useTripStore.getState().setToast({
-                                  message: `Added "${place.name}" to Day ${day.dayNumber}`,
+                                  message: t.addedToDay.replace("{name}", place.name).replace("{day}", day.dayNumber.toString()),
                                   type: "success",
                                 });
                                 setOpenDropdownId(null);
                               }}
-                              className="w-full text-left text-[11px] font-bold px-2 py-1.5 rounded-lg hover:bg-[#006400]/10 hover:text-[#006400] dark:hover:bg-[#86df72]/15 dark:hover:text-[#86df72] transition-colors cursor-pointer text-foreground"
+                              className="w-full text-start text-[11px] font-bold px-2 py-1.5 rounded-lg hover:bg-[#006400]/10 hover:text-[#006400] dark:hover:bg-[#86df72]/15 dark:hover:text-[#86df72] transition-colors cursor-pointer text-foreground"
                             >
                               Day {day.dayNumber}
                             </button>
@@ -624,7 +626,7 @@ export default function AttractionSearch() {
                     <button
                       onClick={() => handlePlaceTap(place)}
                       className="h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none"
-                      title="Ask AI Guide"
+                      title={t.askAiGuide}
                     >
                       <Sparkles className="h-4 w-4" />
                     </button>

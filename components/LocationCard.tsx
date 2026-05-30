@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { RefreshCw, Cloud, Sun, CloudRain, CloudSnow, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { useLocation } from "@/hooks/useLocation";
 import type { WeatherData } from "@/lib/weather";
 import { useTripStore } from "@/stores/tripStore";
@@ -46,7 +46,7 @@ export default function LocationCard() {
           hour12: false,
         };
         setLocalTime(new Intl.DateTimeFormat([], options).format(new Date()));
-      } catch (e) {
+      } catch {
         setLocalTime("14:30"); // Fallback
       }
     };
