@@ -71,9 +71,13 @@ const initialPackingList: PackingItem[] = [
 ];
 
 const initialUsers: UserProfile[] = [
-  { id: "u1", name: "User 1", role: "user" },
-  { id: "u2", name: "User 2", role: "user" },
-  { id: "u3", name: "User 3", role: "admin" },
+  { id: "u1", name: "Liran", role: "admin" },
+  { id: "u2", name: "Ilanit", role: "user" },
+  { id: "u3", name: "Yoav", role: "user" },
+  { id: "u4", name: "Maya", role: "user" },
+  { id: "u5", name: "Noam", role: "user" },
+  { id: "u6", name: "Mor", role: "user" },
+  { id: "u7", name: "Tomer", role: "admin" },
 ];
 
 const initialLogistics: TravelLogistics = {
@@ -105,7 +109,15 @@ export const useTripStore = create<TripState>()(
       // New user/mode fields initialization
       users: initialUsers,
       currentUser: "u1",
-      userPackingLists: { u1: initialPackingList },
+      userPackingLists: {
+        u1: initialPackingList,
+        u2: initialPackingList,
+        u3: initialPackingList,
+        u4: initialPackingList,
+        u5: initialPackingList,
+        u6: initialPackingList,
+        u7: initialPackingList,
+      },
       tripMode: "planning",
       dayAnchors: {},
       locale: "en",
@@ -296,7 +308,15 @@ export const useTripStore = create<TripState>()(
           serendipitySuggestion: null,
           completedActivityIds: [],
           currentUser: "u1",
-          userPackingLists: { u1: initialPackingList },
+          userPackingLists: {
+            u1: initialPackingList,
+            u2: initialPackingList,
+            u3: initialPackingList,
+            u4: initialPackingList,
+            u5: initialPackingList,
+            u6: initialPackingList,
+            u7: initialPackingList,
+          },
           tripMode: "planning",
           dayAnchors: {},
           locale: "en",
@@ -375,6 +395,30 @@ export const useTripStore = create<TripState>()(
     {
       name: "tripiagent-trip-storage",
       storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Self-healing migration for existing dev/production client local storage databases
+          const needsUserUpgrade = !state.users || 
+            state.users.length !== 7 || 
+            state.users[0].name.startsWith("User") ||
+            state.users[0].name === "User 1";
+
+          if (needsUserUpgrade) {
+            state.users = initialUsers;
+            state.currentUser = "u1";
+            state.userPackingLists = {
+              u1: state.userPackingLists?.u1 || initialPackingList,
+              u2: state.userPackingLists?.u2 || initialPackingList,
+              u3: state.userPackingLists?.u3 || initialPackingList,
+              u4: state.userPackingLists?.u4 || initialPackingList,
+              u5: state.userPackingLists?.u5 || initialPackingList,
+              u6: state.userPackingLists?.u6 || initialPackingList,
+              u7: state.userPackingLists?.u7 || initialPackingList,
+            };
+            state.packingList = state.userPackingLists["u1"];
+          }
+        }
+      },
     }
   )
 );

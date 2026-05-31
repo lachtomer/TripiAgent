@@ -68,6 +68,27 @@ export const translations = {
     // SavedAttractionsList
     savedAttractionBank: "Saved Attraction Bank",
     addCustomPoi: "Add Custom POI",
+    createdByLabel: "Added by {name}",
+
+    // EssentialsChecklist
+    essentialsTitle: "Trip Essentials Checklist",
+    essentialsDesc: "Critical documents, permits, and safety checks",
+    prepProgress: "Preparation Progress",
+    percentReady: "{progress}% Ready",
+    loadingChecklist: "Loading checklist...",
+    item_e1_task: "Passports & Flights",
+    item_e1_subtext: "TLV → MXP on Jun 25. Check validity > 6 months.",
+    item_e2_task: "Centauro Car Rental Voucher",
+    item_e2_subtext: "Group E2 pickup at Malpensa on Jun 26, 10:00.",
+    item_e3_task: "Villa Eunice Check-in Keys",
+    item_e3_subtext: "Monzambano base keys and lockbox instructions saved.",
+    item_e4_task: "Portable CO/Smoke Detector",
+    item_e4_subtext: "⚠️ Villa Eunice has no detectors — highly recommended to bring one.",
+    item_e5_task: "Milan Area C / ZTL Registration",
+    item_e5_subtext: "Required fee (€7.50) for entry before 19:30 on Jul 3.",
+    item_e6_task: "Aquaria Thermal Spa Booking",
+    item_e6_subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 29.",
+
 
     // ItineraryCard
     anchor: "Anchor:",
@@ -216,6 +237,27 @@ export const translations = {
     // SavedAttractionsList
     savedAttractionBank: "בנק אטרקציות שמורות",
     addCustomPoi: "הוסף נקודת עניין אישית",
+    createdByLabel: "נוסף על ידי {name}",
+
+    // EssentialsChecklist
+    essentialsTitle: "רשימת חיוני נסיעה",
+    essentialsDesc: "מסמכים קריטיים, אישורים ובדיקות בטיחות",
+    prepProgress: "התקדמות ההכנה",
+    percentReady: "{progress}% מוכן",
+    loadingChecklist: "טוען רשימת משימות...",
+    item_e1_task: "דרכונים וטיסות",
+    item_e1_subtext: "נתב\"ג ← מלפנסה ב-25 ביוני. בדוק תוקף > 6 חודשים.",
+    item_e2_task: "שובר השכרת רכב Centauro",
+    item_e2_subtext: "איסוף קבוצה E2 במלפנסה ב-26 ביוני, 10:00.",
+    item_e3_task: "מפתחות כניסה לוילה יוניס",
+    item_e3_subtext: "מפתחות בסיס מונזמבנו והוראות כספת מפתח שמורות.",
+    item_e4_task: "גלאי פחמן חד-חמצני/עשן נייד",
+    item_e4_subtext: "⚠️ בוילה יוניס אין גלאים — מומלץ מאוד להביא אחד.",
+    item_e5_task: "רישום לאזור C מילאנו / ZTL",
+    item_e5_subtext: "תשלום חובה (€7.50) לכניסה לפני 19:30 ב-3 ביולי.",
+    item_e6_task: "הזמנת ספא תרמי אקוואריה",
+    item_e6_subtext: "אמת הזמנה לספא התרמי שעל גדות האגם בסירמיונה ב-29 ביוני.",
+
 
     // ItineraryCard
     anchor: "עוגן:",

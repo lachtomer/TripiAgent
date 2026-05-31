@@ -27,6 +27,24 @@ describe("tripStore Zustand store", () => {
     expect(useTripStore.getState().packingList.find((i) => i.id === "p1")?.checked).toBe(true);
   });
 
+  it("should have custom users initialized and save attractions with creator tag", () => {
+    const store = useTripStore.getState();
+    expect(store.users).toHaveLength(7);
+    expect(store.users[0].name).toBe("Liran");
+    expect(store.users[0].role).toBe("admin");
+    expect(store.users[6].name).toBe("Tomer");
+    expect(store.users[6].role).toBe("admin");
+
+    const mockAttraction = {
+      id: "place-verona",
+      name: "Juliet's House",
+      createdBy: "Tomer",
+    };
+    store.saveAttraction(mockAttraction);
+    const attraction = useTripStore.getState().savedAttractions.find((a) => a.id === "place-verona");
+    expect(attraction?.createdBy).toBe("Tomer");
+  });
+
   it("should handle upvotes and downvotes on attractions", () => {
     const store = useTripStore.getState();
     const mockAttraction = {
@@ -61,13 +79,14 @@ describe("tripStore Zustand store", () => {
     store.saveAttraction(mockAttraction);
     expect(useTripStore.getState().savedAttractions).toHaveLength(1);
 
-    // User 1 (role: user) attempts to delete -> should fail
+    // Switch to User 2 (Ilanit, role: user) and attempt to delete -> should fail
+    useTripStore.getState().setCurrentUser("u2");
     useTripStore.getState().removeSavedAttraction("place-garda");
     expect(useTripStore.getState().savedAttractions).toHaveLength(1);
     expect(useTripStore.getState().toast?.type).toBe("error");
 
-    // Switch to User 3 (role: admin) and delete -> should succeed
-    useTripStore.getState().setCurrentUser("u3");
+    // Switch to User 7 (Tomer, role: admin) and delete -> should succeed
+    useTripStore.getState().setCurrentUser("u7");
     useTripStore.getState().removeSavedAttraction("place-garda");
     expect(useTripStore.getState().savedAttractions).toHaveLength(0);
     expect(useTripStore.getState().toast?.type).toBe("success");

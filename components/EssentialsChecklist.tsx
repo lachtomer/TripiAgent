@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckSquare, Square, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useTranslation } from "@/lib/translations";
 
 interface ChecklistItem {
   id: string;
@@ -22,6 +23,7 @@ const ESSENTIALS_ITEMS: ChecklistItem[] = [
 
 export default function EssentialsChecklist() {
   const isHydrated = useIsHydrated();
+  const { t, locale } = useTranslation();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(false);
 
@@ -57,7 +59,7 @@ export default function EssentialsChecklist() {
     return (
       <Card className="border border-outline-variant/30 bg-card/50">
         <CardContent className="p-4 flex items-center justify-center">
-          <span className="text-xs text-muted-foreground">Loading checklist...</span>
+          <span className="text-xs text-muted-foreground">{t.loadingChecklist || "Loading checklist..."}</span>
         </CardContent>
       </Card>
     );
@@ -67,7 +69,7 @@ export default function EssentialsChecklist() {
   const progressPercent = Math.round((completedCount / ESSENTIALS_ITEMS.length) * 100);
 
   return (
-    <Card className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}
@@ -75,10 +77,10 @@ export default function EssentialsChecklist() {
         <div className="flex-1 space-y-0.5">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary dark:text-[#86df72]" />
-            <CardTitle className="text-sm font-extrabold tracking-tight">Trip Essentials Checklist</CardTitle>
+            <CardTitle className="text-sm font-extrabold tracking-tight">{t.essentialsTitle}</CardTitle>
           </div>
           <CardDescription className="text-[11px] text-muted-foreground">
-            Critical documents, permits, and safety checks
+            {t.essentialsDesc}
           </CardDescription>
         </div>
         <div className="flex items-center gap-3">
@@ -98,8 +100,10 @@ export default function EssentialsChecklist() {
           {/* Progress Tracker */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              <span>Preparation Progress</span>
-              <span className="text-primary dark:text-[#86df72]">{progressPercent}% Ready</span>
+              <span>{t.prepProgress}</span>
+              <span className="text-primary dark:text-[#86df72]">
+                {(t.percentReady || "{progress}% Ready").replace("{progress}", progressPercent.toString())}
+              </span>
             </div>
             <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
               <div 
@@ -113,6 +117,11 @@ export default function EssentialsChecklist() {
           <div className="space-y-2.5">
             {ESSENTIALS_ITEMS.map((item) => {
               const isChecked = !!checkedItems[item.id];
+              const taskKey = `item_${item.id}_task` as keyof typeof t;
+              const subtextKey = `item_${item.id}_subtext` as keyof typeof t;
+              const taskText = (t[taskKey] as string) || item.task;
+              const subtextText = (t[subtextKey] as string) || item.subtext;
+
               return (
                 <div
                   key={item.id}
@@ -126,7 +135,7 @@ export default function EssentialsChecklist() {
                   <button 
                     type="button" 
                     className="shrink-0 mt-0.5 focus:outline-none"
-                    aria-label={isChecked ? `Uncheck ${item.task}` : `Check ${item.task}`}
+                    aria-label={isChecked ? `Uncheck ${taskText}` : `Check ${taskText}`}
                   >
                     {isChecked ? (
                       <CheckSquare className="h-4.5 w-4.5 text-primary dark:text-[#86df72]" />
@@ -134,14 +143,14 @@ export default function EssentialsChecklist() {
                       <Square className="h-4.5 w-4.5 text-muted-foreground/60" />
                     )}
                   </button>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 text-start">
                     <p className={`text-xs font-bold leading-tight ${
                       isChecked ? "line-through text-muted-foreground" : "text-foreground"
                     }`}>
-                      {item.task}
+                      {taskText}
                     </p>
                     <p className="text-[10px] text-muted-foreground leading-normal">
-                      {item.subtext}
+                      {subtextText}
                     </p>
                   </div>
                 </div>
@@ -153,3 +162,4 @@ export default function EssentialsChecklist() {
     </Card>
   );
 }
+

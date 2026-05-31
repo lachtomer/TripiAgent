@@ -845,3 +845,22 @@ npx playwright test
 
 ## Known Issues
 - `Gemini stream error: TypeError: Invalid state: Controller is already closed` in `/api/ai` — intermittent, caused by client closing connection before stream ends. Non-blocking for current scope.
+
+---
+
+## Step 17 — Checklist i18n, Scoped Packing Lists, Shared Attractions, Custom Users, and Dynamic Search Radius (PLANNING)
+
+### Goal
+Define functional specifications and implementation checklist for bilingual translation of the Trip Essentials Checklist panel, validation of shared attraction bank scopes, user-specific packing list synchronization, custom user profiles list with auto-migration, and dynamic search radius selection.
+
+### Files Changed
+* [`lib/translations.ts`](file:///c:/TripiAgent/lib/translations.ts) — Added Hebrew checklist texts
+* [`types/index.ts`](file:///c:/TripiAgent/types/index.ts) — Added `createdBy` property to `SavedAttraction`
+* [`components/EssentialsChecklist.tsx`](file:///c:/TripiAgent/components/EssentialsChecklist.tsx) — Added Hebrew i18n & dynamic items
+* [`stores/tripStore.ts`](file:///c:/TripiAgent/stores/tripStore.ts) — Overwrote initialUsers with 7 bespoke profiles and created auto-migration checks
+* [`stores/tripStore.test.ts`](file:///c:/TripiAgent/stores/tripStore.test.ts) — Updated deletion authorization test assertions to match Tomer and Ilanit
+* [`components/UserProfileSwitcher.tsx`](file:///c:/TripiAgent/components/UserProfileSwitcher.tsx) — Corrected avatar profile slice to charAt(0)
+* [`components/SavedAttractionsList.tsx`](file:///c:/TripiAgent/components/SavedAttractionsList.tsx) — Added creator badge rendering, dynamic custom POI creator bindings, and RTL mirroring
+* [`components/NearbyPlacesSection.tsx`](file:///c:/TripiAgent/components/NearbyPlacesSection.tsx) — Populated creator data when saving recommended places
+* [`components/AttractionSearch.tsx`](file:///c:/TripiAgent/components/AttractionSearch.tsx) — Populated creator data when bookmarking and implemented adjustable search radius selector (1KM/5KM/10KM/50KM) with quick-refetch logic
+

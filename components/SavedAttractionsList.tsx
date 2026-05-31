@@ -21,6 +21,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useTranslation } from "@/lib/translations";
 
 // Fallback in case itinerary is not loaded yet
 const MOCK_DAYS = Array.from({ length: 10 }, (_, i) => ({
@@ -43,6 +44,7 @@ export default function SavedAttractionsList() {
 
   const activeUser = users.find((u) => u.id === currentUser);
   const isAdmin = activeUser?.role === "admin";
+  const { t, locale } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -81,7 +83,8 @@ export default function SavedAttractionsList() {
       description: poiNotes.trim() || undefined,
       locationName: poiLocation.trim() || undefined,
       upvotes: [],
-      downvotes: []
+      downvotes: [],
+      createdBy: activeUser?.name || "Liran"
     };
 
     saveAttraction(newPoi);
@@ -116,7 +119,7 @@ export default function SavedAttractionsList() {
   };
 
   return (
-    <Card className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}
@@ -263,6 +266,11 @@ export default function SavedAttractionsList() {
                         {attraction.description && (
                           <p className="text-[10px] text-muted-foreground/80 leading-normal mt-1 line-clamp-2">
                             {attraction.description}
+                          </p>
+                        )}
+                        {attraction.createdBy && (
+                          <p className="text-[9px] font-semibold text-muted-foreground/60 mt-1 italic">
+                            {(t.createdByLabel || "Added by {name}").replace("{name}", attraction.createdBy)}
                           </p>
                         )}
                       </div>

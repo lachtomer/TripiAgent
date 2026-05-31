@@ -46,7 +46,7 @@ export default function UserProfileSwitcher() {
         aria-label="Switch user profile"
       >
         <div className="w-6.5 h-6.5 rounded-full bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs">
-          {activeUser.name.charAt(activeUser.name.length - 1)}
+          {activeUser.name.charAt(0)}
         </div>
         <span className="text-xs font-bold text-[#004900] dark:text-[#9df888] hidden sm:inline">
           {activeUser.name}
@@ -84,7 +84,7 @@ export default function UserProfileSwitcher() {
                         ? "bg-[#006400] text-white dark:bg-[#86df72] dark:text-zinc-950"
                         : "bg-muted text-muted-foreground"
                     }`}>
-                      {user.name.charAt(user.name.length - 1)}
+                      {user.name.charAt(0)}
                     </div>
                     <div>
                       <div>{user.name}</div>

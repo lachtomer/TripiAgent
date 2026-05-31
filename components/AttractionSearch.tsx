@@ -43,6 +43,9 @@ export default function AttractionSearch() {
   const addActivity = useTripStore((s) => s.addActivity);
   const itinerary = useTripStore((s) => s.itinerary);
   const setItinerary = useTripStore((s) => s.setItinerary);
+  const currentUser = useTripStore((s) => s.currentUser);
+  const users = useTripStore((s) => s.users);
+  const activeUser = users.find((u) => u.id === currentUser);
 
   useEffect(() => {
     if (itinerary === null) {
@@ -74,17 +77,25 @@ export default function AttractionSearch() {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [moreOptions, setMoreOptions] = useState<string[]>([]); // "vegetarian", "vegan"
 
-  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null, keyword?: string) => {
+  // Search Radius States
+  const [selectedRadius, setSelectedRadius] = useState<number>(5); // Default is 5km
+  const [lastSearchCoords, setLastSearchCoords] = useState<{ lat: number; lng: number; cityName: string | null; keyword?: string } | null>(null);
+
+  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null, keyword?: string, radiusOverride?: number) => {
     setLoading(true);
     setError(null);
     setAllResults([]);
     setVisibleCount(5);
     setLocalWeather(null);
+    setLastSearchCoords({ lat, lng, cityName, keyword });
+
+    const radiusVal = radiusOverride !== undefined ? radiusOverride : selectedRadius;
+    const radiusMeters = radiusVal * 1000;
 
     try {
       const keywordParam = keyword ? `&keyword=${encodeURIComponent(keyword)}` : "";
       const placesRes = await fetch(
-        `/api/places?lat=${lat}&lng=${lng}&radius=5000&type=${searchType}${keywordParam}`
+        `/api/places?lat=${lat}&lng=${lng}&radius=${radiusMeters}&type=${searchType}${keywordParam}`
       );
       if (!placesRes.ok) {
         const errData = await placesRes.json().catch(() => ({}));
@@ -140,7 +151,7 @@ export default function AttractionSearch() {
     } finally {
       setLoading(false);
     }
-  }, [searchType, openNowOnly, glutenFreeOnly, diabeticFriendlyOnly, moreOptions]);
+  }, [searchType, openNowOnly, glutenFreeOnly, diabeticFriendlyOnly, moreOptions, selectedRadius]);
 
   useEffect(() => {
     if (useCurrentLocPending && userLocation.coords) {
@@ -326,6 +337,38 @@ export default function AttractionSearch() {
             </button>
           </div>
 
+          {/* Search Radius Selection */}
+          <div className="flex gap-2 justify-start items-center pt-0.5 mt-1 select-none">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase me-1 shrink-0">Radius:</span>
+            {[1, 5, 10, 50].map((r) => (
+              <button
+                key={r}
+                type="button"
+                id={`search-radius-${r}km`}
+                onClick={() => {
+                  setSelectedRadius(r);
+                  if (lastSearchCoords) {
+                    fetchPlacesNearCoords(
+                      lastSearchCoords.lat,
+                      lastSearchCoords.lng,
+                      lastSearchCoords.cityName,
+                      lastSearchCoords.keyword,
+                      r
+                    );
+                  }
+                }}
+                className={cn(
+                  "px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer select-none",
+                  selectedRadius === r
+                    ? "bg-[#006400]/10 text-[#006400] border-[#006400]/30 dark:bg-[#86df72]/15 dark:text-[#86df72] dark:border-[#86df72]/30"
+                    : "bg-background text-muted-foreground border-outline-variant/30 hover:bg-muted"
+                )}
+              >
+                {r} KM
+              </button>
+            ))}
+          </div>
+
           {/* Food Filters (rendered only when searchType is restaurant) */}
           {searchType === "restaurant" && (
             <div className="space-y-2 pt-2 border-t border-outline-variant/10 animate-in fade-in duration-200">
@@ -452,18 +495,19 @@ export default function AttractionSearch() {
 
               const handleBookmarkToggle = (e: React.MouseEvent) => {
                 e.stopPropagation();
-                if (isSaved) {
-                  removeSavedAttraction(placeId);
-                } else {
-                  saveAttraction({
-                    id: placeId,
-                    name: place.name,
-                    description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
-                    locationName: place.name,
-                    rating: place.rating,
-                    image: coverImage,
-                  });
-                }
+                 if (isSaved) {
+                   removeSavedAttraction(placeId);
+                 } else {
+                   saveAttraction({
+                     id: placeId,
+                     name: place.name,
+                     description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
+                     locationName: place.name,
+                     rating: place.rating,
+                     image: coverImage,
+                     createdBy: activeUser?.name || "Liran",
+                   });
+                 }
               };
 
               return (

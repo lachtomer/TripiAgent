@@ -93,6 +93,7 @@ export interface SavedAttraction {
   image?: string;
   upvotes?: string[]; // array of user IDs who upvoted
   downvotes?: string[]; // array of user IDs who downvoted
+  createdBy?: string;
 }
 
 export interface UserProfile {

@@ -95,6 +95,9 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
   const saveAttraction = useTripStore((s) => s.saveAttraction);
   const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
   const tripMode = useTripStore((s) => s.tripMode);
+  const currentUser = useTripStore((s) => s.currentUser);
+  const users = useTripStore((s) => s.users);
+  const activeUser = users.find((u) => u.id === currentUser);
   const isPlanningMode = tripMode === "planning";
   const { t, locale } = useTranslation();
 
@@ -220,6 +223,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                   locationName: place.name,
                   rating: place.rating,
                   image: coverImage,
+                  createdBy: activeUser?.name || "Liran",
                 });
               }
             };
@@ -342,6 +346,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     locationName: place.name,
                     rating: place.rating,
                     image: coverImage,
+                    createdBy: activeUser?.name || "Liran",
                   });
                 }
               };
