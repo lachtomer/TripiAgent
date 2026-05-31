@@ -151,7 +151,20 @@ export default function AttractionSearch() {
     } finally {
       setLoading(false);
     }
-  }, [searchType, openNowOnly, glutenFreeOnly, diabeticFriendlyOnly, moreOptions, selectedRadius]);
+  }, [
+    searchType,
+    openNowOnly,
+    glutenFreeOnly,
+    diabeticFriendlyOnly,
+    moreOptions,
+    selectedRadius,
+    setVisibleCount,
+    setLoading,
+    setError,
+    setAllResults,
+    setLocalWeather,
+    setLastSearchCoords
+  ]);
 
   useEffect(() => {
     if (useCurrentLocPending && userLocation.coords) {
