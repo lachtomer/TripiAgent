@@ -69,6 +69,6 @@ test.describe("Step 15 — Hebrew & RTL Support", () => {
     const packNav = page.locator("#nav-link-pack");
     await packNav.click();
     await expect(page.locator("text=רשימת אריזה")).toBeVisible();
-    await expect(page.locator("text=חיוני")).toBeVisible();
+    await expect(page.locator("text=חיוני").first()).toBeVisible();
   });
 });
