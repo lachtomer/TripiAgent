@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import TargetBankDayPicker from "@/components/TargetBankDayPicker";
+import ActivityNearbyPanel from "@/components/ActivityNearbyPanel";
 import { 
   Calendar, 
   Clock, 
@@ -15,7 +17,9 @@ import {
   ChevronUp, 
   Info,
   CalendarCheck2,
-  AlertTriangle
+  AlertTriangle,
+  Bookmark,
+  Compass
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -432,6 +436,11 @@ export default function ItineraryCard() {
   const [editActDesc, setEditActDesc] = useState("");
   const [editActLoc, setEditActLoc] = useState("");
 
+  // Target bank day picker: which day's sheet is open
+  const [bankPickerDay, setBankPickerDay] = useState<number | null>(null);
+  // Activity-scoped nearby panel
+  const [nearbyActivityId, setNearbyActivityId] = useState<string | null>(null);
+
   // Adding activities: dayNumber -> boolean
   const [addingActivityDay, setAddingActivityDay] = useState<number | null>(null);
   const [newActTime, setNewActTime] = useState("09:00");
@@ -691,6 +700,20 @@ export default function ItineraryCard() {
                     <svg className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                     </svg>
+                  </Button>
+
+                  <Button
+                    id={`add-from-target-bank-day-${day.dayNumber}`}
+                    data-testid={`add-from-target-bank-day-${day.dayNumber}`}
+                    variant="outline"
+                    size="sm"
+                    disabled={isPlanning}
+                    onClick={() => setBankPickerDay(day.dayNumber)}
+                    className="h-8 border-[#006400]/30 text-[#006400] dark:text-[#86df72] dark:border-[#86df72]/20 hover:bg-[#006400]/5 text-xs font-semibold rounded-lg flex items-center gap-1.5 shrink-0 cursor-pointer"
+                    aria-label={t.addFromTargetBank}
+                  >
+                    <Bookmark className="h-3.5 w-3.5" />
+                    <span className="hidden xs:inline">{t.addFromTargetBank}</span>
                   </Button>
 
                   <Button
@@ -961,6 +984,15 @@ export default function ItineraryCard() {
                                       </div>
                                     )}
                                     
+                                    {nearbyActivityId === act.id && (
+                                      <ActivityNearbyPanel
+                                        activity={act}
+                                        dayNumber={day.dayNumber}
+                                        disabled={isPlanning}
+                                        onClose={() => setNearbyActivityId(null)}
+                                      />
+                                    )}
+
                                     <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                       <div className="flex items-center gap-3">
                                         {act.locationName && (
@@ -983,6 +1015,23 @@ export default function ItineraryCard() {
                                         >
                                           <Info className="h-3 w-3 shrink-0" />
                                           <span>{t.askAiTips}</span>
+                                        </button>
+
+                                        <button
+                                          id={`explore-nearby-${act.id}`}
+                                          data-testid={`explore-nearby-${act.id}`}
+                                          type="button"
+                                          disabled={isPlanning}
+                                          onClick={() =>
+                                            setNearbyActivityId(
+                                              nearbyActivityId === act.id ? null : act.id
+                                            )
+                                          }
+                                          className="flex items-center gap-1 text-[10px] font-bold text-[#006400] dark:text-[#86df72] hover:underline focus:outline-none cursor-pointer min-h-12 px-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                          aria-label={t.exploreNearby}
+                                        >
+                                          <Compass className="h-3 w-3 shrink-0" />
+                                          <span>{t.exploreNearby}</span>
                                         </button>
                                       </div>
 
@@ -1026,6 +1075,17 @@ export default function ItineraryCard() {
           );
         })}
       </div>
+
+      {bankPickerDay !== null && (
+        <TargetBankDayPicker
+          dayNumber={bankPickerDay}
+          open
+          onOpenChange={(open) => {
+            if (!open) setBankPickerDay(null);
+          }}
+          disabled={isPlanning}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,13 @@
-# User Login & Persisted Trip Selections
+# User Login & Layered Trip Persistence (F-1)
 
-**Canonical spec (Spec Kit):** [`specs/001-user-login-persistence/spec.md`](../specs/001-user-login-persistence/spec.md)
+**Canonical spec:** [`specs/001-user-login-persistence/spec.md`](../specs/001-user-login-persistence/spec.md)
 
-**Related (not yet specified):** Multi-trip / multi-destination workspaces — run `/speckit-specify` separately.
+**Persistence model:**
+
+| Shared (group) | Hybrid | Personal (per signed-in user) |
+|----------------|--------|--------------------------------|
+| Itinerary, target bank, trip dates & destination, group chat, trip mode | Common packing list + personal packing list | Personal packing items/checkmarks, locale, bank votes/signals, activity-done per person |
+
+**Backlog:** [`BACKLOG.md`](../BACKLOG.md) — F-1 (this), F-2 multi-trip (spec pending).
 
 **Status:** Spec complete — ready for `/speckit-plan`.

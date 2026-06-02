@@ -27,6 +27,36 @@ describe("tripStore Zustand store", () => {
     expect(useTripStore.getState().packingList.find((i) => i.id === "p1")?.checked).toBe(true);
   });
 
+  it("should add attraction to itinerary with coordinates from target bank", () => {
+    const store = useTripStore.getState();
+    store.saveAttraction({
+      id: "poi-uffizi",
+      name: "Uffizi Gallery",
+      locationName: "Florence",
+      lat: 43.7678,
+      lng: 11.2553,
+    });
+    store.addAttractionToItinerary(2, "poi-uffizi", "14:00");
+    const day2 = useTripStore.getState().itinerary?.find((d) => d.dayNumber === 2);
+    const added = day2?.activities.find((a) => a.title === "Uffizi Gallery");
+    expect(added?.lat).toBe(43.7678);
+    expect(added?.lng).toBe(11.2553);
+    expect(added?.time).toBe("14:00");
+  });
+
+  it("should add place to itinerary via addPlaceToItinerary", () => {
+    const store = useTripStore.getState();
+    store.addPlaceToItinerary(1, {
+      time: "13:00",
+      title: "Gelato Shop",
+      locationName: "Rome",
+      lat: 41.9,
+      lng: 12.5,
+    });
+    const day1 = useTripStore.getState().itinerary?.find((d) => d.dayNumber === 1);
+    expect(day1?.activities.some((a) => a.title === "Gelato Shop" && a.lat === 41.9)).toBe(true);
+  });
+
   it("should have custom users initialized and save attractions with creator tag", () => {
     const store = useTripStore.getState();
     expect(store.users).toHaveLength(7);

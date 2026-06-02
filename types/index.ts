@@ -11,6 +11,8 @@ export interface Activity {
   title: string;
   description: string;
   locationName?: string;
+  lat?: number;
+  lng?: number;
   weatherForecast?: string;
 }
 
@@ -89,6 +91,8 @@ export interface SavedAttraction {
   name: string;
   description?: string;
   locationName?: string;
+  lat?: number;
+  lng?: number;
   rating?: number;
   image?: string;
   upvotes?: string[]; // array of user IDs who upvoted

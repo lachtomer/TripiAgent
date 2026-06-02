@@ -1,8 +1,7 @@
-# Specification Quality Checklist: User Login & Layered Trip Persistence
+# Specification Quality Checklist: Target Bank Day Picker & Activity-Nearby Discovery
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning  
 **Created**: 2026-06-02  
-**Updated**: 2026-06-02 (group-shared vs. personal packing model)  
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
@@ -32,6 +31,7 @@
 
 ## Notes
 
-- Revised SC-2 / FR model: itinerary is **group-shared**; packing is **common + personal** (not per-account isolation of itinerary).
-- Validation passed after refinement (2026-06-02).
+- User explicitly scoped **Target Bank** (not admin bank), **per-day picker**, and **places discovery by activity coordinates**; captured in FR-1–FR-17 and Assumptions.
+- `/api/places` referenced in Assumptions as existing capability; requirements describe behavior, not implementation.
+- Validation passed on first pass (2026-06-02).
 - Ready for `/speckit-plan`.

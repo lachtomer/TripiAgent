@@ -520,6 +520,8 @@ export default function AttractionSearch() {
                      name: place.name,
                      description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
                      locationName: place.name,
+                     lat: lastSearchCoords?.lat,
+                     lng: lastSearchCoords?.lng,
                      rating: place.rating,
                      image: coverImage,
                      createdBy: activeUser?.name || "Liran",

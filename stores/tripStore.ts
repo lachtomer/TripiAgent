@@ -47,6 +47,17 @@ interface TripState {
   saveAttraction: (attraction: SavedAttraction) => void;
   removeSavedAttraction: (id: string) => void;
   addAttractionToItinerary: (dayNumber: number, attractionId: string, time: string) => void;
+  addPlaceToItinerary: (
+    dayNumber: number,
+    place: {
+      time: string;
+      title: string;
+      description?: string;
+      locationName?: string;
+      lat?: number;
+      lng?: number;
+    }
+  ) => void;
   updateLogistics: (updated: Partial<TravelLogistics>) => void;
   setIsPlanning: (val: boolean) => void;
   setToast: (toast: { message: string; type: "success" | "error" | "info" } | null) => void;
@@ -259,7 +270,6 @@ export const useTripStore = create<TripState>()(
         set((state) => {
           const attraction = state.savedAttractions.find((a) => a.id === attractionId);
           if (!attraction) return {};
-          // Ensure itinerary exists; if not, initialise with default
           const baseItinerary = state.itinerary ?? DEFAULT_ITALY_ITINERARY;
           return {
             itinerary: baseItinerary.map((day) =>
@@ -273,7 +283,34 @@ export const useTripStore = create<TripState>()(
                         time,
                         title: attraction.name,
                         description: attraction.description || `Visit ${attraction.name}`,
-                        locationName: attraction.locationName,
+                        locationName: attraction.locationName ?? attraction.name,
+                        lat: attraction.lat,
+                        lng: attraction.lng,
+                      },
+                    ],
+                  }
+                : day
+            ),
+          };
+        }),
+      addPlaceToItinerary: (dayNumber, place) =>
+        set((state) => {
+          const baseItinerary = state.itinerary ?? DEFAULT_ITALY_ITINERARY;
+          return {
+            itinerary: baseItinerary.map((day) =>
+              day.dayNumber === dayNumber
+                ? {
+                    ...day,
+                    activities: [
+                      ...day.activities,
+                      {
+                        id: crypto.randomUUID(),
+                        time: place.time,
+                        title: place.title,
+                        description: place.description || `Visit ${place.title}`,
+                        locationName: place.locationName ?? place.title,
+                        lat: place.lat,
+                        lng: place.lng,
                       },
                     ],
                   }
