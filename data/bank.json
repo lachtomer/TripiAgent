@@ -1,77 +1,212 @@
 {
   "places": [
     {
-      "name": "Day 1 – Visit Sirmione"
+      "name": "Gardaland",
+      "category": "theme_park",
+      "description": "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Full day; arrive at opening.",
+      "lat": 45.4542,
+      "lng": 10.7137,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 2 – Explore Verona"
+      "name": "CanevaWorld Aqua Paradise",
+      "category": "theme_park",
+      "description": "Water park with extreme slides and pools — ideal hot-day alternative to Gardaland.",
+      "lat": 45.4817,
+      "lng": 10.7936,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 1 – Visit Sirmione"
+      "name": "Movieland Park",
+      "category": "theme_park",
+      "description": "Movie-themed rides and stunt shows — same resort area as CanevaWorld.",
+      "lat": 45.483,
+      "lng": 10.794,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 2 – Explore Verona"
+      "name": "Jungle Adventure Park",
+      "category": "adventure",
+      "description": "Tree-top ropes and zip lines near Gardaland — good half-day add-on.",
+      "lat": 45.503,
+      "lng": 10.726,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 1 – Visit Sirmione"
+      "name": "Rimbalzello Adventure Park",
+      "category": "adventure",
+      "description": "Lake-view adventure park — Tibetan bridges, zip lines, treetop courses.",
+      "lat": 45.492,
+      "lng": 10.6055,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Day 1 – Visit Sirmione"
-    },
-    {
-      "name": "Day 2 – Explore Verona"
-    },
-    {
-      "name": "Sirmione",
+      "name": "Monte Baldo Cable Car",
       "category": "nature",
-      "createdBy": "Tomer"
+      "description": "Rotating cable car from Malcesine — panoramic views; gateway to hiking and paragliding.",
+      "lat": 45.7634,
+      "lng": 10.8123,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Paragliding Tandem (Monte Baldo)",
+      "category": "adventure",
+      "description": "Tandem flights from Monte Baldo — book ahead; minimum age typically 16 with guardian.",
+      "lat": 45.816,
+      "lng": 10.852,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Malcesine",
+      "category": "town",
+      "description": "Scaliger castle old town — combine with Monte Baldo cable car or lake ferry.",
+      "lat": 45.7628,
+      "lng": 10.8115,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Riva del Garda — SUP & Water Sports",
+      "category": "water_sports",
+      "description": "SUP, kayak, wakeboard rentals — active lake day at the north shore.",
+      "lat": 45.8858,
+      "lng": 10.8411,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Torbole — Windsurfing & Sailing",
+      "category": "water_sports",
+      "description": "Wind capital of Lake Garda — lessons and rentals for windsurf and sailing.",
+      "lat": 45.8708,
+      "lng": 10.8756,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Desenzano — Self-Drive Boat Rental",
+      "category": "water_sports",
+      "description": "Rent a small boat (no license, up to 40 HP) — more engaging than a guided tour.",
+      "lat": 45.4711,
+      "lng": 10.5358,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Natura Viva Safari Park",
+      "category": "nature",
+      "description": "Safari park and zoo near Verona — strong appeal for teens; ~45 min from Monzambano.",
+      "lat": 45.4431,
+      "lng": 10.8706,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Vittoriale degli Italiani",
+      "category": "culture",
+      "description": "Eccentric poet's estate with a warship in the garden — quirky hit with older teens.",
+      "lat": 45.6236,
+      "lng": 10.5672,
+      "createdBy": "TripiAgent"
     },
     {
       "name": "Verona Arena",
-      "lat": 45.44,
-      "lng": 10.99
+      "category": "culture",
+      "description": "1st-century Roman amphitheater — scheduled Jun 28 day trip.",
+      "lat": 45.439,
+      "lng": 10.9944,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 1 – Visit Sirmione"
+      "name": "Sirmione — Scaligero Castle",
+      "category": "culture",
+      "description": "Medieval castle on the peninsula — keep visit short if teens prefer the spa.",
+      "lat": 45.4928,
+      "lng": 10.6085,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "Day 2 – Explore Verona"
+      "name": "Aquaria Thermal Spa",
+      "category": "wellness",
+      "description": "Lakeside thermal pools — group booking Jun 29; book in advance.",
+      "lat": 45.4903,
+      "lng": 10.6084,
+      "createdBy": "TripiAgent"
     },
     {
-      "name": "New Place"
+      "name": "Borghetto sul Mincio",
+      "category": "nature",
+      "description": "Medieval watermill village — riverside walk ~1 hr. Jul 2 nature day.",
+      "lat": 45.3533,
+      "lng": 10.7378,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Parco Giardino Sigurtà",
+      "category": "nature",
+      "description": "Flat garden paths and flowers — gentle ~2 hr nature walk.",
+      "lat": 45.3628,
+      "lng": 10.7347,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Serravalle Designer Outlet",
+      "category": "shopping",
+      "description": "Designer outlet shopping ~3 hrs — Jul 3 en route to Milan.",
+      "lat": 44.6533,
+      "lng": 8.7847,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Trattoria del Ponte",
+      "category": "dining",
+      "description": "Welcome dinner — lake fish and local pasta in Monzambano.",
+      "lat": 45.337,
+      "lng": 10.528,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Ristorante Pace",
+      "category": "dining",
+      "description": "Desenzano waterfront — fresh lake fish and risotto.",
+      "lat": 45.4711,
+      "lng": 10.5358,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Trattoria Al Pompiere",
+      "category": "dining",
+      "description": "Classic Verona grill — pollo alla griglia.",
+      "lat": 45.443,
+      "lng": 10.998,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Locanda al Bersagliere",
+      "category": "dining",
+      "description": "Sirmione castle area — lake-view lunch.",
+      "lat": 45.491,
+      "lng": 10.607,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Taverna del Silenzio",
+      "category": "dining",
+      "description": "Famous Tortellini di Valeggio — book ahead in Borghetto.",
+      "lat": 45.353,
+      "lng": 10.735,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Ristorante Vecchia Malcesine",
+      "category": "dining",
+      "description": "Pre-cable-car lunch in Malcesine old town.",
+      "lat": 45.764,
+      "lng": 10.809,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Trattoria del Nuovo Macello",
+      "category": "dining",
+      "description": "Milan farewell steak dinner. Alternative: Spontini pizza.",
+      "lat": 45.452,
+      "lng": 9.175,
+      "createdBy": "TripiAgent"
     }
   ]
 }

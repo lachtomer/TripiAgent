@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, MapPin, ArrowRight, MessageSquare, Bookmark } from "lucide-react";
+import { Star, MapPin, ArrowRight, Bookmark } from "lucide-react";
 import { useTripStore } from "@/stores/tripStore";
 import Image from "next/image";
 import { buildGoogleMapsUrl } from "@/lib/places";
@@ -148,10 +148,6 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
   const handlePlaceTap = (place: { name: string }) => {
     const prompt = `Tell me more about ${place.name}. What should I know before visiting? Any tips?`;
     setPendingPrompt(prompt);
-    router.push("/chat");
-  };
-
-  const handleFABClick = () => {
     router.push("/chat");
   };
 
@@ -429,16 +425,6 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
           )}
         </div>
       </section>
-
-      {/* Floating Action Button (FAB) */}
-      <button
-        id="contextual-chat-fab"
-        onClick={handleFABClick}
-        className="fixed end-6 bottom-24 w-14 h-14 bg-[#006400] dark:bg-[#86df72] text-white dark:text-zinc-950 rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-40 cursor-pointer border border-[#86df72]/10 hover:shadow-2xl"
-        aria-label="Open AI chat guide"
-      >
-        <MessageSquare className="h-6 w-6" />
-      </button>
     </div>
   );
 }

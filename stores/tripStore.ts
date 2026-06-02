@@ -3,6 +3,7 @@ import { DEFAULT_ITALY_ITINERARY } from "@/components/ItineraryCard";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Activity, ChatMessage, ItineraryDay, LocationDetails, PackingItem, SavedAttraction, TravelLogistics, MorningBriefing, SerendipitySuggestion, UserProfile } from "@/types";
 import { isBankAdminUser } from "@/lib/bankPermissions";
+import { LAKE_GARDA_TEEN_TARGET_BANK } from "@/lib/lakeGardaTargetBank";
 
 interface TripState {
   location: LocationDetails | null;
@@ -111,7 +112,7 @@ export const useTripStore = create<TripState>()(
       pendingPrompt: null,
       unreadChat: false,
       tripStartDate: "2026-06-25",
-      savedAttractions: [],
+      savedAttractions: LAKE_GARDA_TEEN_TARGET_BANK,
       logistics: initialLogistics,
       isPlanning: false,
       toast: null,
@@ -341,7 +342,7 @@ export const useTripStore = create<TripState>()(
           pendingPrompt: null,
           unreadChat: false,
           tripStartDate: "2026-06-25",
-          savedAttractions: [],
+          savedAttractions: LAKE_GARDA_TEEN_TARGET_BANK,
           logistics: initialLogistics,
           isPlanning: false,
           toast: null,

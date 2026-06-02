@@ -18,7 +18,10 @@ const ESSENTIALS_ITEMS: ChecklistItem[] = [
   { id: "e3", task: "Villa Eunice Check-in Keys", subtext: "Monzambano base keys and lockbox instructions saved." },
   { id: "e4", task: "Portable CO/Smoke Detector", subtext: "⚠️ Villa Eunice has no detectors — highly recommended to bring one." },
   { id: "e5", task: "Milan Area C / ZTL Registration", subtext: "Required fee (€7.50) for entry before 19:30 on Jul 3." },
-  { id: "e6", task: "Aquaria Thermal Spa Booking", subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 29." }
+  { id: "e6", task: "Aquaria Thermal Spa Booking", subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 29." },
+  { id: "e7", task: "Gardaland Tickets", subtext: "Buy online for Jun 30. Consider Fast Pass if peak season." },
+  { id: "e8", task: "Taverna del Silenzio Reservation", subtext: "Book lunch in Borghetto for Jul 2 — famous tortellini, fills up in summer." },
+  { id: "e9", task: "Desenzano Boat Rental", subtext: "Reserve self-drive boat for Jun 27 at 11:00 (no license, up to 40 HP)." },
 ];
 
 export default function EssentialsChecklist() {

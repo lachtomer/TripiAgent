@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useTripStore } from "./tripStore";
+import { LAKE_GARDA_TEEN_TARGET_BANK } from "@/lib/lakeGardaTargetBank";
 
 describe("tripStore Zustand store", () => {
   beforeEach(() => {
@@ -107,18 +108,19 @@ describe("tripStore Zustand store", () => {
     };
 
     store.saveAttraction(mockAttraction);
-    expect(useTripStore.getState().savedAttractions).toHaveLength(1);
+    const seededCount = LAKE_GARDA_TEEN_TARGET_BANK.length;
+    expect(useTripStore.getState().savedAttractions).toHaveLength(seededCount + 1);
 
     // Switch to User 2 (Ilanit, role: user) and attempt to delete -> should fail
     useTripStore.getState().setCurrentUser("u2");
     useTripStore.getState().removeSavedAttraction("place-garda");
-    expect(useTripStore.getState().savedAttractions).toHaveLength(1);
+    expect(useTripStore.getState().savedAttractions).toHaveLength(seededCount + 1);
     expect(useTripStore.getState().toast?.type).toBe("error");
 
     // Switch to User 7 (Tomer, role: admin) and delete -> should succeed
     useTripStore.getState().setCurrentUser("u7");
     useTripStore.getState().removeSavedAttraction("place-garda");
-    expect(useTripStore.getState().savedAttractions).toHaveLength(0);
+    expect(useTripStore.getState().savedAttractions).toHaveLength(seededCount);
     expect(useTripStore.getState().toast?.type).toBe("success");
   });
 
