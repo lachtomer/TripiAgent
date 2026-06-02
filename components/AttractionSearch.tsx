@@ -11,6 +11,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { type PlaceDetail } from "@/lib/places";
 import { cn } from "@/lib/utils";
 import { useLocation } from "@/hooks/useLocation";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { DEFAULT_ITALY_ITINERARY } from "./ItineraryCard";
 import { useTranslation } from "@/lib/translations";
 
@@ -46,12 +47,13 @@ export default function AttractionSearch() {
   const currentUser = useTripStore((s) => s.currentUser);
   const users = useTripStore((s) => s.users);
   const activeUser = users.find((u) => u.id === currentUser);
+  const isHydrated = useIsHydrated();
 
   useEffect(() => {
-    if (itinerary === null) {
+    if (isHydrated && itinerary === null) {
       setItinerary(DEFAULT_ITALY_ITINERARY);
     }
-  }, [itinerary, setItinerary]);
+  }, [isHydrated, itinerary, setItinerary]);
 
   const { location: userLocation, refreshLocation, loading: locationLoading } = useLocation();
   const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
@@ -278,6 +280,7 @@ export default function AttractionSearch() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="h-9.5 pe-8 ps-3 text-xs sm:text-sm bg-muted/30 focus-visible:ring-1 focus-visible:ring-[#006400] w-full"
+                data-testid="search-input"
               />
               <button
                 type="button"
@@ -299,6 +302,7 @@ export default function AttractionSearch() {
               disabled={loading || !query.trim()}
               size="sm"
               className="h-9.5 bg-[#006400] hover:bg-[#004d00] dark:bg-[#86df72] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 px-4 gap-1.5 shrink-0 rounded-xl"
+              data-testid="search-button"
             >
               {loading ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />

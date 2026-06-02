@@ -1,11 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Step 4i + 4j: Packing List & BottomNav Polish", () => {
+  test.setTimeout(45000);
+
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage to start fresh
+    test.setTimeout(60000);
     await page.goto("http://localhost:9001/pack");
     await page.evaluate(() => localStorage.removeItem("tripiagent-trip-storage"));
-    await page.reload();
+    await page.reload({ waitUntil: "domcontentloaded" });
   });
 
   test("4i-1: Pack page renders with heading and generate button", async ({ page }) => {

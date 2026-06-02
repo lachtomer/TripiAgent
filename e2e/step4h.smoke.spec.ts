@@ -91,12 +91,12 @@ test.describe("Step 4h — Itinerary Planner", () => {
     await page.locator("#new-activity-submit-1").click();
 
     // Verify it appears in list
-    await expect(page.locator("text=Gelato Stroll")).toBeVisible();
+    await expect(page.locator("text=Gelato Stroll")).toBeVisible({ timeout: 10000 });
 
     // Expand the newly added activity under Day 1
     const lastRow = page.locator("#day-card-1 [id^='activity-row-']").last();
     await lastRow.locator("[id^='activity-header-']").click();
-    await expect(lastRow.locator("[id^='activity-details-']")).toContainText("Grab a late night gelato by the fountain.");
+    await expect(lastRow.locator("[id^='activity-details-']")).toContainText("Grab a late night gelato by the fountain.", { timeout: 10000 });
   });
 
   test("5. Delete an activity", async ({ page }) => {

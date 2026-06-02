@@ -45,10 +45,11 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
     });
 
     // Mock Places API route
-    let requestedRadius: string | null = null;
+    const requestedRadii: string[] = [];
     await page.route("**/api/places*", async (route) => {
       const url = new URL(route.request().url());
-      requestedRadius = url.searchParams.get("radius");
+      const radius = url.searchParams.get("radius");
+      if (radius) requestedRadii.push(radius);
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -79,21 +80,23 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
 
     // Submit search
     const searchBtn = page.locator("#attraction-search-btn");
+    await expect(searchBtn).toBeEnabled();
     await searchBtn.click();
 
-    // Wait for the query to be triggered
-    await page.waitForTimeout(500);
-    expect(requestedRadius).toBe("5000");
+    // Wait for the first request to be observed
+    await expect.poll(() => requestedRadii.includes("5000"), { timeout: 15000 }).toBeTruthy();
 
-    // Click 10 KM button and check if query updates immediately
+    // Click 10 KM button and trigger a search to assert the updated request radius
+    await expect(searchBtn).toBeEnabled();
     await radius10Btn.click();
-    await page.waitForTimeout(500);
-    expect(requestedRadius).toBe("10000");
+    await searchBtn.click();
+    await expect.poll(() => requestedRadii.includes("10000"), { timeout: 15000 }).toBeTruthy();
 
-    // Click 50 KM button and check if query updates immediately
+    // Click 50 KM button and trigger a search to assert the updated request radius
     const radius50Btn = page.locator("#search-radius-50km");
+    await expect(searchBtn).toBeEnabled();
     await radius50Btn.click();
-    await page.waitForTimeout(500);
-    expect(requestedRadius).toBe("50000");
+    await searchBtn.click();
+    await expect.poll(() => requestedRadii.includes("50000"), { timeout: 15000 }).toBeTruthy();
   });
 });

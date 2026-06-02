@@ -8,9 +8,10 @@ const BASE = "http://localhost:9001";
 
 test.describe("Step 15 — Hebrew & RTL Support", () => {
   test("1. Verify lang toggle switches HTML dir/lang attributes and translations load correctly", async ({ page }) => {
+    test.setTimeout(45000);
     // 1. Go to Home page
     await page.goto(BASE);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     // 2. Check initial English state
     const html = page.locator("html");
@@ -21,23 +22,28 @@ test.describe("Step 15 — Hebrew & RTL Support", () => {
     await expect(page.locator("text=Explore & Search Italy")).toBeVisible();
 
     // 3. Switch language to Hebrew
-    const toggleBtn = page.locator("#lang-toggle-btn");
+    const toggleBtn = page.locator("[data-testid=\"lang-toggle\"]");
     await expect(toggleBtn).toBeVisible();
     await toggleBtn.click();
 
     // 4. Verify HTML is updated to Hebrew RTL
-    await expect(html).toHaveAttribute("lang", "he");
+    await expect(html).toHaveAttribute("lang", "he", { timeout: 5000 });
     await expect(html).toHaveAttribute("dir", "rtl");
 
+    // Wait for translation readiness signal (locale applied on document + handler)
+    await expect(page.locator('[data-testid="translations-loaded"][data-locale="he"]')).toBeAttached({ timeout: 5000 });
+
     // Verify translated Hebrew header
-    await expect(page.locator("text=טיול וחיפוש באיטליה")).toBeVisible();
+    await expect(page.locator("text=טיול וחיפוש באיטליה")).toBeVisible({ timeout: 5000 });
 
     // 5. Navigate to Itinerary page and verify translations and LTR isolation
     const itineraryNav = page.locator("#nav-link-itinerary");
     await itineraryNav.click();
-    
-    // Check that Hebrew labels are loaded in Itinerary Card
-    await expect(page.locator("text=תאריך התחלת הטיול:")).toBeVisible();
+    await page.waitForURL("**/itinerary");
+    await page.waitForLoadState("domcontentloaded");
+
+    // Check that Hebrew labels are loaded in Itinerary Card (needs hydration time)
+    await expect(page.getByText("תאריך התחלת הטיול:")).toBeVisible({ timeout: 15000 });
 
     // Verify that the Day 1 activities list exists
     const firstActivityRow = page.locator("#activity-row-a1");
@@ -68,7 +74,8 @@ test.describe("Step 15 — Hebrew & RTL Support", () => {
     // 7. Navigate to Packing page and verify Hebrew categories
     const packNav = page.locator("#nav-link-pack");
     await packNav.click();
-    await expect(page.locator("text=רשימת אריזה")).toBeVisible();
+    await page.waitForURL("**/pack");
+    await expect(page.getByText("רשימת אריזה")).toBeVisible({ timeout: 15000 });
     await expect(page.locator("text=חיוני").first()).toBeVisible();
   });
 });

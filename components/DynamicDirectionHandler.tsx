@@ -11,5 +11,12 @@ export default function DynamicDirectionHandler() {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  return null;
+  return (
+    <div
+      data-testid="translations-loaded"
+      data-locale={locale}
+      style={{ display: "none" }}
+      aria-hidden="true"
+    />
+  );
 }

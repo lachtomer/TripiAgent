@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useTranslation } from "@/lib/translations";
+import { isBankAdminUser } from "@/lib/bankPermissions";
 
 // Fallback in case itinerary is not loaded yet
 const MOCK_DAYS = Array.from({ length: 10 }, (_, i) => ({
@@ -43,7 +44,7 @@ export default function SavedAttractionsList() {
   const voteAttraction = useTripStore((state) => state.voteAttraction);
 
   const activeUser = users.find((u) => u.id === currentUser);
-  const isAdmin = activeUser?.role === "admin";
+  const isAdmin = isBankAdminUser(activeUser);
   const { t, locale } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -120,6 +121,7 @@ export default function SavedAttractionsList() {
 
   return (
     <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+      <span data-testid="saved-attractions-ready" className="sr-only">ready</span>
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}

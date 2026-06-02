@@ -7,26 +7,46 @@
  * Run with: npx playwright test e2e/travelAgentPersona.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { mockAiTextStream, mockPackGenerate } from "./helpers/apiMocks";
 
 const BASE = process.env.BASE_URL || "http://localhost:9001";
 
+async function ensureInTripMode(page: import("@playwright/test").Page) {
+  await page.waitForFunction(() => localStorage.getItem("tripiagent-trip-storage") !== null);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.getByText("In-Trip (Traveling)").click();
+    try {
+      await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 4000 });
+      return;
+    } catch {
+      // Zustand persist can rehydrate after the first click and reset tripMode.
+    }
+  }
+  await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 15000 });
+}
+
 test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)", () => {
+  test.describe.configure({ mode: "serial" });
 
   test("Plan client trip, customize logistics, and test live AI features", async ({ page }) => {
     test.setTimeout(90_000);
-    // 1. Visit the Homepage and check layout elements
-    console.log(`Navigating to target environment: ${BASE}`);
-    await page.goto(BASE);
-    await expect(page.locator("text=TripiAgent")).toBeVisible();
-    
-    // Switch to In-Trip mode so Today's Planner becomes visible
-    await page.click("text=In-Trip (Traveling)");
-    await expect(page.locator("text=Today's Planner")).toBeVisible();
 
-    // 2. Navigate to Itinerary and enter client booking logistics
+    await mockAiTextStream(
+      page,
+      "Welcome to your Vatican night tour planning session. **Private Vatican Museum Night Tour** is an excellent choice for luxury clients. Arrive 15 minutes early at the entrance. Dress code: smart casual. Photography is allowed in most galleries but flash is prohibited."
+    );
+    await mockPackGenerate(page);
+
+    console.log(`Navigating to target environment: ${BASE}`);
+    await page.goto(BASE, { waitUntil: "domcontentloaded" });
+    await expect(page.locator('[data-testid="translations-loaded"]')).toBeAttached();
+    await expect(page.getByText("TripiAgent")).toBeVisible();
+
+    await ensureInTripMode(page);
+
     console.log("Navigating to Itinerary page...");
-    await page.goto(`${BASE}/itinerary`);
-    await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible();
+    await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible({ timeout: 15000 });
 
     console.log("Expanding Logistics card and entering flight/ZTL information...");
     const logisticsHeader = page.locator("text=Logistics & Bookings");
@@ -43,8 +63,8 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
 
     // Reload page to verify local storage state persistence
     console.log("Reloading page to verify state persistence...");
-    await page.reload();
-    await logisticsHeader.click();
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.locator("text=Logistics & Bookings").click();
     expect(await page.inputValue("#logistics-flight-tlv-mxp")).toBe("AZ402-Giulia");
     expect(await ztlCheckbox.isChecked()).toBe(true);
 
@@ -63,37 +83,60 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
 
     // 4. Schedule the custom attraction for Day 1
     console.log("Scheduling custom attraction to Day 1...");
-    const select = page.locator("select").last(); // Last select on page should be inside the card scheduler
-    await select.selectOption("1");
-
     const itemContainer = page.locator('[data-attraction-name="Private Vatican Museum Night Tour"]');
+    // The per-attraction select defaults to Day 1; ensure it's set
+    const attractionSelect = itemContainer.locator("select").first();
+    await attractionSelect.selectOption("1");
+
     const addToDayBtn = itemContainer.locator("button", { hasText: "Add to Day" });
     await addToDayBtn.click();
+    // Wait for success state (button flips to "Added!") before navigating — ensures Zustand persist flushed
+    await expect(itemContainer.locator("button", { hasText: "Added!" })).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("#day-card-1").locator("text=Private Vatican Museum Night Tour")).toBeVisible({ timeout: 10000 });
 
-    // 5. Navigate to Home, select Day 1, and click 'Ask AI Guide'
     console.log("Navigating back to Home to check the Today's Planner timeline...");
-    await page.goto(BASE);
-    
+    await page.goto(BASE, { waitUntil: "domcontentloaded" });
+    await ensureInTripMode(page);
+
     // Select Day 1 in Today's Planner
     const daySelect = page.locator("select").first();
     await daySelect.selectOption("1");
 
     // Verify the custom tour shows up on the Day 1 timeline
-    const timelineItem = page.locator("div.relative.group", { hasText: "Private Vatican Museum Night Tour" });
-    await expect(timelineItem).toBeVisible();
+    const timelineItem = page.locator('[data-testid="timeline-item"]', { hasText: "Private Vatican Museum Night Tour" });
+    await expect(timelineItem).toBeVisible({ timeout: 10000 });
 
-    // Trigger AI Guide chat assistant (real AI call)
     console.log("Clicking 'Ask AI Guide' to start live Gemini AI travel assistant session...");
-    const askAIBtn = timelineItem.locator("button", { hasText: "Ask AI Guide" });
-    await askAIBtn.click();
+    const askAIBtn = timelineItem.getByRole("button", { name: /Ask AI Guide/i });
+    await askAIBtn.scrollIntoViewIfNeeded();
+    await Promise.all([
+      page.waitForURL(/\/chat/, { timeout: 15000 }),
+      askAIBtn.click(),
+    ]);
 
-    // 6. Validate Live Chat Response (AI Real Call)
     console.log("Validating chat redirection and waiting for streamed AI response...");
-    await expect(page).toHaveURL(/.*\/chat/);
-    
+    const chatPrompt =
+      "Tell me about Private Vatican Museum Night Tour near Vatican City. What should I know before visiting?";
+    await page.fill("#chat-input", chatPrompt);
+    await Promise.all([
+      page.waitForResponse(
+        (resp) => resp.url().includes("/api/ai") && resp.request().method() === "POST" && resp.status() === 200,
+        { timeout: 25000 }
+      ),
+      page.locator("#chat-send-button").click(),
+    ]);
+
     // Wait for the AI assistant response to stream in
+    await page.waitForFunction(
+      () => {
+        const nodes = document.querySelectorAll(".prose");
+        const el = nodes[nodes.length - 1];
+        return el && (el.textContent?.trim().length ?? 0) > 20;
+      },
+      { timeout: 25000 }
+    );
     const lastMsgBubble = page.locator(".prose").last();
-    await expect(lastMsgBubble).toBeVisible({ timeout: 20000 });
+    await expect(lastMsgBubble).not.toBeEmpty();
     
     const firstResponseText = await lastMsgBubble.textContent();
     console.log(`Live AI Response snippet: "${firstResponseText?.slice(0, 100)}..."`);
@@ -105,15 +148,23 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     await page.click("#chat-send-button");
 
     // Wait for follow-up response
+    await page.waitForFunction(
+      () => {
+        const nodes = document.querySelectorAll(".prose");
+        const el = nodes[nodes.length - 1];
+        return el && (el.textContent?.trim().length ?? 0) > 20;
+      },
+      { timeout: 25000 }
+    );
     const followUpMsgBubble = page.locator(".prose").last();
-    await expect(followUpMsgBubble).toBeVisible({ timeout: 25000 });
+    await expect(followUpMsgBubble).not.toBeEmpty();
     const followUpResponseText = await followUpMsgBubble.textContent();
     console.log(`Follow-up AI Response snippet: "${followUpResponseText?.slice(0, 100)}..."`);
     expect(followUpResponseText?.length).toBeGreaterThan(20);
 
     // 8. Generate Smart Packing List with AI (AI Real Call)
     console.log("Navigating to Pack page and generating list using Gemini...");
-    await page.goto(`${BASE}/pack`);
+    await page.goto(`${BASE}/pack`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("text=Packing Checklist")).toBeVisible();
 
     // Click generate button

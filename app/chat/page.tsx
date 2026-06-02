@@ -13,9 +13,9 @@ export default function ChatPage() {
   }, [setUnreadChat]);
 
   return (
-    <div className="flex flex-col flex-1 p-4 space-y-4">
+    <div className="flex flex-col flex-1 p-4 space-y-4" data-testid="chat-page">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Travel Chat</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground" data-testid="chat-heading">Travel Chat</h1>
         <p className="text-xs text-muted-foreground mt-0.5">AI local recommendations &amp; translation helper</p>
       </div>
 

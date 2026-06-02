@@ -1,79 +1,64 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# AGENTS.md
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## Project‑wide Operating System for Antigravity Agents
 
-# TripiAgent — Agent instructions (all tools)
+### Core Principles (must never be violated)
+1. **No unnecessary user interaction** – agents ask questions *only* when a product decision is required.
+2. **Deterministic fixes over cosmetic work‑arounds** – never hide a bug behind a flaky wait or a lint‑disable.
+3. **Stable selectors & explicit readiness signals** – E2E tests must use semantic `data-testid`, ARIA roles, or visible text, never pure CSS class selectors.
+4. **Mock external services** – AI, Places, or any third‑party API is intercepted with a fixture unless the task explicitly states a live‑integration validation.
+5. **Never claim READY FOR GO‑LIVE** unless **lint**, **unit tests**, **E2E**, and **build** are all green.
+6. **Never claim DEPLOYED** without a verified Vercel (or Firebase) URL and a successful smoke check.
+7. **Self‑heal** – for lint / build failures agents automatically attempt safe mechanical fixes (type errors, unused vars, missing imports, broken selectors, missing mocks, deterministic waits). If fixing requires a business decision the agent stops and asks the precise question.
 
-## Project contract (paste at start of every Antigravity / Cursor task)
+### Failure Classification (applied in order)
+1. Deterministic code bug
+2. Flaky timing / race condition
+3. External dependency nondeterminism
+4. Environment / config issue
+5. Test bug / brittle assertion
+6. Mixed cause
 
+### Fixed Execution Cycle (used by all workflows)
+1. **Reproduce** – run the failing command, capture logs.
+2. **Triage** – classify using the table above.
+3. **Root‑cause hypothesis** – produce a concise hypothesis.
+4. **Implement minimal safe fix** – edit app code *or* test code according to the classification.
+5. **Run targeted test(s)** – only the affected spec(s) / unit test.
+6. **Self‑heal safe failures** – if the fix introduced lint or build warnings, apply mechanical corrections automatically.
+7. **Run broader validation** – `npm run lint && npm test && npm run test:e2e && npm run build`.
+8. **Report** – structured short report (see *Report Format* below).
+
+### Report Format
 ```
-PROJECT: TripiAgent — mobile AI travel PWA for Italy.
-PATH: C:\tripiagent (same as C:\TripiAgent on Windows)
+1. Triage classification: <type>
+2. Root cause: <summary>
+3. Files changed:
+   - <file path>
+4. Fix applied: <concise description>
+5. Tests run: <list of commands / specs>
+6. Failures remaining: <none | list>
+7. Risk level: <low | medium | high>
+8. Final status: <E2E STABLE | E2E STILL FLAKY>
+``` 
 
-STACK: Next.js App Router, TS, Tailwind, shadcn (Slate), Zustand+persist, @ducanh2912/next-pwa
-DEPLOY: Vercel.
-LOCAL DEV PORT: 9001 only — http://localhost:9001
-API keys server-only. No DB v1. Routes: /, /chat, /itinerary, /pack + /api/*
-Accent #006400. Mobile 390px. Dark mode (next-themes).
+### Workflows
+- **/triage-fix** – executes the full execution cycle for any failing spec, lint, or build error.
+- **/dev-loop** – orchestrates the repeatable development loop (design → plan → implement → targeted checks → self‑heal → broader validation → pause).
+- **/prod-check** – runs final production verification after a successful dev loop (lint → unit → e2e → build → deployment smoke).
 
-WORK: One step only. List files changed. Wait for my "confirmed" before next step.
-```
+### Skills (auto‑activated by workflows)
+- `triage-and-fix` – classification, root‑cause analysis, mechanical fixes.
+- `e2e-stabilization` – selector hygiene, deterministic waits, fixture mocking.
+- `production-readiness` – env/config validation, CI wiring, build checks.
+- `design-implement-verify` – design‑understand, plan creation, batch implementation.
 
-## Human workflow (non-negotiable)
-- **One step at a time.** Finish a single step or sub-step (e.g. 4a only), list files changed, then **STOP** and wait for: `Step X confirmed` or feedback.
-- **Correctness over speed.** Read existing code before editing; no guessed APIs.
-- **Handoff to Cursor:** After each Antigravity chunk, leave a short `HANDOFF.md` update (see skill `handoff-to-cursor.md`).
+### Permissions Guidance
+- Safe install/access requests (e.g., npm packages, file reads) should be auto‑approved where Antigravity UI allows it.
+- Require manual approval only for:
+  * Destructive actions (deleting files, database resets).
+  * Credential or secret handling.
+  * Business‑logic changes that could alter user‑facing behavior.
 
-## Spec-Driven Development (SDD) & Spec-Kit (Required)
-- **Specification Guard:** All changes or new prompts MUST start with a specification in the `.specify/` folder. If prompted to implement a feature without an active spec, you must refuse and request a spec.
-- **Spec-Kit Command Mapping:**
-  - `/speckit.constitution`: Read and review the `.specify/constitution.md` file.
-  - `/speckit.specify`: Create/edit functional spec `.specify/<feature_name>.md`.
-  - `/speckit.plan`: Create/edit implementation plan `implementation_plan.md` (or `.specify/plans/`).
-  - `/speckit.tasks`: Create/edit checklist in `task.md`.
-  - `/speckit.implement`: Implement changes step-by-step.
-
-
-## Stack (do not drift)
-- Next.js App Router, TypeScript, Tailwind, shadcn (Slate), Zustand + persist
-- PWA: `@ducanh2912/next-pwa` or Serwist — production only
-- **Deploy: Vercel** (not Firebase App Hosting, not Vercel SPA rewrite to `/`)
-- **Local Dev Port**: 9001 only — http://localhost:9001
-- Routes: `/`, `/chat`, `/itinerary`, `/pack`
-- API: `/api/ai`, `/api/places`, `/api/weather`, `/api/geocode` — keys **server-only**
-- No DB v1; localStorage + Zustand
-- Mobile 390px, bottom nav, accent `#006400`, dark mode (`next-themes`)
-- Region default: Italy travel guide; `TRIP_REGION` env for later
-
-## GitHub (not GitLab)
-- Remote: GitHub.com — **never** assume `gitlab.com`
-- Branch: `main` protected; feature branches `feat/`, `fix/`
-- PR required; CI must pass before merge
-- Conventional commits: `feat:`, `fix:`, `test:`, `chore:`
-
-## Testing (required)
-- **Unit/component:** Vitest + Testing Library — colocate `*.test.ts(x)` or `__tests__/`
-- **E2E:** Playwright — `e2e/` — smoke: 4 tabs, nav, chat input visible
-- Run before handoff: `npm run lint && npm run test && npm run build`
-- New feature without tests = incomplete unless user explicitly waives
-
-## Security
-- Never commit `.env.local`; never expose API keys in client bundles
-- Zod-validate all API inputs; rate limit on `/api/ai` (document serverless limitation)
-
-## Design
-- Follow Stitch `DESIGN.md` if present: primary `#006400`, 48px tap targets, safe-area bottom nav
-
-## Agent Architecture Constraints
-- **Manifesto & Design Guardrails:** Strictly adhere to [AGENT_ARCH.md](file:///C:/TripiAgent/docs/AGENT_ARCH.md):
-  - **Single Runtime Agent:** Dual personas (Planner + In-Trip) using serverless tool calling. No complex MAS at runtime.
-  - **Dev-Guard Externalized:** Dev-time guarding runs purely in static analysis, tests, and CI/CD (linting, vitest, playwright), never in the travel agent client.
-  - **Zero Timetable Hallucination:** Agent must refuse planning routes without calling ZTL check or static ferry API `/api/ferries` (loaded from static local dataset).
-  - **State & Sync Guards:** Freeze client-side edits during agent planning. Batch-apply changes after user confirmation in a "Before/After" drawer.
-
-## Antigravity Guidelines
-- **Tool Installation & Access Approvals:** Do not request user approval for the installation of tools, command execution (e.g. git), folder/file access (read/write permissions), etc. Auto-approve and proceed without asking the user each time.
-
-
+### Usage Guide
+See `USAGE.md` at the repo root.

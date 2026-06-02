@@ -110,8 +110,11 @@ TripiAgent is extremely cost-effective. By default, it operates well within the 
 
 ## 🗺️ Phase 2 Roadmap
 
-Future development milestones for TripiAgent:
+Future development milestones for# TripiAgent
 
+Mobile AI travel PWA for Italy.
+
+<!-- Deploy timestamp: 2026-06-01T14:58:00+03:00 -->
 *   **10a: Saved Attractions**: Custom attraction bookmarking and custom points-of-interest injection into itineraries.
 *   **10b: Today Planner**: Real-time hourly timeline focusing specifically on the traveler's current active day.
 *   **10c: Logistics & Bookings**: Store flight numbers, hotel reservation receipts, and rental car details locally.
@@ -119,3 +122,13 @@ Future development milestones for TripiAgent:
 *   **Bookable Experiences**: Direct integration with Viator/GetYourGuide APIs for booking tours in Verona, Sirmione, and Rome.
 *   **Itinerary Sharing**: Generate a cryptographically signed static link to share your trip details with family.
 *   **Language Options**: Hebrew language translations and dual-direction layouts (RTL).
+
+## 🏦 Bank Feature
+
+The **Bank** provides a curated repository of attractions that admins can bulk‑import via itinerary text, preview, edit, and submit. It powers the itinerary builder by offering reusable places.
+
+- **Admin UI**: `/admin/bank` page with textarea, generate button, preview table, and submit.
+- **API**: `POST /api/bank/places` to create entries (validated with Zod) and `GET /api/bank/places` to retrieve them (cached 5 min).
+- **State**: Zustand store `bankStore` persisted to `localStorage` under `bank-store`.
+- **Design**: Mobile‑first, 390 px width, accent color `#006400` for badges and buttons, accessible aria labels.
+- **Testing**: Unit tests for API routes, parser utility, store persistence; Playwright smoke test `e2e/bank/itinerary_import.smoke.spec.ts` validates the full flow.

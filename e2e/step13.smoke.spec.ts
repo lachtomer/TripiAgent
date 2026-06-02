@@ -3,14 +3,19 @@
  * Run with: npx playwright test e2e/step13.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { mockMilanRestaurantSearch } from "./helpers/apiMocks";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
 
   test("1. Parse 'Pizza in Milan', query places, check warning badge, and direct timeline bind", async ({ page }) => {
+    test.setTimeout(60000);
+    await mockMilanRestaurantSearch(page);
+
     // 1. Go to Home page
     await page.goto(BASE);
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.locator("text=Explore & Search Italy")).toBeVisible();
 
     // 2. Type 'Pizza in Milan' in search input
@@ -22,8 +27,9 @@ test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
     const diningBtn = page.locator("button:has-text('Dining')");
     await diningBtn.click();
 
-    // 4. Click Search and wait for results
+    // 4. Click Search — wait for button to be enabled first (depends on store hydration)
     const searchBtn = page.locator("#attraction-search-btn");
+    await expect(searchBtn).toBeEnabled({ timeout: 10000 });
     await searchBtn.click();
     
     // Wait for the loading spinner/skeletons to disappear and result cards to render
@@ -50,11 +56,12 @@ test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
     await day2Option.click();
 
     // 8. Verify the Toast alert displays confirming addition
-    await expect(page.locator(`text=Added "${placeName}" to Day 2`)).toBeVisible();
+    await expect(page.getByTestId("toast-message")).toContainText(`Added "${placeName}" to Day 2`, { timeout: 10000 });
 
     // 9. Navigate to Itinerary page and verify the activity is listed under Day 2
     await page.goto(`${BASE}/itinerary`);
+    await page.waitForLoadState("domcontentloaded");
     const day2Card = page.locator("#day-card-2");
-    await expect(day2Card.locator(`text=${placeName}`).first()).toBeVisible();
+    await expect(day2Card.locator(`text=${placeName}`).first()).toBeVisible({ timeout: 15000 });
   });
 });

@@ -19,6 +19,7 @@ export default function TopAppBar() {
       <div className="flex items-center gap-3">
         <button 
           id="menu-button"
+          data-testid="menu-button"
           className="text-[#004900] dark:text-[#9df888] hover:bg-[#f0f5e9] dark:hover:bg-[#1e293b] p-2 rounded-full transition-colors active:opacity-80 flex items-center justify-center focus:outline-none"
           aria-label="Open menu"
         >
@@ -32,9 +33,9 @@ export default function TopAppBar() {
         {isHydrated && (
           <button
             onClick={toggleLanguage}
-            id="lang-toggle-btn"
+            id="lang-toggle-btn" data-testid="lang-toggle"
             className="flex items-center justify-center w-8 h-8 rounded-full border border-[#bfcab7] dark:border-[#1e293b]/30 text-xs font-bold text-[#004900] dark:text-[#9df888] hover:bg-[#f0f5e9] dark:hover:bg-[#1e293b] active:scale-95 transition-all select-none cursor-pointer focus:outline-none"
-            title={locale === "en" ? "שנה עברית" : "Switch to English"}
+             title={locale === "en" ? "שנה עברית" : "Switch to English"}
             aria-label="Switch Language"
           >
             {locale === "en" ? "עב" : "EN"}

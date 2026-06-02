@@ -42,7 +42,10 @@ export default function Toast() {
       >
         <div className="flex items-center gap-2.5 min-w-0">
           {icons[toast.type]}
-          <p className="text-xs font-bold text-foreground leading-normal truncate">
+          <p
+            data-testid="toast-message"
+            className="text-xs font-bold text-foreground leading-normal truncate"
+          >
             {toast.message}
           </p>
         </div>

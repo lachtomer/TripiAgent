@@ -3,6 +3,7 @@
  * Run with: npx playwright test e2e/step4g.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { mockAiTextStream } from "./helpers/apiMocks";
 
 const BASE = "http://localhost:9001";
 
@@ -26,23 +27,47 @@ test.describe("Step 4g — Chat Interface Polish", () => {
   });
 
   test("2. Tapping a quick prompt chip sends message & shows typing indicator", async ({ page }) => {
-    await page.goto(`${BASE}/chat`);
+    test.setTimeout(45000);
 
-    // Tap "Skip the line tips" chip
+    // Mock the AI endpoint so the response is fast and deterministic
+    await page.route('**/api/ai**', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/plain',
+        body: 'Here are some **skip the line tips** for popular attractions in Italy:\n- Book tickets online in advance\n- Visit early in the morning\n- Use official fast-track passes',
+      });
+    });
+
+    await page.goto(`${BASE}/chat`);
+    await page.waitForLoadState("domcontentloaded");
+
+    // Wait for chip to be interactive
     const chip = page.locator("#quick-prompt-skip-the-line-tips");
+    await expect(chip).toBeVisible({ timeout: 10000 });
     await chip.click();
 
     // Check user message is visible in chat history
     const userMsg = page.locator(".bg-primary.text-primary-foreground").first();
     await expect(userMsg).toContainText("Skip the line tips");
 
-    // Check typing dots are briefly visible or helper exists
-    // Since API is fast, typing indicator might flash quickly, but let's check it doesn't crash
+    // Check that assistant response streams in with actual content
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector(".prose");
+        return el && (el.textContent?.trim().length ?? 0) > 0;
+      },
+      { timeout: 20000 }
+    );
     const assistantMsg = page.locator(".prose").first();
-    await expect(assistantMsg).toBeVisible({ timeout: 15000 });
+    await expect(assistantMsg).not.toBeEmpty();
   });
 
   test("3. Renders assistant responses as Markdown (bold, lists, etc.)", async ({ page }) => {
+    await mockAiTextStream(
+      page,
+      "Here is your answer:\n\n**Bold text** for emphasis.\n\n- list item one\n- list item two"
+    );
+
     await page.goto(`${BASE}/chat`);
 
     // Send a message asking for markdown output

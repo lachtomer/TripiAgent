@@ -1,3 +1,30 @@
+# HANDOFF — Cursor Phase 1: E2E Stabilization & Bank Route Fix (Complete)
+
+## Step completed
+- ID: Cursor Phase 1 — E2E blockers + Bank route reconciliation
+- Agent: Cursor (Lead Architect)
+- Date: 2026-06-01
+
+## Summary
+- Fixed 6 failing E2E specs (bank import, step13 toast, step15 Hebrew, step4g markdown, travelAgentPersona, route 404)
+- Consolidated Bank page to `app/admin/bank/page.tsx` at `/admin/bank`
+- Added shared E2E mocks in `e2e/helpers/apiMocks.ts`
+- Added `verification_plan.md`, `CHANGELOG.md`; synced `task.md` and `.specify/bank_tasks.md`
+
+## Test results
+- lint: PASS
+- unit: 26/26 PASS
+- e2e: 46/47 PASS (1 flaky: step10 bookmark on first attempt)
+- build: PASS
+
+## Open for Phase 2+
+- Bank UX (loading state, ARIA, 48px targets, Return Home link)
+- GitLab CI cross-platform E2E script
+- Bank Gemini parser (`lib/aiParser.ts`) *(done — Tasks 4.3/4.8)*
+- Eliminate step10 bookmark flake *(done — Task 5.4)*
+
+---
+
 # HANDOFF — ESLint Warning Fixes (Complete)
 
 ## Step completed

@@ -58,7 +58,7 @@ export default function TodayPlanner() {
 
   if (!isHydrated) {
     return (
-      <Card className="border border-outline-variant/30 bg-card/50">
+      <Card data-testid="today-planner-loading" className="border border-outline-variant/30 bg-card/50">
         <CardContent className="p-4 flex items-center justify-center">
           <span className="text-xs text-muted-foreground animate-pulse">Loading today&apos;s schedule...</span>
         </CardContent>
@@ -78,7 +78,7 @@ export default function TodayPlanner() {
   const sortedActivities = [...currentDay.activities].sort((a, b) => a.time.localeCompare(b.time));
 
   return (
-    <Card className="border border-outline-variant/30 bg-card shadow-sm rounded-2xl overflow-hidden transition-all duration-300">
+    <Card data-testid="today-planner" className="border border-outline-variant/30 bg-card shadow-sm rounded-2xl overflow-hidden transition-all duration-300">
       <CardHeader className="p-4 bg-muted/10 border-b border-outline-variant/20 flex flex-col space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function TodayPlanner() {
             {sortedActivities.map((act) => {
               const isCompleted = completedActivityIds.includes(act.id);
               return (
-                <div key={act.id} className="relative group">
+                <div key={act.id} className="relative group" data-testid="timeline-item">
                   {/* Timeline node checkbox */}
                   <button
                     onClick={() => toggleActivityCompletion(act.id)}

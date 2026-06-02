@@ -814,13 +814,14 @@ export default function ItineraryCard() {
                         <div
                           key={act.id}
                           id={`activity-row-${act.id}`}
+                          data-testid={`activity-${act.id}`}
                           className={cn(
                             "relative transition-all duration-300",
                             isLast ? "itinerary-line-last" : "itinerary-line"
                           )}
                         >
                           {/* Left-hand timeline connection dot */}
-                          <div className="absolute start-[14px] top-[18px] w-2.5 h-2.5 rounded-full bg-[#006400] dark:bg-[#86df72] border border-white dark:border-zinc-950 z-10 shadow-sm" />
+                          <div className="absolute start-[14px] top-[18px] w-2.5 h-2.5 rounded-full bg-[#006400] dark:bg-[#86df72] border border-white dark:border-zinc-950 z-10 shadow-sm" data-testid={`timeline-item-${act.id}`} />
 
                           {/* Nested Card wrapper */}
                           <div className="ps-6">

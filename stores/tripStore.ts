@@ -1,6 +1,8 @@
 import { create } from "zustand";
+import { DEFAULT_ITALY_ITINERARY } from "@/components/ItineraryCard";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Activity, ChatMessage, ItineraryDay, LocationDetails, PackingItem, SavedAttraction, TravelLogistics, MorningBriefing, SerendipitySuggestion, UserProfile } from "@/types";
+import { isBankAdminUser } from "@/lib/bankPermissions";
 
 interface TripState {
   location: LocationDetails | null;
@@ -243,7 +245,7 @@ export const useTripStore = create<TripState>()(
       removeSavedAttraction: (id) =>
         set((state) => {
           const user = state.users.find((u) => u.id === state.currentUser);
-          if (user?.role !== "admin") {
+          if (!isBankAdminUser(user)) {
             return {
               toast: { message: "Only admins can remove items from the target bank", type: "error" }
             };
@@ -256,9 +258,11 @@ export const useTripStore = create<TripState>()(
       addAttractionToItinerary: (dayNumber, attractionId, time) =>
         set((state) => {
           const attraction = state.savedAttractions.find((a) => a.id === attractionId);
-          if (!attraction || !state.itinerary) return {};
+          if (!attraction) return {};
+          // Ensure itinerary exists; if not, initialise with default
+          const baseItinerary = state.itinerary ?? DEFAULT_ITALY_ITINERARY;
           return {
-            itinerary: state.itinerary.map((day) =>
+            itinerary: baseItinerary.map((day) =>
               day.dayNumber === dayNumber
                 ? {
                     ...day,
