@@ -3,6 +3,7 @@
  * Run with: npx playwright test e2e/step4f.smoke.spec.ts --headed
  */
 import { test, expect, Page } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
@@ -13,6 +14,9 @@ async function grantLocation(page: Page) {
 }
 
 test.describe("Step 4f — Home page", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. renders Home with Mode Switcher, Map Card and Investigate section", async ({ page }) => {
     await page.goto(BASE);
     await page.waitForLoadState("networkidle");

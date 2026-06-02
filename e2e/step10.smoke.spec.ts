@@ -4,6 +4,7 @@
  */
 import { test, expect, type Page } from "@playwright/test";
 import { mockNearbyTopPicks } from "./helpers/apiMocks";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 const STORAGE_KEY = "tripiagent-trip-storage";
@@ -27,6 +28,10 @@ async function waitForSavedAttractionInStorage(page: Page, name: string) {
 }
 
 test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
+
   test("1. Bookmark a place from search results and verify it in Saved Attractions", async ({ page }) => {
     test.setTimeout(45000);
 

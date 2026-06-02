@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- SPECKIT START -->
-Active feature plan: `specs/004-nav-home-redesign/plan.md`
-Spec: `specs/004-nav-home-redesign/spec.md`
-Feature: Navigation Redesign & Home Screen (6-tab nav, Active Route Map, Investigate section)
+Active feature plan: `specs/005-auth-map-polish/plan.md`
+Spec: `specs/001-user-login-persistence/spec.md` + `specs/004-nav-home-redesign/spec.md` (gaps a–e)
+Feature: User Auth (F-1) + Live Map Card + Bookmark Toasts
 <!-- SPECKIT END -->

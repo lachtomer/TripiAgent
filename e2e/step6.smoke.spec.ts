@@ -3,10 +3,14 @@
  * Run with: npx playwright test e2e/step6.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 6 — Security Headers & Routes Verification", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. Security headers are present on root response", async ({ page }) => {
     const response = await page.goto(BASE);
     expect(response).not.toBeNull();

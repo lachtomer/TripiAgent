@@ -8,6 +8,7 @@
  */
 import { test, expect } from "@playwright/test";
 import { mockAiTextStream, mockPackGenerate } from "./helpers/apiMocks";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = process.env.BASE_URL || "http://localhost:9001";
 
@@ -27,6 +28,10 @@ async function ensureInTripMode(page: import("@playwright/test").Page) {
 
 test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)", () => {
   test.describe.configure({ mode: "serial" });
+
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
 
   test("Plan client trip, customize logistics, and test live AI features", async ({ page }) => {
     test.setTimeout(90_000);

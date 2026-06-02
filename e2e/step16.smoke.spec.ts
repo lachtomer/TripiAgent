@@ -3,6 +3,7 @@
  * Run with: npx playwright test e2e/step16.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
@@ -19,6 +20,10 @@ const MOCK_PLACES = Array.from({ length: 12 }, (_, i) => ({
 }));
 
 test.describe("Step 16 — Search Results Pagination", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
+
   test("1. Verify 5 results are shown initially, clicking Show More loads next batch, then hides button", async ({ page }) => {
     // Mock the Places and Geocode APIs to keep the test offline-friendly and robust
     await page.route("**/api/geocode*", async (route) => {

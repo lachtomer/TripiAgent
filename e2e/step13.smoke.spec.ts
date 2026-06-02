@@ -4,10 +4,14 @@
  */
 import { test, expect } from "@playwright/test";
 import { mockMilanRestaurantSearch } from "./helpers/apiMocks";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
 
   test("1. Parse 'Pizza in Milan', query places, check warning badge, and direct timeline bind", async ({ page }) => {
     test.setTimeout(60000);

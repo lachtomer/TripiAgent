@@ -3,12 +3,14 @@
  * Run: npx playwright test e2e/step19.itinerary-garda-refresh.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 const STORAGE_KEY = "tripiagent-trip-storage";
 
 test.describe("Step 19 — Garda itinerary refresh", () => {
   test.beforeEach(async ({ page }) => {
+    await signInAs(page);
     await page.addInitScript((key) => {
       localStorage.removeItem(key);
     }, STORAGE_KEY);

@@ -3,11 +3,13 @@
  * Run with: npx playwright test e2e/step5.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 5 — PWA Configuration", () => {
   test.beforeEach(async ({ page }) => {
+    await signInAs(page);
     await page.goto(BASE);
   });
 

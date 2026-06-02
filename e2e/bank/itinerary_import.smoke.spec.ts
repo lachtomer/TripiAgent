@@ -4,6 +4,7 @@
  */
 import { test, expect } from "@playwright/test";
 import { mockBankParse, mockBankPlacesSubmit } from "../helpers/apiMocks";
+import { signInAs } from "../helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
@@ -11,6 +12,7 @@ test.describe("Bank – Itinerary Import", () => {
   test.setTimeout(45000);
 
   test.beforeEach(async ({ page }) => {
+    await signInAs(page);
     await mockBankParse(page);
     await page.goto(`${BASE}/admin/bank`, { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("bank-page-ready")).toBeAttached({ timeout: 15000 });

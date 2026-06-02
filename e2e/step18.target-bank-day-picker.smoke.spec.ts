@@ -4,6 +4,7 @@
  */
 import { test, expect } from "@playwright/test";
 import { mockNearbyTopPicks } from "./helpers/apiMocks";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 const STORAGE_KEY = "tripiagent-trip-storage";
@@ -29,6 +30,7 @@ const SEED_STATE = {
 
 test.describe("Step 18 — Target bank day picker & activity nearby", () => {
   test.beforeEach(async ({ page }) => {
+    await signInAs(page);
     await mockNearbyTopPicks(page);
     await page.route("**/api/geocode**", async (route) => {
       await route.fulfill({

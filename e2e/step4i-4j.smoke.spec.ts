@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 test.describe("Step 4i + 4j: Packing List & BottomNav Polish", () => {
   test.setTimeout(45000);
 
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
+    await signInAs(page);
     await page.goto("http://localhost:9001/pack");
     await page.evaluate(() => localStorage.removeItem("tripiagent-trip-storage"));
     await page.reload({ waitUntil: "domcontentloaded" });

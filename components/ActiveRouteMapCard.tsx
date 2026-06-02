@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import MapPreview from "@/components/MapPreview";
+import LiveMapCard from "@/components/LiveMapCard";
 
 export default function ActiveRouteMapCard() {
   const [expanded, setExpanded] = useState(false);
@@ -17,7 +17,7 @@ export default function ActiveRouteMapCard() {
         role="button"
         aria-label="הרחב מפה — Expand map"
       >
-        <MapPreview />
+        <LiveMapCard className="w-full h-full" />
       </div>
 
       {expanded && (
@@ -33,7 +33,7 @@ export default function ActiveRouteMapCard() {
             </button>
           </div>
           <div className="flex-1 overflow-hidden">
-            <MapPreview />
+            <LiveMapCard className="w-full h-full" />
           </div>
         </div>
       )}

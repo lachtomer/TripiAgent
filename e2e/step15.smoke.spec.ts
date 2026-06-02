@@ -3,10 +3,14 @@
  * Run with: npx playwright test e2e/step15.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 15 — Hebrew & RTL Support", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. Verify lang toggle switches HTML dir/lang attributes and translations load correctly", async ({ page }) => {
     test.setTimeout(45000);
     // 1. Go to Home page

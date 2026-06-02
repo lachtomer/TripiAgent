@@ -3,10 +3,14 @@
  * Run with: npx playwright test e2e/step17.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. Verify Hebrew locale updates Trip Essentials Checklist text and dir attribute", async ({ page }) => {
     await page.goto(`${BASE}/itinerary`);
     await page.waitForLoadState("networkidle");

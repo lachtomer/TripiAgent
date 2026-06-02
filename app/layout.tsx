@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import TopAppBar from "@/components/TopAppBar";
 import Toast from "@/components/Toast";
 import DynamicDirectionHandler from "@/components/DynamicDirectionHandler";
+import AuthGate from "@/components/AuthGate";
 import "./globals.css";
 
 const inter = Inter({
@@ -54,9 +55,11 @@ export default function RootLayout({
           >
             <DynamicDirectionHandler />
             <Toast />
-            <TopAppBar />
-            <main className="flex-1 flex flex-col">{children}</main>
-            <BottomNav />
+            <AuthGate>
+              <TopAppBar />
+              <main className="flex-1 flex flex-col">{children}</main>
+              <BottomNav />
+            </AuthGate>
           </ThemeProvider>
         </div>
       </body>

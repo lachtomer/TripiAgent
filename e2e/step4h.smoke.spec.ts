@@ -3,11 +3,13 @@
  * Run with: npx playwright test e2e/step4h.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 4h — Itinerary Planner", () => {
   test.beforeEach(async ({ page }) => {
+    await signInAs(page);
     await page.goto(`${BASE}/itinerary`);
     // Wait for the hydrated state to load
     await page.waitForSelector("#trip-start-date", { timeout: 10000 });

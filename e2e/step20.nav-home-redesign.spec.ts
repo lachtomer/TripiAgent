@@ -3,10 +3,14 @@
  * Run with: npx playwright test e2e/step20.nav-home-redesign.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 20 — Nav Redesign & Home Screen", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. Nav bar has exactly 6 tabs", async ({ page }) => {
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");

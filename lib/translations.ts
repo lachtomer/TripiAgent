@@ -188,6 +188,22 @@ export const translations = {
     quickPromptLunch: "Find lunch under €15",
     quickPromptAfternoon: "Plan my afternoon",
     quickPromptTips: "Skip the line tips",
+
+    // Auth
+    loginTitle: "Sign In",
+    loginUsernamePlaceholder: "Your name",
+    loginPasswordPlaceholder: "Password",
+    loginSubmitBtn: "Sign In",
+    wrongPassword: "Incorrect name or password",
+    signOut: "Sign Out",
+
+    // Packing sections
+    commonPackingSection: "Group Essentials",
+    personalPackingSection: "My Items",
+
+    // Bookmark toasts (canonical strings — must match store exactly)
+    bookmarkAdded: "נשמר ליעדים ✓",
+    bookmarkRemoved: "הוסר מיעדים",
   },
   he: {
     // Navigation
@@ -376,6 +392,22 @@ export const translations = {
     quickPromptLunch: "מצא ארוחת צהריים מתחת ל-€15",
     quickPromptAfternoon: "תכנן לי את אחר הצהריים",
     quickPromptTips: "טיפים לעקיפת התורים",
+
+    // Auth
+    loginTitle: "כניסה",
+    loginUsernamePlaceholder: "השם שלך",
+    loginPasswordPlaceholder: "סיסמא",
+    loginSubmitBtn: "כניסה",
+    wrongPassword: "שם או סיסמא שגויים",
+    signOut: "יציאה",
+
+    // Packing sections
+    commonPackingSection: "ציוד קבוצתי",
+    personalPackingSection: "הפריטים שלי",
+
+    // Bookmark toasts (canonical strings — must match store exactly)
+    bookmarkAdded: "נשמר ליעדים ✓",
+    bookmarkRemoved: "הוסר מיעדים",
   },
 };
 

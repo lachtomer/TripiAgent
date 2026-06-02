@@ -37,16 +37,12 @@ const isVegan = (placeId: string) => {
 
 export default function AttractionSearch({ defaultQuery, headless }: { defaultQuery?: string; headless?: boolean }) {
   const router = useRouter();
-  const saveAttraction = useTripStore((s) => s.saveAttraction);
-  const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
+  const toggleSearchBookmark = useTripStore((s) => s.toggleSearchBookmark);
   const savedAttractions = useTripStore((s) => s.savedAttractions);
   const setPendingPrompt = useTripStore((s) => s.setPendingPrompt);
   const addActivity = useTripStore((s) => s.addActivity);
   const itinerary = useTripStore((s) => s.itinerary);
   const setItinerary = useTripStore((s) => s.setItinerary);
-  const currentUser = useTripStore((s) => s.currentUser);
-  const users = useTripStore((s) => s.users);
-  const activeUser = users.find((u) => u.id === currentUser);
   const isHydrated = useIsHydrated();
 
   useEffect(() => {
@@ -501,21 +497,18 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
 
               const handleBookmarkToggle = (e: React.MouseEvent) => {
                 e.stopPropagation();
-                 if (isSaved) {
-                   removeSavedAttraction(placeId);
-                 } else {
-                   saveAttraction({
-                     id: placeId,
-                     name: place.name,
-                     description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
-                     locationName: place.name,
-                     lat: lastSearchCoords?.lat,
-                     lng: lastSearchCoords?.lng,
-                     rating: place.rating,
-                     image: coverImage,
-                     createdBy: activeUser?.name || "Liran",
-                   });
-                 }
+                toggleSearchBookmark({
+                  id: placeId,
+                  name: place.name,
+                  description: place.formatted_address || place.address || `Recommended ${searchType === "restaurant" ? "dining spot" : "attraction"} in Italy`,
+                  locationName: place.name,
+                  lat: lastSearchCoords?.lat,
+                  lng: lastSearchCoords?.lng,
+                  rating: place.rating,
+                  image: coverImage,
+                  upvotes: [],
+                  downvotes: [],
+                });
               };
 
               return (

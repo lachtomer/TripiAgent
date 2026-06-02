@@ -21,12 +21,16 @@ interface TripState {
   serendipitySuggestion: SerendipitySuggestion | null;
   completedActivityIds: string[];
   
-  // New user/mode fields
+  // User/mode fields
   users: UserProfile[];
   currentUser: string;
   userPackingLists: Record<string, PackingItem[]>;
   tripMode: "planning" | "in-trip";
   dayAnchors: Record<number, string>;
+
+  // Common packing (group-wide) + per-user checkmarks on common items
+  commonPackingList: PackingItem[];
+  commonCheckmarks: Record<string, string[]>; // userId → checked item IDs
 
   setLocation: (location: LocationDetails) => void;
   setManualCity: (city: string) => void;
@@ -75,6 +79,14 @@ interface TripState {
   swapItineraryDays: (dayA: number, dayB: number) => void;
   locale: "en" | "he";
   setLocale: (locale: "en" | "he") => void;
+
+  // Common packing actions
+  addCommonPackingItem: (item: Omit<PackingItem, "id">) => void;
+  removeCommonPackingItem: (id: string) => void;
+  toggleCommonCheckmark: (itemId: string) => void;
+
+  // Bookmark from search — bypasses admin check, sets toast internally
+  toggleSearchBookmark: (place: SavedAttraction) => void;
 }
 
 const initialPackingList: PackingItem[] = [
@@ -135,6 +147,10 @@ export const useTripStore = create<TripState>()(
       tripMode: "planning",
       dayAnchors: {},
       locale: "en",
+
+      // Common packing fields
+      commonPackingList: initialPackingList,
+      commonCheckmarks: {},
       
       setLocation: (location) => set({ location }),
       setManualCity: (cityName) =>
@@ -433,6 +449,52 @@ export const useTripStore = create<TripState>()(
           };
         }),
       setLocale: (locale) => set({ locale }),
+
+      // Common packing actions
+      addCommonPackingItem: (item) =>
+        set((state) => ({
+          commonPackingList: [
+            ...state.commonPackingList,
+            { ...item, id: `common-${Date.now()}` },
+          ],
+        })),
+      removeCommonPackingItem: (id) =>
+        set((state) => ({
+          commonPackingList: state.commonPackingList.filter((i) => i.id !== id),
+        })),
+      toggleCommonCheckmark: (itemId) =>
+        set((state) => {
+          const uid = state.currentUser;
+          const current = state.commonCheckmarks[uid] ?? [];
+          const next = current.includes(itemId)
+            ? current.filter((id) => id !== itemId)
+            : [...current, itemId];
+          return {
+            commonCheckmarks: {
+              ...state.commonCheckmarks,
+              [uid]: next,
+            },
+          };
+        }),
+
+      // Bookmark from search results — no admin check, toast set internally
+      toggleSearchBookmark: (place) =>
+        set((state) => {
+          const exists = state.savedAttractions.some((a) => a.id === place.id);
+          if (exists) {
+            return {
+              savedAttractions: state.savedAttractions.filter((a) => a.id !== place.id),
+              toast: { message: "הוסר מיעדים", type: "info" as const },
+            };
+          }
+          return {
+            savedAttractions: [
+              ...state.savedAttractions,
+              { ...place, upvotes: place.upvotes ?? [], downvotes: place.downvotes ?? [] },
+            ],
+            toast: { message: "נשמר ליעדים ✓", type: "success" as const },
+          };
+        }),
     }),
     {
       name: "tripiagent-trip-storage",
@@ -458,6 +520,23 @@ export const useTripStore = create<TripState>()(
               u7: state.userPackingLists?.u7 || initialPackingList,
             };
             state.packingList = state.userPackingLists["u1"];
+          }
+
+          // One-time migration: seed commonPackingList and deduplicate personal lists
+          if (!state.commonPackingList) {
+            state.commonPackingList = initialPackingList;
+            const commonIds = new Set(initialPackingList.map((i) => i.id));
+            for (const uid of Object.keys(state.userPackingLists ?? {})) {
+              state.userPackingLists[uid] = (state.userPackingLists[uid] ?? []).filter(
+                (i) => !commonIds.has(i.id)
+              );
+            }
+            state.packingList = (state.packingList ?? []).filter(
+              (i) => !commonIds.has(i.id)
+            );
+          }
+          if (!state.commonCheckmarks) {
+            state.commonCheckmarks = {};
           }
         }
       },

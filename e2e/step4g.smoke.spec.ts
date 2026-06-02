@@ -4,10 +4,14 @@
  */
 import { test, expect } from "@playwright/test";
 import { mockAiTextStream } from "./helpers/apiMocks";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 4g — Chat Interface Polish", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. ChatPage mounts and renders quick prompt chips", async ({ page }) => {
     await page.goto(`${BASE}/chat`);
 

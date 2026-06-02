@@ -3,10 +3,14 @@
  * Run with: npx playwright test e2e/step14.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
+import { signInAs } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
 test.describe("Step 14 — View All Navigation", () => {
+  test.beforeEach(async ({ page }) => {
+    await signInAs(page);
+  });
   test("1. Investigate section shows search input; search focuses correctly", async ({ page }) => {
     // 1. Go to Home page
     await page.goto(BASE);
