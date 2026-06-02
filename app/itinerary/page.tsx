@@ -1,8 +1,6 @@
 import ItineraryCard from "@/components/ItineraryCard";
-import MapPreview from "@/components/MapPreview";
 import EssentialsChecklist from "@/components/EssentialsChecklist";
 import SavedAttractionsList from "@/components/SavedAttractionsList";
-import LogisticsCard from "@/components/LogisticsCard";
 
 export default function ItineraryPage() {
   return (
@@ -10,7 +8,7 @@ export default function ItineraryPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Itinerary</h1>
-        <p className="text-xs text-muted-foreground mt-1">Your daily travel plans, booking confirmations, and logistics</p>
+        <p className="text-xs text-muted-foreground mt-1">Your daily travel plans and schedule</p>
       </div>
 
       {/* Responsive Grid: 1 column on mobile, 3 columns on tablet/desktop */}
@@ -19,16 +17,10 @@ export default function ItineraryPage() {
           {/* Daily schedule planner */}
           <ItineraryCard />
         </div>
-        
-        <div className="space-y-6">
-          {/* Map Preview block */}
-          <MapPreview />
 
+        <div className="space-y-6">
           {/* Essentials Checklist block */}
           <EssentialsChecklist />
-
-          {/* Logistics & Booking References */}
-          <LogisticsCard />
 
           {/* Saved Attractions & Custom POIs */}
           <SavedAttractionsList />

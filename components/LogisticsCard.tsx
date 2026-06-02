@@ -15,7 +15,7 @@ export default function LogisticsCard() {
   const updateLogistics = useTripStore((state) => state.updateLogistics);
   const { t, locale } = useTranslation();
 
-  const [collapsed, setCollapsed] = useState(true); // Collapsed by default to save page height
+  const [collapsed, setCollapsed] = useState(false); // Expanded by default — now lives on dedicated bookings page
   const [showSavedFeedback, setShowSavedFeedback] = useState(false);
 
   // Local state for forms to avoid heavy re-renders on keypress

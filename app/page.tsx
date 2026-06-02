@@ -1,11 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useTripStore } from "@/stores/tripStore";
 import LocationPermissionBanner from "@/components/LocationPermissionBanner";
 import CopilotCards from "@/components/CopilotCards";
 import TodayPlanner from "@/components/TodayPlanner";
-import ActiveRouteMapCard from "@/components/ActiveRouteMapCard";
+import MapPreview from "@/components/MapPreview";
 import InvestigateSection from "@/components/InvestigateSection";
 
 export default function Home() {
@@ -44,8 +43,8 @@ export default function Home() {
       </div>
 
       {/* 2. Active Route Map */}
-      <div className="px-4 pt-3">
-        <ActiveRouteMapCard />
+      <div className="px-4 pt-3" data-testid="active-route-map">
+        <MapPreview />
       </div>
 
       {/* 3. In-trip only: Location banner + Copilot + Today Planner */}

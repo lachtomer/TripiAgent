@@ -109,10 +109,11 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
   });
 
   test("4. Logistics card displays, updates, and persists state", async ({ page }) => {
-    await page.goto(`${BASE}/itinerary`);
+    await page.goto(`${BASE}/bookings`);
+    await page.waitForLoadState("networkidle");
 
-    const logisticsHeader = page.locator("text=Logistics & Bookings");
-    await logisticsHeader.click();
+    await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=Logistics & Bookings")).toBeVisible({ timeout: 10000 });
 
     await page.fill("#logistics-flight-tlv-mxp", "LY381-E2E");
     const ztlCheckbox = page.locator("#logistics-milan-ztl-paid");
@@ -122,12 +123,10 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
 
     await page.reload();
-    await logisticsHeader.click();
+    await page.waitForLoadState("networkidle");
 
-    const flightInputVal = await page.inputValue("#logistics-flight-tlv-mxp");
-    expect(flightInputVal).toBe("LY381-E2E");
-
-    const isZtlChecked = await ztlCheckbox.isChecked();
-    expect(isZtlChecked).toBe(true);
+    // Wait for Zustand to rehydrate and sync into local form state (toHaveValue retries internally)
+    await expect(page.locator("#logistics-flight-tlv-mxp")).toHaveValue("LY381-E2E", { timeout: 10000 });
+    await expect(ztlCheckbox).toBeChecked({ timeout: 5000 });
   });
 });

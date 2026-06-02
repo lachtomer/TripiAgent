@@ -49,17 +49,15 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
 
     await ensureInTripMode(page);
 
-    console.log("Navigating to Itinerary page...");
-    await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
-    await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible({ timeout: 15000 });
+    console.log("Navigating to Logistics & Bookings page...");
+    await page.goto(`${BASE}/bookings`, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 15000 });
 
-    console.log("Expanding Logistics card and entering flight/ZTL information...");
-    const logisticsHeader = page.locator("text=Logistics & Bookings");
-    await logisticsHeader.click();
-
-    // Fill flight detail and milan ZTL status
-    await page.fill("#logistics-flight-tlv-mxp", "AZ402-Giulia");
+    console.log("Entering flight and ZTL information in the Logistics card...");
     const ztlCheckbox = page.locator("#logistics-milan-ztl-paid");
+
+    // Fill flight detail and milan ZTL status (card starts expanded)
+    await page.fill("#logistics-flight-tlv-mxp", "AZ402-Giulia");
     await ztlCheckbox.setChecked(true);
 
     // Save and verify save notification
@@ -67,13 +65,16 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
 
     // Reload page to verify local storage state persistence
-    console.log("Reloading page to verify state persistence...");
+    console.log("Reloading bookings page to verify state persistence...");
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.locator("text=Logistics & Bookings").click();
+    await page.waitForLoadState("networkidle");
     expect(await page.inputValue("#logistics-flight-tlv-mxp")).toBe("AZ402-Giulia");
     expect(await ztlCheckbox.isChecked()).toBe(true);
 
     // 3. Add Custom Luxury Attraction for the client
+    console.log("Navigating to Itinerary page to add custom attraction...");
+    await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible({ timeout: 15000 });
     console.log("Adding a custom luxury attraction to the saved list...");
     const toggleFormBtn = page.locator("text=Add Custom Attraction");
     await toggleFormBtn.click();

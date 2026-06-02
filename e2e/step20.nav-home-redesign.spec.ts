@@ -53,20 +53,6 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
     await expect(page.locator("[data-testid='active-route-map']")).toBeVisible({ timeout: 10000 });
   });
 
-  test("5. Map card expands and collapses", async ({ page }) => {
-    await page.goto(`${BASE}/`);
-    await page.waitForLoadState("networkidle");
-    const mapCard = page.locator("[data-testid='active-route-map']");
-    await expect(mapCard).toBeVisible({ timeout: 10000 });
-
-    await mapCard.click();
-    const closeBtn = page.locator("button[aria-label*='Close'], button[aria-label*='סגור']").first();
-    await expect(closeBtn).toBeVisible({ timeout: 5000 });
-
-    await closeBtn.click();
-    await expect(closeBtn).not.toBeVisible({ timeout: 5000 });
-  });
-
   test("6. Investigate section visible on home", async ({ page }) => {
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");
@@ -95,10 +81,10 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
     await expect(page.locator("[data-testid='saved-attractions-ready']")).toBeVisible({ timeout: 10000 });
   });
 
-  test("9. Bookings page loads with placeholder", async ({ page }) => {
+  test("9. Bookings page loads with logistics card", async ({ page }) => {
     await page.goto(`${BASE}/bookings`);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("text=ניירות").first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=Logistics & Bookings").first()).toBeVisible({ timeout: 5000 });
   });
 });
