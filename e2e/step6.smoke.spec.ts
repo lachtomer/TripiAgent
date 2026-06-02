@@ -20,24 +20,16 @@ test.describe("Step 6 — Security Headers & Routes Verification", () => {
 
   test("2. App loads correctly and nav is functional", async ({ page }) => {
     await page.goto(BASE);
-    await expect(page.locator("text=Explore Italy")).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("#bottom-nav")).toBeVisible();
+    await expect(page.locator("#nav-link-home")).toBeVisible();
   });
 
-  test("3. All 4 routes work correctly", async ({ page }) => {
-    // Root
-    const res1 = await page.goto(BASE);
-    expect(res1?.status()).toBe(200);
-
-    // Chat
-    const res2 = await page.goto(`${BASE}/chat`);
-    expect(res2?.status()).toBe(200);
-
-    // Itinerary
-    const res3 = await page.goto(`${BASE}/itinerary`);
-    expect(res3?.status()).toBe(200);
-
-    // Pack
-    const res4 = await page.goto(`${BASE}/pack`);
-    expect(res4?.status()).toBe(200);
+  test("3. All 6 routes work correctly", async ({ page }) => {
+    const routes = ["/", "/chat", "/itinerary", "/pack", "/locations", "/bookings"];
+    for (const route of routes) {
+      const res = await page.goto(`${BASE}${route}`);
+      expect(res?.status()).toBe(200);
+    }
   });
 });

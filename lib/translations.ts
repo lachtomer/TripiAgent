@@ -3,6 +3,10 @@ import { useTripStore } from "@/stores/tripStore";
 export const translations = {
   en: {
     // Navigation
+    home: "Home",
+    calendar: "Calendar",
+    locations: "Locations",
+    bookings: "Bookings",
     explore: "Explore",
     chat: "Chat",
     itinerary: "Itinerary",
@@ -187,6 +191,10 @@ export const translations = {
   },
   he: {
     // Navigation
+    home: "בית",
+    calendar: "תכנון",
+    locations: "יעדים",
+    bookings: "ניירות",
     explore: "חקור",
     chat: "צ'אט",
     itinerary: "מסלול",

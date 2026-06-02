@@ -13,11 +13,14 @@ async function grantLocation(page: Page) {
 }
 
 test.describe("Step 4f — Home page", () => {
-  test("1. renders header and LocationCard on load (no location)", async ({ page }) => {
+  test("1. renders Home with Mode Switcher, Map Card and Investigate section", async ({ page }) => {
     await page.goto(BASE);
-    await expect(page.getByRole("heading", { name: "Explore Italy" })).toBeVisible();
-    await expect(page.getByText("Your intelligent travel assistant")).toBeVisible();
-    await expect(page.getByText("Current Location")).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    // sr-only heading still in DOM
+    await expect(page.getByRole("heading", { name: "Explore Italy" })).toBeAttached();
+    // New home-screen components
+    await expect(page.locator("[data-testid='active-route-map']")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
   });
 
   test("2. LocationPermissionBanner visible when location not granted", async ({ page }) => {
@@ -31,38 +34,20 @@ test.describe("Step 4f — Home page", () => {
     await expect(banner.first()).toBeVisible({ timeout: 5000 });
   });
 
-  test("3. LocationCard shows real weather when coords granted", async ({ page }) => {
+  test("3. Map card is visible on Home regardless of location", async ({ page }) => {
     await grantLocation(page);
     await page.goto(BASE);
-
-    // Wait for city name to resolve (geocode call)
-    await page.waitForSelector("text=Current Location", { timeout: 10000 });
-
-    // Weather area should eventually show a temperature OR a skeleton
-    const weatherArea = page.locator(".bg-primary\\/10");
-    await expect(weatherArea.first()).toBeVisible({ timeout: 10000 });
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("[data-testid='active-route-map']")).toBeVisible({ timeout: 10000 });
   });
 
-  test("4. NearbyPlacesSection renders skeletons then cards when location granted", async ({ page }) => {
+  test("4. Investigate section renders with toggles when location granted", async ({ page }) => {
     await grantLocation(page);
     await page.goto(BASE);
-
-    // Section heading should appear
-    await expect(
-      page.getByText("Nearby Highlights", { exact: false })
-    ).toBeVisible({ timeout: 10000 });
-
-    // Place cards or empty state should appear within 15s
-    const placeCards = page.locator("[id^='place-card-']");
-    const emptyMsg = page.getByText("No nearby places found");
-    await Promise.race([
-      placeCards.first().waitFor({ timeout: 15000 }),
-      emptyMsg.waitFor({ timeout: 15000 }),
-    ]);
-
-    const count = await placeCards.count();
-    console.log(`  → Found ${count} place card(s)`);
-    expect(count).toBeGreaterThanOrEqual(0); // passes even if API returns 0 results
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid='investigate-target-btn']")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid='investigate-aroundme-btn']")).toBeVisible({ timeout: 10000 });
   });
 
   test("5. Tapping a place card navigates to /chat and auto-sends the prompt", async ({ page }) => {

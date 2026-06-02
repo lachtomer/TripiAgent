@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin, MessageCircle, Calendar, Luggage } from "lucide-react";
+import { Home, Calendar, MessageCircle, Luggage, MapPin, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTripStore } from "@/stores/tripStore";
 import { useTranslation } from "@/lib/translations";
@@ -13,10 +13,12 @@ export default function BottomNav() {
   const { t } = useTranslation();
 
   const navItems = [
-    { key: "explore", label: t.explore, href: "/", icon: MapPin },
-    { key: "chat", label: t.chat, href: "/chat", icon: MessageCircle },
-    { key: "itinerary", label: t.itinerary, href: "/itinerary", icon: Calendar },
-    { key: "pack", label: t.pack, href: "/pack", icon: Luggage },
+    { key: "home",      label: t.home,      href: "/",          icon: Home },
+    { key: "calendar",  label: t.calendar,  href: "/itinerary", icon: Calendar },
+    { key: "chat",      label: t.chat,      href: "/chat",      icon: MessageCircle },
+    { key: "pack",      label: t.pack,      href: "/pack",      icon: Luggage },
+    { key: "locations", label: t.locations, href: "/locations", icon: MapPin },
+    { key: "bookings",  label: t.bookings,  href: "/bookings",  icon: FileText },
   ];
 
   return (
@@ -25,7 +27,7 @@ export default function BottomNav() {
       className="fixed bottom-0 left-0 right-0 w-full max-w-[390px] md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto z-50 border-t border-x border-border/60 bg-background/90 backdrop-blur-md"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="mx-auto flex h-16 w-full items-center justify-around px-2">
+      <div className="mx-auto flex h-16 w-full items-center justify-around px-0">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -37,7 +39,7 @@ export default function BottomNav() {
               href={item.href}
               id={`nav-link-${item.key}`}
               className={cn(
-                "relative flex h-14 min-w-[56px] flex-col items-center justify-center rounded-xl transition-all duration-200 px-3 cursor-pointer",
+                "relative flex h-14 min-w-[48px] flex-col items-center justify-center rounded-xl transition-all duration-200 px-1 cursor-pointer",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
                   ? "text-primary dark:text-[#86df72] bg-primary/5 dark:bg-[#86df72]/10"
@@ -63,7 +65,7 @@ export default function BottomNav() {
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium mt-0.5 transition-all duration-200",
+                  "text-[9px] font-medium mt-0.5 transition-all duration-200",
                   isActive ? "font-bold" : ""
                 )}
               >

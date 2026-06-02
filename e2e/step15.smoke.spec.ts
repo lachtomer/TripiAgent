@@ -18,8 +18,8 @@ test.describe("Step 15 — Hebrew & RTL Support", () => {
     await expect(html).toHaveAttribute("lang", "en");
     await expect(html).toHaveAttribute("dir", "ltr");
     
-    // Check that English text is present
-    await expect(page.locator("text=Explore & Search Italy")).toBeVisible();
+    // Check that new investigate section is present (replaces old AttractionSearch header)
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
 
     // 3. Switch language to Hebrew
     const toggleBtn = page.locator("[data-testid=\"lang-toggle\"]");
@@ -34,12 +34,12 @@ test.describe("Step 15 — Hebrew & RTL Support", () => {
     await expect(page.locator('[data-testid="translations-loaded"][data-locale="he"]')).toBeAttached({ timeout: 5000 });
 
     // Verify translated Hebrew header
-    await expect(page.locator("text=טיול וחיפוש באיטליה")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=חקר / Investigate")).toBeVisible({ timeout: 5000 });
 
     // 5. Navigate to Itinerary page and verify translations and LTR isolation
-    const itineraryNav = page.locator("#nav-link-itinerary");
-    await itineraryNav.click();
-    await page.waitForURL("**/itinerary");
+    const itineraryNav = page.locator("#nav-link-calendar");
+    await itineraryNav.click({ timeout: 15000 });
+    await page.waitForURL("**/itinerary", { timeout: 20000 });
     await page.waitForLoadState("domcontentloaded");
 
     // Check that Hebrew labels are loaded in Itinerary Card (needs hydration time)

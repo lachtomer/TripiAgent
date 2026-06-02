@@ -35,7 +35,7 @@ const isVegan = (placeId: string) => {
   return placeId.charCodeAt(placeId.length - 4) % 2 === 0;
 };
 
-export default function AttractionSearch() {
+export default function AttractionSearch({ defaultQuery, headless }: { defaultQuery?: string; headless?: boolean }) {
   const router = useRouter();
   const saveAttraction = useTripStore((s) => s.saveAttraction);
   const removeSavedAttraction = useTripStore((s) => s.removeSavedAttraction);
@@ -59,7 +59,7 @@ export default function AttractionSearch() {
   const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
   const { t, locale } = useTranslation();
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(defaultQuery ?? "");
   const [searchType, setSearchType] = useState<"tourist_attraction" | "restaurant">("tourist_attraction");
   const [loading, setLoading] = useState(false);
   const [allResults, setAllResults] = useState<PlaceDetail[]>([]);
@@ -255,19 +255,8 @@ export default function AttractionSearch() {
     router.push("/chat");
   };
 
-  return (
-    <Card className="border border-outline-variant/30 bg-card shadow-sm rounded-2xl overflow-hidden">
-      <CardHeader className="p-4 bg-muted/10 border-b border-outline-variant/20">
-        <CardTitle className="text-sm font-extrabold tracking-tight flex items-center gap-1.5 text-foreground">
-          <Search className="h-4.5 w-4.5 text-[#006400] dark:text-[#86df72]" />
-          {t.searchTitle}
-        </CardTitle>
-        <CardDescription className="text-[11px]">
-          {t.searchDescription}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="p-4 space-y-4">
+  const content = (
+    <CardContent className="p-4 space-y-4">
         {/* Search Input Form */}
         <form onSubmit={handleSearch} className="space-y-3">
           <div className="flex gap-2">
@@ -541,6 +530,7 @@ export default function AttractionSearch() {
                     <button
                       onClick={handleBookmarkToggle}
                       id={`search-bookmark-${placeId}`}
+                      aria-label={isSaved ? `Remove ${place.name}` : `Bookmark ${place.name}`}
                       className="absolute top-0.5 start-0.5 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
                       title={isSaved ? t.removeFromSaved : t.saveToBank}
                     >
@@ -721,7 +711,25 @@ export default function AttractionSearch() {
             </button>
           )}
         </div>
-      </CardContent>
+    </CardContent>
+  );
+
+  if (headless) {
+    return <div className="p-4 space-y-4">{content.props.children}</div>;
+  }
+
+  return (
+    <Card className="border border-outline-variant/30 bg-card shadow-sm rounded-2xl overflow-hidden">
+      <CardHeader className="p-4 bg-muted/10 border-b border-outline-variant/20">
+        <CardTitle className="text-sm font-extrabold tracking-tight flex items-center gap-1.5 text-foreground">
+          <Search className="h-4.5 w-4.5 text-[#006400] dark:text-[#86df72]" />
+          {t.searchTitle}
+        </CardTitle>
+        <CardDescription className="text-[11px]">
+          {t.searchDescription}
+        </CardDescription>
+      </CardHeader>
+      {content}
     </Card>
   );
 }

@@ -1,0 +1,11 @@
+---
+description: Spec-Kit active feature plan reference
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+<!-- SPECKIT START -->
+Active feature plan: `specs/004-nav-home-redesign/plan.md`
+Spec: `specs/004-nav-home-redesign/spec.md`
+Feature: Navigation Redesign & Home Screen (6-tab nav, Active Route Map, Investigate section)
+<!-- SPECKIT END -->

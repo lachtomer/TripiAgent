@@ -1,5 +1,7 @@
 # BACKLOG
 
+**Active execution plan (excludes F-2):** [`.specify/post_bank_release_plan.md`](.specify/post_bank_release_plan.md)
+
 ## Planned features (specified — implement when ready)
 
 | ID | Feature | Spec | Status |

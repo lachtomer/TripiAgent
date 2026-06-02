@@ -13,10 +13,10 @@ test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
     test.setTimeout(60000);
     await mockMilanRestaurantSearch(page);
 
-    // 1. Go to Home page
+    // 1. Go to Home page and wait for Investigate section to load
     await page.goto(BASE);
-    await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("text=Explore & Search Italy")).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
 
     // 2. Type 'Pizza in Milan' in search input
     const searchInput = page.locator("#attraction-search-input");

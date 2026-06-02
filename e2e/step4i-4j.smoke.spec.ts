@@ -86,14 +86,16 @@ test.describe("Step 4i + 4j: Packing List & BottomNav Polish", () => {
     await expect(clearBtn).toContainText("Confirm clear?");
   });
 
-  test("4j-1: BottomNav renders with all 4 tabs", async ({ page }) => {
+  test("4j-1: BottomNav renders with all 6 tabs", async ({ page }) => {
     await page.goto("http://localhost:9001/");
     const nav = page.locator("#bottom-nav");
     await expect(nav).toBeVisible();
-    await expect(page.locator("#nav-link-explore")).toBeVisible();
+    await expect(page.locator("#nav-link-home")).toBeVisible();
     await expect(page.locator("#nav-link-chat")).toBeVisible();
-    await expect(page.locator("#nav-link-itinerary")).toBeVisible();
+    await expect(page.locator("#nav-link-calendar")).toBeVisible();
     await expect(page.locator("#nav-link-pack")).toBeVisible();
+    await expect(page.locator("#nav-link-locations")).toBeVisible();
+    await expect(page.locator("#nav-link-bookings")).toBeVisible();
   });
 
   test("4j-2: Active tab has aria-current=page", async ({ page }) => {

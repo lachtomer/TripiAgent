@@ -44,7 +44,8 @@ test.describe("Step 16 — Search Results Pagination", () => {
 
     // 1. Go to Home page
     await page.goto(BASE);
-    await expect(page.locator("text=Explore & Search Italy")).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
 
     // 2. Fill search input and submit
     const searchInput = page.locator("#attraction-search-input");

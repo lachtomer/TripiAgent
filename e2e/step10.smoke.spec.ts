@@ -27,21 +27,26 @@ async function waitForSavedAttractionInStorage(page: Page, name: string) {
 }
 
 test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
-  test("1. Bookmark a place from Home and verify it in Saved Attractions", async ({ page }) => {
+  test("1. Bookmark a place from search results and verify it in Saved Attractions", async ({ page }) => {
     test.setTimeout(45000);
 
     await mockNearbyTopPicks(page);
     await page.goto(BASE);
     await page.evaluate((key) => localStorage.removeItem(key), STORAGE_KEY);
-    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.reload({ waitUntil: "networkidle" });
 
-    await expect(page.getByRole("heading", { name: "Explore Italy" })).toBeVisible({ timeout: 10000 });
+    // Wait for investigate section to hydrate
+    await expect(page.locator("[data-testid='investigate-section']")).toBeVisible({ timeout: 10000 });
+
+    // Submit the pre-filled search
+    const searchBtn = page.locator("#attraction-search-btn");
+    await expect(searchBtn).toBeEnabled({ timeout: 10000 });
+    await searchBtn.click();
 
     const placeName = "Colosseum";
-    const bookmarkBtn = page.locator("#bookmark-place1");
+    const bookmarkBtn = page.locator("#search-bookmark-place1");
     await expect(bookmarkBtn).toBeVisible({ timeout: 15000 });
     console.log(`  → Bookmarking place: ${placeName}`);
-
     await bookmarkBtn.click();
 
     await expect(bookmarkBtn).toHaveAttribute(
@@ -54,7 +59,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
 
     await Promise.all([
       page.waitForURL(/\/itinerary/, { waitUntil: "domcontentloaded", timeout: 15000 }),
-      page.locator("#nav-link-itinerary").click(),
+      page.locator("#nav-link-calendar").click(),
     ]);
 
     await expect(page.getByTestId("saved-attractions-ready")).toBeAttached({ timeout: 10000 });

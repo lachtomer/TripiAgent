@@ -14,12 +14,19 @@ test.describe("Step 4h — Itinerary Planner", () => {
   });
 
   test("1. Seeding default 10-day Italy itinerary", async ({ page }) => {
+    // Scroll down to load/show all day cards
+    await page.evaluate(() => window.scrollTo(0, 1000));
+
     // Check that Day 1 to Day 5 headers are rendered
-    await expect(page.locator("text=Jun 25 – Milan Arrival")).toBeVisible();
-    await expect(page.locator("text=Jun 26 – Car Pickup & Drive to Monzambano")).toBeVisible();
-    await expect(page.locator("text=Jun 27 – Monzambano / Lake Garda")).toBeVisible();
-    await expect(page.locator("text=Jun 28 – Verona Day Trip")).toBeVisible();
-    await expect(page.locator("text=Jun 29 – Sirmione & Spa")).toBeVisible();
+    await expect(page.locator("text=Jun 25 – Milan Arrival")).toBeVisible({ timeout: 10000 });
+    await page.locator("text=Jun 26 – Car Pickup & Drive to Monzambano").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 26 – Car Pickup & Drive to Monzambano")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 27 – Lake Boat & Rimbalzello").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 27 – Lake Boat & Rimbalzello")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 28 – Verona & Natura Viva Safari").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 28 – Verona & Natura Viva Safari")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 29 – Sirmione & Aquaria Spa").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 29 – Sirmione & Aquaria Spa")).toBeVisible({ timeout: 5000 });
 
     // Verify Milan/Monzambano activities exist
     await expect(page.locator("text=Flight 6404 Departs TLV")).toBeVisible();
