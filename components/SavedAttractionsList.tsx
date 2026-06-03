@@ -24,6 +24,7 @@ import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useTranslation } from "@/lib/translations";
 import PlaceNameLink from "@/components/PlaceNameLink";
 import { isBankAdminUser } from "@/lib/bankPermissions";
+import { resolveSavedAttractionLinks } from "@/lib/urlSafety";
 
 // Fallback in case itinerary is not loaded yet
 const MOCK_DAYS = Array.from({ length: 10 }, (_, i) => ({
@@ -230,6 +231,7 @@ export default function SavedAttractionsList() {
                 const isCustom = attraction.id.startsWith("custom-poi-");
                 const currentSchedule = scheduleState[attraction.id] || { dayNumber: 1, time: "10:00" };
                 const isSuccess = !!successState[attraction.id];
+                const links = resolveSavedAttractionLinks(attraction);
 
                 return (
                   <div 
@@ -263,8 +265,8 @@ export default function SavedAttractionsList() {
                           <PlaceNameLink
                             placeId={attraction.id}
                             name={attraction.name}
-                            websiteUrl={attraction.website_url}
-                            mapsUrl={attraction.maps_url}
+                            websiteUrl={links.websiteUrl}
+                            mapsUrl={links.mapsUrl}
                           />
                         </div>
                         {attraction.locationName && (

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isSafeExternalUrl, resolvePlaceHref, placeTestIdSlug } from "./urlSafety";
+import { isSafeExternalUrl, resolvePlaceHref, placeTestIdSlug, resolveSavedAttractionLinks } from "./urlSafety";
 
 describe("urlSafety", () => {
   it("allows http and https URLs", () => {
@@ -34,5 +34,46 @@ describe("urlSafety", () => {
 
   it("placeTestIdSlug sanitizes awkward place_id characters", () => {
     expect(placeTestIdSlug("ChIJ+abc/def")).toBe("ChIJ_abc_def");
+  });
+
+  it("resolveSavedAttractionLinks uses coords for Target Bank entries", () => {
+    const links = resolveSavedAttractionLinks({
+      id: "bank-gardaland",
+      name: "Gardaland",
+      locationName: "Castelnuovo del Garda",
+      lat: 45.4542,
+      lng: 10.7137,
+    });
+    expect(links.mapsUrl).toBe(
+      "https://www.google.com/maps/search/?api=1&query=45.4542,10.7137"
+    );
+    expect(resolvePlaceHref(links.websiteUrl, links.mapsUrl)).toContain("google.com/maps");
+  });
+
+  it("resolveSavedAttractionLinks uses place_id for bookmarked Google places", () => {
+    const links = resolveSavedAttractionLinks({
+      id: "ChIJmock123",
+      name: "Colosseum",
+      locationName: "Rome",
+    });
+    expect(links.mapsUrl).toContain("query_place_id=ChIJmock123");
+  });
+
+  it("resolveSavedAttractionLinks uses name search for custom POIs without coords", () => {
+    const links = resolveSavedAttractionLinks({
+      id: "custom-poi-abc",
+      name: "Limone Ferry Port",
+      locationName: "Limone",
+    });
+    expect(links.mapsUrl).toContain("query=Limone%20Ferry%20Port%2C%20Limone");
+  });
+
+  it("resolveSavedAttractionLinks preserves explicit URLs when present", () => {
+    const links = resolveSavedAttractionLinks({
+      id: "place-1",
+      name: "Test",
+      maps_url: "https://maps.google.com/explicit",
+    });
+    expect(links.mapsUrl).toBe("https://maps.google.com/explicit");
   });
 });
