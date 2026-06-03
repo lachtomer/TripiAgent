@@ -54,7 +54,17 @@ CORE DIRECTIONS & GUIDELINES:
      ]
    }
    \`\`\`
-   Do not modify the ZTL properties or logistics. Only output this block if you are proposing an update to a specific day's activities.`;
+   Do not modify the ZTL properties or logistics. Only output this block if you are proposing an update to a specific day's activities.
+8. **Venue Links**: When you recommend a specific named restaurant, attraction, museum, or shop, format the venue name as a markdown link that opens in the user's browser. Use this URL pattern unless a verified official URL is already in context:
+   [Venue Name](https://www.google.com/maps/search/?api=1&query={URL-encoded venue name plus city from USER CONTEXT Location line})
+   Example for a spot in Verona: [Osteria Francescana](https://www.google.com/maps/search/?api=1&query=Osteria%20Francescana%20Verona)
+   Never invent custom website domains. Only use http or https links.`;
+}
+
+/** Build a deterministic Google Maps search URL for chat venue links. */
+export function buildVenueMapsSearchUrl(venueName: string, cityName?: string | null): string {
+  const query = [venueName.trim(), cityName?.trim()].filter(Boolean).join(" ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 export async function getGeminiTravelResponse(

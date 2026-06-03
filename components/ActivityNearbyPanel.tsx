@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, MapPin, Plus, UtensilsCrossed } from "lucide-react";
 import type { Activity } from "@/types";
-import type { PlaceDetail } from "@/lib/places";
+import { buildGoogleMapsUrl, type PlaceDetail } from "@/lib/places";
+import PlaceNameLink from "@/components/PlaceNameLink";
 import { resolveActivityCoordinates } from "@/lib/activityGeo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,6 +124,8 @@ export default function ActivityNearbyPanel({
       lat: resolvedCoords?.lat,
       lng: resolvedCoords?.lng,
       createdBy: activeUser?.name ?? "Traveler",
+      website_url: place.website_url,
+      maps_url: place.maps_url ?? buildGoogleMapsUrl(place.place_id),
     });
     setToast({ message: t.activityNearbySavedToBank.replace("{name}", place.name), type: "success" });
   };
@@ -222,7 +225,12 @@ export default function ActivityNearbyPanel({
               data-testid={`activity-nearby-result-${place.place_id}`}
             >
               <div>
-                <p className="text-xs font-bold text-foreground">{place.name}</p>
+                <PlaceNameLink
+                  placeId={place.place_id}
+                  name={place.name}
+                  websiteUrl={place.website_url}
+                  mapsUrl={place.maps_url}
+                />
                 {(place.formatted_address || place.address) && (
                   <p className="text-[10px] text-muted-foreground line-clamp-1">{place.formatted_address || place.address}</p>
                 )}

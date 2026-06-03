@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, MapPin, ArrowRight, Bookmark } from "lucide-react";
+import { Star, MapPin, ArrowRight, Bookmark, Sparkles } from "lucide-react";
 import { useTripStore } from "@/stores/tripStore";
 import Image from "next/image";
 import { buildGoogleMapsUrl } from "@/lib/places";
 import type { PlaceDetail } from "@/lib/places";
 import { useTranslation } from "@/lib/translations";
+import PlaceNameLink from "@/components/PlaceNameLink";
 
 const PLACE_COVER_PHOTOS = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAiB8CHimE3CmDarZ9rOmpp9XxARrPcXOAvgPyoQSMR6KTQRd2ns20hpw1uK4BXCqe5LC4xK2Y4zKEJQwj1iThdXRw0r7WPM-khHj7Bv1FNPFvs9ZQTlzCFG22V2vGOHn4aUsq2hFYYyRXD7Y0wQ1sqfmxFGfPz8CE0CadhHnxaJHFW6lRzyLakACJYPqPCj2oZ11RzLWTb-1ijGAY-2QOcnd6nMIWuQ8-W2UuNaB25iQ-MqfFPeaZdb_3BflsAqZYaiIETxjMcLzS1",
@@ -17,12 +18,13 @@ const PLACE_COVER_PHOTOS = [
 
 const MOCK_PICKS: PlaceDetail[] = [
   {
-    place_id: "place1", // Using place1 to match E2E mock expectations
+    place_id: "place1",
     name: "Colosseum",
     rating: 4.9,
     distance: 800,
     open_now: true,
     image: PLACE_COVER_PHOTOS[0],
+    maps_url: buildGoogleMapsUrl("place1"),
   },
   {
     place_id: "place2",
@@ -31,6 +33,7 @@ const MOCK_PICKS: PlaceDetail[] = [
     distance: 1200,
     open_now: true,
     image: PLACE_COVER_PHOTOS[1],
+    maps_url: buildGoogleMapsUrl("place2"),
   },
   {
     place_id: "place3",
@@ -39,6 +42,7 @@ const MOCK_PICKS: PlaceDetail[] = [
     distance: 2500,
     open_now: true,
     image: PLACE_COVER_PHOTOS[2],
+    maps_url: buildGoogleMapsUrl("place3"),
   },
 ];
 
@@ -222,6 +226,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                   rating: place.rating,
                   image: coverImage,
                   createdBy: activeUser?.name || "Liran",
+                  website_url: place.website_url,
+                  maps_url: place.maps_url ?? buildGoogleMapsUrl(placeId),
                 });
               }
             };
@@ -229,8 +235,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
             return (
               <div
                 key={placeId}
-                onClick={() => handlePlaceTap(place)}
-                className="min-w-[280px] snap-start bg-card border border-outline-variant/30 hover:border-outline-variant rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer"
+                className="min-w-[280px] snap-start bg-card border border-outline-variant/30 hover:border-outline-variant rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
               >
                 {/* Hero Image */}
                 <div className="relative h-40 w-full overflow-hidden">
@@ -269,10 +274,15 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                 <div className="p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start gap-2 mb-1">
-                      <div dir="ltr" className="text-start truncate flex-1">
-                        <h4 className="font-semibold text-[17px] text-foreground leading-tight truncate drop-shadow-sm">
-                          {place.name}
-                        </h4>
+                      <div className="text-start truncate flex-1 min-w-0">
+                        <PlaceNameLink
+                          placeId={placeId}
+                          name={place.name}
+                          websiteUrl={place.website_url}
+                          mapsUrl={place.maps_url}
+                          variant="md"
+                          className="font-semibold text-[17px] leading-tight drop-shadow-sm"
+                        />
                       </div>
                       {place.open_now !== undefined && (
                         <span className={`text-[10px] font-extrabold uppercase tracking-wider mt-0.5 shrink-0 ${
@@ -296,9 +306,13 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
 
                   <button
                     id={`place-card-${placeId}`}
-                    onClick={() => handlePlaceTap(place)}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlaceTap(place);
+                    }}
                     className="w-full mt-4 py-2.5 bg-[#006400] dark:bg-[#86df72] hover:bg-[#004d00] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 font-semibold text-xs rounded-xl shadow-sm hover:shadow transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer"
-                    aria-label={`Ask AI about ${place.name}`}
+                    aria-label={`${t.askAiAboutPlace}: ${place.name}`}
                   >
                     <span>{t.exploreGuide}</span>
                     <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
@@ -347,6 +361,8 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     rating: place.rating,
                     image: coverImage,
                     createdBy: activeUser?.name || "Liran",
+                    website_url: place.website_url,
+                    maps_url: place.maps_url ?? buildGoogleMapsUrl(placeId),
                   });
                 }
               };
@@ -355,8 +371,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                 <div
                   key={placeId}
                   id={`discover-place-${placeId}`}
-                  className="flex gap-4 items-center p-3 rounded-2xl border border-outline-variant/20 bg-card hover:bg-muted/10 shadow-sm transition-all duration-300 group hover:shadow-md cursor-pointer"
-                  onClick={() => handlePlaceTap(place)}
+                  className="flex gap-4 items-center p-3 rounded-2xl border border-outline-variant/20 bg-card hover:bg-muted/10 shadow-sm transition-all duration-300 group hover:shadow-md"
                 >
                   {/* Left Side: Thumbnail Image */}
                   <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 relative bg-muted">
@@ -386,10 +401,14 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                   {/* Right Side: Details */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex justify-between items-start gap-2">
-                      <div dir="ltr" className="text-start truncate flex-1">
-                        <h4 className="font-semibold text-sm text-foreground leading-tight truncate group-hover:text-[#006400] dark:group-hover:text-[#86df72] transition-colors">
-                          {place.name}
-                        </h4>
+                      <div className="text-start truncate flex-1 min-w-0">
+                        <PlaceNameLink
+                          placeId={placeId}
+                          name={place.name}
+                          websiteUrl={place.website_url}
+                          mapsUrl={place.maps_url}
+                          variant="md"
+                        />
                       </div>
                       {place.rating !== undefined && (
                         <span dir="ltr" className="flex items-center gap-0.5 text-xs font-bold text-[#006400] dark:text-[#86df72] shrink-0">
@@ -419,6 +438,17 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                       </p>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    id={`discover-ask-ai-${placeId}`}
+                    onClick={() => handlePlaceTap(place)}
+                    className="h-11 w-11 shrink-0 rounded-xl border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none"
+                    aria-label={`${t.askAiAboutPlace}: ${place.name}`}
+                    title={t.askAiGuide}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </button>
                 </div>
               );
             })

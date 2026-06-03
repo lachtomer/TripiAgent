@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { StateGraph, Annotation, START, END } from "@langchain/langgraph";
-import { ChatMessage, ItineraryDay, LocationDetails, Activity, WeatherSnapshot } from "@/types";
+import { ChatMessage, ItineraryDay, LocationDetails, Activity, WeatherSnapshot, TripContext } from "@/types";
+import { buildSystemPrompt } from "./gemini";
 import { checkMilanZTL } from "./ztl";
 import fs from "fs";
 import path from "path";
@@ -43,9 +44,50 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (x, y) => y,
     default: () => ({}),
   }),
+  tripContext: Annotation<TripContext | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
 });
 
 export type AgentStateType = typeof AgentStateAnnotation.State;
+
+function resolveTripContext(state: AgentStateType): TripContext {
+  const now = new Date();
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  const itinerarySummary = state.itinerary
+    ? state.itinerary
+        .map((d) => `Day ${d.dayNumber}: ${d.activities.map((a) => a.title).join(", ")}`)
+        .join("; ")
+    : state.tripContext?.itinerarySummary ?? null;
+
+  const base = state.tripContext ?? {};
+
+  return {
+    coords: state.location?.coords ?? base.coords ?? null,
+    cityName: state.location?.cityName ?? base.cityName ?? null,
+    localTime:
+      base.localTime ??
+      now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    dayOfWeek: base.dayOfWeek ?? daysOfWeek[now.getDay()],
+    weather: state.weather ?? base.weather ?? null,
+    itinerarySummary,
+    locale: base.locale,
+  };
+}
+
+const VENUE_LINK_PLANNER_HINT = `
+When mentioning specific venues in explanatory text, format venue names as markdown links per the venue-link rule (Google Maps search URL + city from context). Never invent custom domains.
+`;
 
 // 2. Nodes Implementation
 
@@ -116,6 +158,7 @@ async function plannerNode(state: AgentStateType): Promise<Partial<AgentStateTyp
   }
   \`\`\`
   Ensure Day number is correct and activities have time slot strings.
+  ${VENUE_LINK_PLANNER_HINT}
   `;
 
   try {
@@ -256,11 +299,15 @@ async function assistantNode(state: AgentStateType): Promise<Partial<AgentStateT
   let finalResponse = state.response;
   if (!finalResponse) {
     const latestMessage = state.messages[state.messages.length - 1]?.text || "";
-    // General chat fallback
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-2.5-flash" });
+      const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+      const systemPrompt = buildSystemPrompt(resolveTripContext(state));
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: systemPrompt,
+      });
       const result = await model.generateContent(latestMessage);
       finalResponse = result.response.text();
     } else {

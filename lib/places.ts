@@ -1,3 +1,5 @@
+import { isSafeExternalUrl } from "./urlSafety";
+
 export interface PlaceDetail {
   place_id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface PlaceDetail {
   types?: string[];
   distance?: number;
   maps_url?: string;
+  website_url?: string;
   formatted_address?: string;
   address?: string;
   description?: string;
@@ -28,6 +31,8 @@ interface GooglePlaceResult {
     };
   };
 }
+
+export const PLACE_DETAILS_ENRICHMENT_CAP = 8;
 
 // Great-circle distance in meters using Haversine formula
 export function getDistanceMeters(
@@ -54,6 +59,69 @@ export function getDistanceMeters(
 // Server-safe URL builder for Google Maps search using place_id
 export function buildGoogleMapsUrl(placeId: string): string {
   return `https://www.google.com/maps/search/?api=1&query=Google&query_place_id=${placeId}`;
+}
+
+async function fetchPlaceDetails(
+  placeId: string,
+  apiKey: string
+): Promise<{ website_url?: string; maps_url?: string }> {
+  const url =
+    `https://maps.googleapis.com/maps/api/place/details/json` +
+    `?place_id=${encodeURIComponent(placeId)}&fields=website,url&key=${apiKey}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return { maps_url: buildGoogleMapsUrl(placeId) };
+
+    const data = await res.json();
+    const website = data?.result?.website as string | undefined;
+    const googleUrl = data?.result?.url as string | undefined;
+
+    return {
+      website_url: website && isSafeExternalUrl(website) ? website : undefined,
+      maps_url:
+        googleUrl && isSafeExternalUrl(googleUrl)
+          ? googleUrl
+          : buildGoogleMapsUrl(placeId),
+    };
+  } catch {
+    return { maps_url: buildGoogleMapsUrl(placeId) };
+  }
+}
+
+async function enrichPlacesWithDetails(
+  places: PlaceDetail[],
+  apiKey: string
+): Promise<PlaceDetail[]> {
+  const toEnrich = places.slice(0, PLACE_DETAILS_ENRICHMENT_CAP);
+  const rest = places.slice(PLACE_DETAILS_ENRICHMENT_CAP);
+
+  const settled = await Promise.allSettled(
+    toEnrich.map(async (p) => {
+      const details = await fetchPlaceDetails(p.place_id, apiKey);
+      return {
+        ...p,
+        website_url: details.website_url,
+        maps_url: details.maps_url ?? p.maps_url ?? buildGoogleMapsUrl(p.place_id),
+      };
+    })
+  );
+
+  const enriched = settled.map((r, i) =>
+    r.status === "fulfilled"
+      ? r.value
+      : {
+          ...toEnrich[i],
+          maps_url: toEnrich[i].maps_url ?? buildGoogleMapsUrl(toEnrich[i].place_id),
+        }
+  );
+
+  const tail = rest.map((p) => ({
+    ...p,
+    maps_url: p.maps_url ?? buildGoogleMapsUrl(p.place_id),
+  }));
+
+  return [...enriched, ...tail];
 }
 
 export async function getGoogleNearbyPlaces(
@@ -110,11 +178,10 @@ export async function getProgressiveNearbyPlaces(
   keyword?: string
 ): Promise<PlaceDetail[]> {
   // Progressive radius scan: 1000m -> 2500m -> 5000m
-  // Ensures maximum precision/walkability while complying with 100-point rule scope.
   try {
     const results = await getGoogleNearbyPlaces(lat, lng, 1000, type, apiKey, keyword);
     if (results.length >= 3) {
-      return results;
+      return enrichPlacesWithDetails(results, apiKey);
     }
   } catch (err) {
     console.warn("1000m radius search failed, retrying at 2500m:", err);
@@ -123,11 +190,12 @@ export async function getProgressiveNearbyPlaces(
   try {
     const results = await getGoogleNearbyPlaces(lat, lng, 2500, type, apiKey, keyword);
     if (results.length >= 3) {
-      return results;
+      return enrichPlacesWithDetails(results, apiKey);
     }
   } catch (err) {
     console.warn("2500m radius search failed, retrying at 5000m:", err);
   }
 
-  return await getGoogleNearbyPlaces(lat, lng, 5000, type, apiKey, keyword);
+  const results = await getGoogleNearbyPlaces(lat, lng, 5000, type, apiKey, keyword);
+  return enrichPlacesWithDetails(results, apiKey);
 }

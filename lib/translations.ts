@@ -21,6 +21,8 @@ export const translations = {
     closedState: "Closed",
     openState: "Open",
     beautifulPlace: "Beautiful place to visit near you",
+    viewOfficialSite: "View official site",
+    opensInNewTab: "opens in new tab",
 
     // AttractionSearch
     searchTitle: "Explore & Search Italy",
@@ -43,6 +45,7 @@ export const translations = {
     saveToBank: "Save to Attraction Bank",
     removeFromSaved: "Remove from Saved",
     askAiGuide: "Ask AI Guide",
+    askAiAboutPlace: "Ask AI about this place",
     showMoreResults: "Show More Results",
     showingCount: "Showing {visible} of {total}",
 
@@ -227,6 +230,8 @@ export const translations = {
     closedState: "סגור",
     openState: "פתוח",
     beautifulPlace: "מקום יפה לבקר בו בקרבת מקום",
+    viewOfficialSite: "לאתר הרשמי",
+    opensInNewTab: "נפתח בלשונית חדשה",
 
     // AttractionSearch
     searchTitle: "טיול וחיפוש באיטליה",
@@ -249,6 +254,7 @@ export const translations = {
     saveToBank: "שמור לבנק האטרקציות",
     removeFromSaved: "הסר מהשמורים",
     askAiGuide: "שאל מדריך בינה מלאכותית",
+    askAiAboutPlace: "שאל את העוזר על המקום",
     showMoreResults: "הצג תוצאות נוספות",
     showingCount: "מציג {visible} מתוך {total}",
 

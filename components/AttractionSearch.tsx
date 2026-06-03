@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
-import { type PlaceDetail } from "@/lib/places";
+import { buildGoogleMapsUrl, type PlaceDetail } from "@/lib/places";
+import PlaceNameLink from "@/components/PlaceNameLink";
 import { cn } from "@/lib/utils";
 import { useLocation } from "@/hooks/useLocation";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
@@ -506,6 +507,8 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
                   lng: lastSearchCoords?.lng,
                   rating: place.rating,
                   image: coverImage,
+                  website_url: place.website_url,
+                  maps_url: place.maps_url ?? buildGoogleMapsUrl(placeId),
                   upvotes: [],
                   downvotes: [],
                 });
@@ -541,10 +544,13 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
                   {/* Info details */}
                   <div className="flex-1 min-w-0 space-y-0.5">
                     <div className="flex justify-between items-start gap-1">
-                      <div dir="ltr" className="text-start truncate flex-1">
-                        <h4 className="font-bold text-xs text-foreground truncate pr-1">
-                          {place.name}
-                        </h4>
+                      <div className="text-start truncate flex-1 min-w-0">
+                        <PlaceNameLink
+                          placeId={placeId}
+                          name={place.name}
+                          websiteUrl={place.website_url}
+                          mapsUrl={place.maps_url}
+                        />
                       </div>
                       {place.rating !== undefined && (
                         <span dir="ltr" className="flex items-center gap-0.5 text-[10px] font-bold text-[#006400] dark:text-[#86df72] shrink-0">

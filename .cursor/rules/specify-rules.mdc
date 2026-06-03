@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- SPECKIT START -->
-Active feature plan: `specs/008-hebrew-ui-english-chat/plan.md`
-Spec: `specs/008-hebrew-ui-english-chat/spec.md`
-Feature: 008 — Hebrew UI only; remove EN/עב toggle; English supported in chat only
+Active feature plan: `specs/007-place-suggestion-links/plan.md`
+Spec: `specs/007-place-suggestion-links/spec.md`
+Feature: 007 — Clickable place suggestion links (official website + Maps fallback)
 <!-- SPECKIT END -->

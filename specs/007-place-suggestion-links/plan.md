@@ -6,7 +6,7 @@
 **Research:** `specs/007-place-suggestion-links/research.md`  
 **Data model:** `specs/007-place-suggestion-links/data-model.md`  
 **UI contracts:** `specs/007-place-suggestion-links/contracts/place-suggestions-ui.md`  
-**Branch:** `007-place-suggestion-links` (create before implement; do not commit to `main` directly)
+**Branch:** `main` (local dev on port 9001 — no feature branch; incremental commits on `main` when user asks)
 
 ---
 
@@ -26,7 +26,7 @@
 | 10 | Details `fields=website` only | Use `fields=website,url`; prefer Google `url` for `maps_url` when present |
 | 11 | E2E plan thin | Expanded scenarios + shared mock updates |
 | 12 | `data-testid` with raw `place_id` | Add `data-place-id`; sanitize testid slug |
-| 13 | Branch discipline | Feature branch required |
+| 13 | Branch discipline | Work on `main` locally — no feature branch (user confirmed) |
 
 ---
 

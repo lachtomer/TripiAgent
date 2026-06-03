@@ -95,6 +95,8 @@ export interface SavedAttraction {
   lng?: number;
   rating?: number;
   image?: string;
+  website_url?: string;
+  maps_url?: string;
   upvotes?: string[]; // array of user IDs who upvoted
   downvotes?: string[]; // array of user IDs who downvoted
   createdBy?: string;

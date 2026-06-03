@@ -1,4 +1,26 @@
 import { z } from "zod";
+import { isSafeExternalUrl } from "./urlSafety";
+
+const safeHttpUrl = z
+  .string()
+  .refine((val) => isSafeExternalUrl(val), { message: "URL must use http or https" });
+
+export const PlaceDetailSchema = z.object({
+  place_id: z.string(),
+  name: z.string(),
+  rating: z.number().optional(),
+  open_now: z.boolean().optional(),
+  types: z.array(z.string()).optional(),
+  distance: z.number().optional(),
+  maps_url: safeHttpUrl.optional(),
+  website_url: safeHttpUrl.optional(),
+  address: z.string().optional(),
+  formatted_address: z.string().optional(),
+  description: z.string().optional(),
+  image: z.string().optional(),
+});
+
+export const PlacesResponseSchema = z.array(PlaceDetailSchema);
 
 export const ChatRequestSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),

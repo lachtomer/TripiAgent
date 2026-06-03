@@ -10,6 +10,7 @@ import { useChat } from "@/hooks/useChat";
 import { useTripStore } from "@/stores/tripStore";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/translations";
+import { isSafeExternalUrl } from "@/lib/urlSafety";
 import {
   Sheet,
   SheetContent,
@@ -46,6 +47,23 @@ function parseReplanPayload(text: string): { cleanText: string; replan: ReplanDa
   }
   return { cleanText: text, replan: null };
 }
+
+const markdownLinkComponents = {
+  a: ({
+    href,
+    children,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+    if (!href || !isSafeExternalUrl(href)) {
+      return <span>{children}</span>;
+    }
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+        {children}
+      </a>
+    );
+  },
+};
 
 export default function ChatInterface() {
   const [input, setInput] = useState("");
@@ -190,7 +208,10 @@ export default function ChatInterface() {
                         prose-strong:text-foreground prose-code:text-[#006400] dark:prose-code:text-[#86df72]
                         prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-xs"
                     >
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownLinkComponents}
+                      >
                         {displayMarkdown || ""}
                       </ReactMarkdown>
                     </div>

@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useTranslation } from "@/lib/translations";
+import PlaceNameLink from "@/components/PlaceNameLink";
 import { isBankAdminUser } from "@/lib/bankPermissions";
 
 // Fallback in case itinerary is not loaded yet
@@ -258,7 +259,14 @@ export default function SavedAttractionsList() {
                             </span>
                           )}
                         </div>
-                        <h4 className="font-bold text-xs text-foreground truncate mt-1">{attraction.name}</h4>
+                        <div className="mt-1">
+                          <PlaceNameLink
+                            placeId={attraction.id}
+                            name={attraction.name}
+                            websiteUrl={attraction.website_url}
+                            mapsUrl={attraction.maps_url}
+                          />
+                        </div>
                         {attraction.locationName && (
                           <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
                             <MapPin className="h-3 w-3 shrink-0" />

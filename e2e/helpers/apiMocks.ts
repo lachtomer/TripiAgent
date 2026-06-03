@@ -7,6 +7,7 @@ export const MOCK_NEARBY_TOP_PICKS = [
     rating: 4.9,
     distance: 800,
     open_now: true,
+    maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=place1",
   },
   {
     place_id: "place2",
@@ -14,6 +15,7 @@ export const MOCK_NEARBY_TOP_PICKS = [
     rating: 4.8,
     distance: 1200,
     open_now: true,
+    maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=place2",
   },
   {
     place_id: "place3",
@@ -21,6 +23,7 @@ export const MOCK_NEARBY_TOP_PICKS = [
     rating: 4.7,
     distance: 2500,
     open_now: true,
+    maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=place3",
   },
 ];
 
@@ -42,6 +45,8 @@ const MILAN_PIZZA_PLACE = {
   formatted_address: "Via Roma 1, Milan, Italy",
   types: ["restaurant"],
   open_now: true,
+  website_url: "https://example.com/osteria",
+  maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=mock-milan-pizza-1",
 };
 
 export async function mockMilanRestaurantSearch(page: Page) {
