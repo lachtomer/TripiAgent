@@ -77,8 +77,7 @@ interface TripState {
   updateDayAnchor: (dayNumber: number, anchor: string) => void;
   voteAttraction: (attractionId: string, vote: "up" | "down" | null, userId: string) => void;
   swapItineraryDays: (dayA: number, dayB: number) => void;
-  locale: "en" | "he";
-  setLocale: (locale: "en" | "he") => void;
+  locale: "he";
 
   // Common packing actions
   addCommonPackingItem: (item: Omit<PackingItem, "id">) => void;
@@ -146,7 +145,7 @@ export const useTripStore = create<TripState>()(
       },
       tripMode: "planning",
       dayAnchors: {},
-      locale: "en",
+      locale: "he" as const,
 
       // Common packing fields
       commonPackingList: initialPackingList,
@@ -377,7 +376,7 @@ export const useTripStore = create<TripState>()(
           },
           tripMode: "planning",
           dayAnchors: {},
-          locale: "en",
+          locale: "he" as const,
         }),
 
       // New actions implementations
@@ -448,8 +447,6 @@ export const useTripStore = create<TripState>()(
             toast: { message: `Swapped Day ${dayNumberA} and Day ${dayNumberB} successfully`, type: "success" },
           };
         }),
-      setLocale: (locale) => set({ locale }),
-
       // Common packing actions
       addCommonPackingItem: (item) =>
         set((state) => ({
@@ -537,6 +534,11 @@ export const useTripStore = create<TripState>()(
           }
           if (!state.commonCheckmarks) {
             state.commonCheckmarks = {};
+          }
+
+          // Feature 008: pin locale to "he" — coerce any legacy "en" value
+          if ((state.locale as string) !== "he") {
+            state.locale = "he";
           }
         }
       },

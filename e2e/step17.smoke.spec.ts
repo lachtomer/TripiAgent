@@ -1,5 +1,6 @@
 /**
  * Step 17 E2E test — Checklist i18n & Adjustable Search Radius
+ * Feature 008: Hebrew-only UI — no language toggle; Hebrew is always active.
  * Run with: npx playwright test e2e/step17.smoke.spec.ts
  */
 import { test, expect } from "@playwright/test";
@@ -11,27 +12,23 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
   test.beforeEach(async ({ page }) => {
     await signInAs(page);
   });
-  test("1. Verify Hebrew locale updates Trip Essentials Checklist text and dir attribute", async ({ page }) => {
-    await page.goto(`${BASE}/itinerary`);
+
+  test("1. Verify Reservations checklist renders in Hebrew by default with correct dir attribute", async ({ page }) => {
+    await page.goto(`${BASE}/bookings`);
     await page.waitForLoadState("networkidle");
 
-    // 1. Verify English defaults
-    await expect(page.locator("text=Trip Essentials Checklist")).toBeVisible();
-    await expect(page.locator("text=Passports & Flights")).toBeVisible();
+    // Hebrew is the only UI language — no toggle needed
+    // Verify Hebrew translations are active on load
+    await expect(page.locator("text=הזמנות לבדיקה")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=גלאי פחמן חד-חמצני/עשן נייד")).toBeVisible();
 
-    // 2. Toggle to Hebrew
-    const toggleBtn = page.locator("#lang-toggle-btn");
-    await expect(toggleBtn).toBeVisible();
-    await toggleBtn.click();
-
-    // 3. Verify Hebrew translations load
-    await expect(page.locator("text=רשימת חיוני נסיעה")).toBeVisible();
-    await expect(page.locator("text=דרכונים וטיסות")).toBeVisible();
-
-    // 4. Verify card dir attribute is updated to rtl
-    const checklistHeader = page.locator("text=רשימת חיוני נסיעה");
+    // Verify card dir attribute is rtl
+    const checklistHeader = page.locator("text=הזמנות לבדיקה");
     const checklistCard = checklistHeader.locator("xpath=ancestor::div[contains(@class, 'bg-card')][1]");
     await expect(checklistCard).toHaveAttribute("dir", "rtl");
+
+    // Verify no language toggle exists
+    await expect(page.locator("[data-testid='lang-toggle']")).not.toBeAttached();
   });
 
   test("2. Verify adjustable search radius chips exist and update request parameters", async ({ page }) => {

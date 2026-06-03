@@ -72,8 +72,8 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     expect(await ztlCheckbox.isChecked()).toBe(true);
 
     // 3. Add Custom Luxury Attraction for the client
-    console.log("Navigating to Itinerary page to add custom attraction...");
-    await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
+    console.log("Navigating to Locations page to add custom attraction...");
+    await page.goto(`${BASE}/locations`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible({ timeout: 15000 });
     console.log("Adding a custom luxury attraction to the saved list...");
     const toggleFormBtn = page.locator("text=Add Custom Attraction");

@@ -63,8 +63,8 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await waitForSavedAttractionInStorage(page, placeName);
 
     await Promise.all([
-      page.waitForURL(/\/itinerary/, { waitUntil: "domcontentloaded", timeout: 15000 }),
-      page.locator("#nav-link-calendar").click(),
+      page.waitForURL(/\/locations/, { waitUntil: "domcontentloaded", timeout: 15000 }),
+      page.locator("#nav-link-locations").click(),
     ]);
 
     await expect(page.getByTestId("saved-attractions-ready")).toBeAttached({ timeout: 10000 });
@@ -73,7 +73,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
   });
 
   test("2. Add a custom POI and schedule it into the itinerary", async ({ page }) => {
-    await page.goto(`${BASE}/itinerary`);
+    await page.goto(`${BASE}/locations`);
     await expect(page.locator("text=Saved Attractions & POIs")).toBeVisible();
 
     const toggleFormBtn = page.locator("text=Add Custom Attraction");

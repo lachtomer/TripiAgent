@@ -4,13 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { translations } from "@/lib/translations";
-import { useTripStore } from "@/stores/tripStore";
 
 export default function LoginPage() {
   const router = useRouter();
   const signIn = useAuthStore((s) => s.signIn);
-  const locale = useTripStore((s) => s.locale);
-  const t = translations[locale] ?? translations.en;
+  const t = translations.he;
 
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");

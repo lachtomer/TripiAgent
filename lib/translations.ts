@@ -1,5 +1,3 @@
-import { useTripStore } from "@/stores/tripStore";
-
 export const translations = {
   en: {
     // Navigation
@@ -75,8 +73,10 @@ export const translations = {
     createdByLabel: "Added by {name}",
 
     // EssentialsChecklist
-    essentialsTitle: "Trip Essentials Checklist",
-    essentialsDesc: "Critical documents, permits, and safety checks",
+    essentialsTitle: "Reservations to Verify",
+    essentialsDesc: "Activities, dining, and safety items to confirm before the trip",
+    logisticsPageTitle: "Logistics & Bookings",
+    logisticsPageSubtitle: "Flights, vouchers, lockbox — plus reservations to verify before the trip",
     prepProgress: "Preparation Progress",
     percentReady: "{progress}% Ready",
     loadingChecklist: "Loading checklist...",
@@ -279,8 +279,10 @@ export const translations = {
     createdByLabel: "נוסף על ידי {name}",
 
     // EssentialsChecklist
-    essentialsTitle: "רשימת חיוני נסיעה",
-    essentialsDesc: "מסמכים קריטיים, אישורים ובדיקות בטיחות",
+    essentialsTitle: "הזמנות לבדיקה",
+    essentialsDesc: "פעילויות, מסעדות ופריטי בטיחות לאישור לפני הנסיעה",
+    logisticsPageTitle: "לוגיסטיקה והזמנות",
+    logisticsPageSubtitle: "טיסות, שוברים, כספת — והזמנות לבדוק לפני הנסיעה",
     prepProgress: "התקדמות ההכנה",
     percentReady: "{progress}% מוכן",
     loadingChecklist: "טוען רשימת משימות...",
@@ -412,7 +414,5 @@ export const translations = {
 };
 
 export function useTranslation() {
-  const locale = useTripStore((s) => s.locale);
-  const t = translations[locale] || translations.en;
-  return { t, locale };
+  return { t: translations.he, locale: "he" as const };
 }

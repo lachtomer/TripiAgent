@@ -1,0 +1,30 @@
+# ECC + SpecKit Integration
+# Drop this into .specify/extensions.yml in any project
+# ECC quality gates fire automatically after speckit-implement completes
+
+hooks:
+  after_implement:
+    - extension: ecc-code-review
+      command: ecc/code-review
+      optional: false
+      description: "ECC code review — quality, security, maintainability"
+      prompt: "Review all changed files for quality, security vulnerabilities, and adherence to the project constitution. Flag any issues before merge."
+
+    - extension: ecc-verification
+      command: ecc/verification-loop
+      optional: false
+      description: "ECC verification loop — build, test, lint, typecheck, coverage ≥80%"
+      prompt: "Run the full verification loop: build must pass, all tests must pass, linting clean, TypeScript errors zero, coverage must reach 80%."
+
+    - extension: ecc-security-scan
+      command: ecc/security-review
+      optional: true
+      description: "ECC security review — OWASP Top 10, secrets, injection risks"
+      prompt: "Scan all changed files for security vulnerabilities: OWASP Top 10, hardcoded secrets, injection risks, insecure dependencies, auth gaps."
+
+  before_implement:
+    - extension: ecc-search-first
+      command: ecc/search-first
+      optional: true
+      description: "ECC search-first — research APIs and libraries before writing code"
+      prompt: "Before implementing, verify: are all APIs/libraries being used real and current? Check documentation for any unfamiliar dependencies in the task list."

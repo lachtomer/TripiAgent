@@ -169,16 +169,13 @@ describe("tripStore Zustand store", () => {
     expect(useTripStore.getState().dayAnchors[2]).toBe("Rome");
   });
 
-  it("should handle locale changes and reset correctly", () => {
+  it("should always have Hebrew locale and keep it after reset", () => {
     const store = useTripStore.getState();
-    expect(store.locale).toBe("en"); // Default is en
-    
-    // Set locale to he
-    store.setLocale("he");
-    expect(useTripStore.getState().locale).toBe("he");
-    
-    // Reset store resets locale to en
+    // Feature 008: locale is always "he"
+    expect(store.locale).toBe("he");
+
+    // Reset store preserves "he"
     useTripStore.getState().resetStore();
-    expect(useTripStore.getState().locale).toBe("en");
+    expect(useTripStore.getState().locale).toBe("he");
   });
 });

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- SPECKIT START -->
-Active feature plan: `.specify/plans/step_16_plan.md`
-Spec: `.specify/step_16_map_to_home_logistics_to_bookings.md`
-Feature: Step 16 — Move Active Route Map to Home; Move Logistics to Bookings tab; Rename nav tab
+Active feature plan: `specs/008-hebrew-ui-english-chat/plan.md`
+Spec: `specs/008-hebrew-ui-english-chat/spec.md`
+Feature: 008 — Hebrew UI only; remove EN/עב toggle; English supported in chat only
 <!-- SPECKIT END -->
