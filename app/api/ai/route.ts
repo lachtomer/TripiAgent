@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AiRequestBodySchema } from "@/lib/schemas";
 import { rateLimiter } from "@/lib/rateLimit";
 import { agentGraph } from "@/lib/agentGraph";
-import { ChatMessage, LocationDetails, TripContext } from "@/types";
+import { Activity, ChatMessage, ItineraryDay, LocationDetails, TripContext } from "@/types";
 
 if (process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
     }
 
     const itinerarySummary = itinerary
-      ? itinerary
-          .map((d) => `Day ${d.dayNumber}: ${d.activities.map((a) => a.title).join(", ")}`)
+      ? (itinerary as ItineraryDay[])
+          .map((d: ItineraryDay) => `Day ${d.dayNumber}: ${d.activities.map((a: Activity) => a.title).join(", ")}`)
           .join("; ")
       : context?.itinerarySummary ?? null;
 
