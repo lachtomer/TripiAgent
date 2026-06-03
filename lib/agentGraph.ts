@@ -70,7 +70,7 @@ function resolveTripContext(state: AgentStateType): TripContext {
         .join("; ")
     : state.tripContext?.itinerarySummary ?? null;
 
-  const base = state.tripContext ?? {};
+  const base: Partial<TripContext> = state.tripContext ?? {};
 
   return {
     coords: state.location?.coords ?? base.coords ?? null,
