@@ -8,6 +8,7 @@
     "start": "next start -p 9001",
     "lint": "eslint",
     "test": "vitest run",
+    "check:chrome": "node scripts/check-no-hebrew-chrome.mjs",
     "test:e2e": "playwright test",
     "test:e2e:win": "powershell -ExecutionPolicy Bypass -File ./scripts/e2e-run.ps1"
   },

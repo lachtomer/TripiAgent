@@ -46,7 +46,8 @@ test.describe("Step 18 — Target bank day picker & activity nearby", () => {
       [STORAGE_KEY, SEED_STATE] as const
     );
     await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
-    await expect(page.locator('[data-attraction-name="Colosseum"]')).toBeVisible({ timeout: 15000 });
+    // Confirm page is loaded and ready (data-attraction-name lives on /locations, not /itinerary)
+    await expect(page.getByTestId("add-from-target-bank-day-1")).toBeVisible({ timeout: 15000 });
   });
 
   test("1. Add from Target Bank picker schedules activity on chosen day", async ({ page }) => {

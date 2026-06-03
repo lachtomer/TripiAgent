@@ -2,6 +2,11 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useTripStore } from "@/stores/tripStore";
 import { ChatMessage, TripContext } from "@/types";
+import { resolveChatContextLocale } from "@/lib/chatLocale";
+
+export type SendMessageOptions = {
+  isQuickPrompt?: boolean;
+};
 
 export function useChat() {
   const pathname = usePathname();
@@ -33,7 +38,7 @@ export function useChat() {
   }, []);
 
   const sendMessage = useCallback(
-    async (text: string) => {
+    async (text: string, options?: SendMessageOptions) => {
       if (!text.trim()) return;
 
       // Abort active stream if one is currently running
@@ -84,7 +89,7 @@ export function useChat() {
         dayOfWeek: daysOfWeek[now.getDay()],
         weather: null,
         itinerarySummary,
-        locale: typeof navigator !== "undefined" ? navigator.language : "en-US",
+        locale: resolveChatContextLocale(text, options),
       };
 
       // Map chat history payload

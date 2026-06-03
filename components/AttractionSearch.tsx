@@ -54,7 +54,7 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
 
   const { location: userLocation, refreshLocation, loading: locationLoading } = useLocation();
   const [useCurrentLocPending, setUseCurrentLocPending] = useState(false);
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [query, setQuery] = useState(defaultQuery ?? "");
   const [searchType, setSearchType] = useState<"tourist_attraction" | "restaurant">("tourist_attraction");
@@ -560,7 +560,7 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
                       )}
                     </div>
                     
-                    <div className="flex items-center justify-between gap-1.5 pt-0.5" dir={locale === "he" ? "rtl" : "ltr"}>
+                    <div className="flex items-center justify-between gap-1.5 pt-0.5" dir="ltr">
                       <span className="text-[10px] text-muted-foreground truncate max-w-[130px]">
                         {place.types?.[0]?.replace(/_/g, " ") || (searchType === "restaurant" ? t.dining : t.attractions)}
                       </span>

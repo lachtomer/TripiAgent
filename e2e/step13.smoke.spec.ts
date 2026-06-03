@@ -44,8 +44,8 @@ test.describe("Step 13 — Explore & Search Precision & UX Upgrades", () => {
     const ztlBadge = firstResultCard.locator("text=ZTL Area C");
     await expect(ztlBadge).toBeVisible();
 
-    // Get the name of the place for verification
-    const placeName = await firstResultCard.locator("h4").textContent();
+    // Get the name of the place for verification (names render via PlaceNameLink, not h4)
+    const placeName = await firstResultCard.locator("[data-place-id]").textContent();
     expect(placeName).toBeTruthy();
     console.log(`  → Direct-scheduling place: ${placeName}`);
 

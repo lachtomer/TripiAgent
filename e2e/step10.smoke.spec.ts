@@ -84,7 +84,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await page.fill("#custom-poi-notes", "Take the morning boat.");
     await page.click("#add-custom-poi-submit");
 
-    await expect(page.locator("h4:has-text('Limone Ferry Port')")).toBeVisible();
+    await expect(page.locator('[data-attraction-name="Limone Ferry Port"]')).toBeVisible({ timeout: 10000 });
 
     const select = page.locator("select").last();
     await select.selectOption("3");
@@ -93,7 +93,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     const addToDayBtn = itemContainer.locator("button", { hasText: "Add to Day" });
     await addToDayBtn.click();
 
-    await expect(page.locator("h4:has-text('Limone Ferry Port')")).toBeVisible();
+    await expect(page.locator('[data-attraction-name="Limone Ferry Port"]')).toBeVisible();
   });
 
   test("3. Today Planner is visible and interactive on Home page", async ({ page }) => {
@@ -113,7 +113,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await page.waitForLoadState("networkidle");
 
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("text=Logistics & Bookings")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Logistics & Bookings" })).toBeVisible({ timeout: 10000 });
 
     await page.fill("#logistics-flight-tlv-mxp", "LY381-E2E");
     const ztlCheckbox = page.locator("#logistics-milan-ztl-paid");

@@ -13,7 +13,7 @@ export default function LogisticsCard() {
   const isHydrated = useIsHydrated();
   const logistics = useTripStore((state) => state.logistics);
   const updateLogistics = useTripStore((state) => state.updateLogistics);
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false); // Expanded by default — now lives on dedicated bookings page
   const [showSavedFeedback, setShowSavedFeedback] = useState(false);
@@ -65,7 +65,7 @@ export default function LogisticsCard() {
   };
 
   return (
-    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir="ltr" className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}
@@ -115,7 +115,7 @@ export default function LogisticsCard() {
             {/* Flight return */}
             <div className="space-y-1">
               <label htmlFor="logistics-flight-mxp-tlv" className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
-                <Plane className={`h-3 w-3 text-primary dark:text-[#86df72] ${locale === 'he' ? '' : 'rotate-180'}`} />
+                <Plane className="h-3 w-3 text-primary dark:text-[#86df72] rotate-180" />
                 {t.returnFlight}
               </label>
               <Input

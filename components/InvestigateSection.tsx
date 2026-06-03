@@ -28,7 +28,7 @@ export default function InvestigateSection() {
     >
       <CardHeader className="p-4 bg-muted/10 border-b border-outline-variant/20 space-y-3">
         <CardTitle className="text-sm font-extrabold tracking-tight text-foreground">
-          חקר / Investigate
+          Investigate
         </CardTitle>
 
         <div className="flex w-full rounded-full bg-muted/60 p-0.5 gap-0.5">
@@ -44,14 +44,14 @@ export default function InvestigateSection() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {m === "target" ? "יעד" : "סביבי"}
+              {m === "target" ? "Target" : "Nearby"}
             </button>
           ))}
         </div>
 
         {gpsDenied && (
           <p className="text-[10px] text-muted-foreground bg-muted/30 rounded-lg px-3 py-1.5 text-center">
-            הפעל מיקום לחיפוש סביבך
+            Enable location to search near you
           </p>
         )}
       </CardHeader>

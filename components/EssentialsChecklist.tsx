@@ -22,7 +22,7 @@ const ESSENTIALS_ITEMS: ChecklistItem[] = [
 
 export default function EssentialsChecklist() {
   const isHydrated = useIsHydrated();
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [collapsed, setCollapsed] = useState(false);
 
@@ -68,7 +68,7 @@ export default function EssentialsChecklist() {
   const progressPercent = Math.round((completedCount / ESSENTIALS_ITEMS.length) * 100);
 
   return (
-    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir="ltr" className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"
         onClick={() => setCollapsed(!collapsed)}

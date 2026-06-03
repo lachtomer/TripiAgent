@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import SavedAttractionsList from "@/components/SavedAttractionsList";
 
 export const metadata: Metadata = {
-  title: "יעדים — TripiAgent",
+  title: "Locations — TripiAgent",
   description: "Saved attractions and points of interest",
 };
 

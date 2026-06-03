@@ -46,7 +46,7 @@ export default function SavedAttractionsList() {
 
   const activeUser = users.find((u) => u.id === currentUser);
   const isAdmin = isBankAdminUser(activeUser);
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [collapsed, setCollapsed] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -121,7 +121,7 @@ export default function SavedAttractionsList() {
   };
 
   return (
-    <Card dir={locale === 'he' ? 'rtl' : 'ltr'} className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
+    <Card dir="ltr" className="border border-outline-variant/30 bg-card overflow-hidden shadow-sm transition-all duration-300">
       <span data-testid="saved-attractions-ready" className="sr-only">ready</span>
       <CardHeader 
         className="p-4 flex flex-row items-center justify-between space-y-0 cursor-pointer hover:bg-muted/5 select-none"

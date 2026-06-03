@@ -105,14 +105,14 @@ test.describe("Step 21 — Auth Gate & Login", () => {
     await expect(page.locator("[data-testid='personal-packing-section']")).not.toContainText("Inhaler");
   });
 
-  test("7: LiveMapCard is visible on home", async ({ page }) => {
+  test("7: Route map is visible on home", async ({ page }) => {
     await signInAs(page, "Tomer");
     await page.goto(BASE);
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("[data-testid='live-map-card']")).toBeVisible({ timeout: 10000 });
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.locator("[data-testid='active-route-map']")).toBeVisible({ timeout: 10000 });
   });
 
-  test("8: Bookmark add shows toast 'נשמר ליעדים ✓'", async ({ page }) => {
+  test("8: Bookmark add shows toast 'Saved to Locations ✓'", async ({ page }) => {
     test.setTimeout(60000);
     await signInAs(page, "Tomer");
 
@@ -146,10 +146,10 @@ test.describe("Step 21 — Auth Gate & Login", () => {
     const bookmarkBtn = page.locator("[id^='search-bookmark-']").first();
     // Ensure it's not already saved
     await bookmarkBtn.click();
-    await expect(page.locator("[data-testid='toast-message']")).toContainText("נשמר ליעדים ✓", { timeout: 5000 });
+    await expect(page.locator("[data-testid='toast-message']")).toContainText("Saved to Locations ✓", { timeout: 5000 });
   });
 
-  test("9: Bookmark remove shows toast 'הוסר מיעדים'", async ({ page }) => {
+  test("9: Bookmark remove shows toast 'Removed from Locations'", async ({ page }) => {
     test.setTimeout(60000);
     await signInAs(page, "Tomer");
 
@@ -181,6 +181,6 @@ test.describe("Step 21 — Auth Gate & Login", () => {
     await bookmarkBtn.click();
     // Then click again to remove
     await bookmarkBtn.click();
-    await expect(page.locator("[data-testid='toast-message']")).toContainText("הוסר מיעדים", { timeout: 5000 });
+    await expect(page.locator("[data-testid='toast-message']")).toContainText("Removed from Locations", { timeout: 5000 });
   });
 });

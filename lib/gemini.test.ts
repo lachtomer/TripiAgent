@@ -14,6 +14,19 @@ describe("gemini prompts", () => {
     expect(prompt).toContain("Never invent custom website domains");
   });
 
+  it("includes mixed-language and overwhelmingly Hebrew reply rules", () => {
+    const prompt = buildSystemPrompt({
+      coords: null,
+      cityName: "Verona",
+      itinerarySummary: null,
+      locale: "en",
+    });
+
+    expect(prompt).toContain("Mixed Hebrew and English");
+    expect(prompt).toContain("Overwhelmingly Hebrew");
+    expect(prompt).toContain("respond in **English**");
+  });
+
   it("buildVenueMapsSearchUrl encodes venue and city", () => {
     const url = buildVenueMapsSearchUrl("Osteria Francescana", "Modena");
     expect(url).toContain("google.com/maps/search");

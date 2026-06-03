@@ -64,12 +64,11 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     await page.click("#logistics-save-button");
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
 
-    // Reload page to verify local storage state persistence
+    // Reload page to verify local storage state persistence (use toHaveValue to wait for Zustand rehydration)
     console.log("Reloading bookings page to verify state persistence...");
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle");
-    expect(await page.inputValue("#logistics-flight-tlv-mxp")).toBe("AZ402-Giulia");
-    expect(await ztlCheckbox.isChecked()).toBe(true);
+    await expect(page.locator("#logistics-flight-tlv-mxp")).toHaveValue("AZ402-Giulia", { timeout: 8000 });
+    await expect(ztlCheckbox).toBeChecked({ timeout: 5000 });
 
     // 3. Add Custom Luxury Attraction for the client
     console.log("Navigating to Locations page to add custom attraction...");
@@ -84,8 +83,8 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     await page.fill("#custom-poi-notes", "Luxury guided private night tour for clients.");
     await page.click("#add-custom-poi-submit");
 
-    // Verify it is added to the list
-    await expect(page.locator("h4:has-text('Private Vatican Museum Night Tour')")).toBeVisible();
+    // Verify it is added to the list (names render via PlaceNameLink, not h4)
+    await expect(page.locator('[data-attraction-name="Private Vatican Museum Night Tour"]')).toBeVisible({ timeout: 10000 });
 
     // 4. Schedule the custom attraction for Day 1
     console.log("Scheduling custom attraction to Day 1...");
@@ -98,6 +97,8 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
     await addToDayBtn.click();
     // Wait for success state (button flips to "Added!") before navigating — ensures Zustand persist flushed
     await expect(itemContainer.locator("button", { hasText: "Added!" })).toBeVisible({ timeout: 5000 });
+    // Verify the activity appears in the itinerary day card (day cards live on /itinerary, not /locations)
+    await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("#day-card-1").locator("text=Private Vatican Museum Night Tour")).toBeVisible({ timeout: 10000 });
 
     console.log("Navigating back to Home to check the Today's Planner timeline...");

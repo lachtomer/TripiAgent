@@ -119,7 +119,7 @@ export default function ChatInterface() {
     if (pendingPrompt && !firedRef.current) {
       firedRef.current = true;
       clearPendingPrompt();
-      sendMessage(pendingPrompt);
+      sendMessage(pendingPrompt, { isQuickPrompt: true });
     }
   }, [pendingPrompt, clearPendingPrompt, sendMessage]);
 
@@ -136,14 +136,14 @@ export default function ChatInterface() {
 
   const handleQuickPrompt = (prompt: string) => {
     if (loading) return;
-    sendMessage(prompt);
+    sendMessage(prompt, { isQuickPrompt: true });
   };
 
   // Show typing dots only while waiting for the FIRST stream chunk
   const showTypingDots = loading && !streamStarted;
 
   return (
-    <div dir="rtl" className="flex-1 flex flex-col min-h-0 relative">
+    <div dir="ltr" className="flex-1 flex flex-col min-h-0 relative">
       {/* Message List */}
       <div className="flex-1 overflow-y-auto px-1 space-y-4.5 pb-36 pt-2">
         {messages.length === 0 ? (
@@ -192,8 +192,8 @@ export default function ChatInterface() {
                   className={cn(
                     "rounded-2xl px-4 py-2.5 text-sm shadow-sm transition-all duration-300 border flex flex-col gap-2",
                     isUser
-                      ? cn("bg-primary text-primary-foreground border-primary/20 rounded-bl-none")
-                      : cn("bg-card text-foreground border-outline-variant/30 rounded-br-none")
+                      ? cn("bg-primary text-primary-foreground border-primary/20 rounded-br-none")
+                      : cn("bg-card text-foreground border-outline-variant/30 rounded-bl-none")
                   )}
                 >
                   {isUser ? (

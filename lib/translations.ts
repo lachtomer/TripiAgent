@@ -205,8 +205,8 @@ export const translations = {
     personalPackingSection: "My Items",
 
     // Bookmark toasts (canonical strings — must match store exactly)
-    bookmarkAdded: "נשמר ליעדים ✓",
-    bookmarkRemoved: "הוסר מיעדים",
+    bookmarkAdded: "Saved to Locations ✓",
+    bookmarkRemoved: "Removed from Locations",
   },
   he: {
     // Navigation
@@ -420,5 +420,5 @@ export const translations = {
 };
 
 export function useTranslation() {
-  return { t: translations.he, locale: "he" as const };
+  return { t: translations.en, locale: "en" as const };
 }

@@ -82,9 +82,9 @@ const MOCK_DISCOVER_MORE: PlaceDetail[] = [
   },
 ];
 
-function formatDistance(meters: number, locale: string): string {
-  if (meters < 1000) return `${meters}${locale === "he" ? " מ'" : "m"}`;
-  return `${(meters / 1000).toFixed(1)} ${locale === "he" ? 'ק"מ' : "km"}`;
+function formatDistance(meters: number): string {
+  if (meters < 1000) return `${meters}m`;
+  return `${(meters / 1000).toFixed(1)} km`;
 }
 
 interface NearbyPlacesSectionProps {
@@ -103,7 +103,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
   const users = useTripStore((s) => s.users);
   const activeUser = users.find((u) => u.id === currentUser);
   const isPlanningMode = tripMode === "planning";
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [places, setPlaces] = useState<PlaceDetail[]>([]);
   const [loading, setLoading] = useState(false);
@@ -207,7 +207,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
         ) : (
           topPicks.map((place, idx) => {
             const placeId = place.place_id;
-            const distanceStr = place.distance !== undefined ? formatDistance(place.distance, locale) : "";
+            const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
             const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[idx % PLACE_COVER_PHOTOS.length];
 
             const isSaved = savedAttractions.some((a) => a.id === placeId);
@@ -294,7 +294,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                     </div>
                     
                     {distanceStr && (
-                      <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1.5" dir={locale === "he" ? "rtl" : "ltr"}>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1.5" dir="ltr">
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="flex gap-1" dir="ltr">
                           <span>{distanceStr}</span>
@@ -342,7 +342,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
           ) : (
             discoverPlaces.map((place, idx) => {
               const placeId = place.place_id;
-              const distanceStr = place.distance !== undefined ? formatDistance(place.distance, locale) : "";
+              const distanceStr = place.distance !== undefined ? formatDistance(place.distance) : "";
               const coverImage = (place as { image?: string }).image || PLACE_COVER_PHOTOS[(idx + 3) % PLACE_COVER_PHOTOS.length];
               const isSaved = savedAttractions.some((a) => a.id === placeId);
 
@@ -418,7 +418,7 @@ export default function NearbyPlacesSection({ lat, lng }: NearbyPlacesSectionPro
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground" dir={locale === "he" ? "rtl" : "ltr"}>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground" dir="ltr">
                       {distanceStr && (
                         <span className="flex gap-1" dir="ltr">
                           <span>{distanceStr}</span>

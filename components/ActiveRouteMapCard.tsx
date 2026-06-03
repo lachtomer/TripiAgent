@@ -15,7 +15,7 @@ export default function ActiveRouteMapCard() {
         className="cursor-pointer rounded-2xl overflow-hidden border border-outline-variant/30 shadow-md"
         style={{ height: 220 }}
         role="button"
-        aria-label="הרחב מפה — Expand map"
+        aria-label="Expand map"
       >
         <LiveMapCard className="w-full h-full" />
       </div>
@@ -23,11 +23,11 @@ export default function ActiveRouteMapCard() {
       {expanded && (
         <div className="fixed inset-0 z-50 bg-background flex flex-col">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-            <span className="text-sm font-bold">המסלול שלי</span>
+            <span className="text-sm font-bold">My Route</span>
             <button
               onClick={() => setExpanded(false)}
               className="p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer"
-              aria-label="סגור — Close map"
+              aria-label="Close map"
             >
               <X className="h-5 w-5" />
             </button>

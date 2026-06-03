@@ -77,7 +77,7 @@ interface TripState {
   updateDayAnchor: (dayNumber: number, anchor: string) => void;
   voteAttraction: (attractionId: string, vote: "up" | "down" | null, userId: string) => void;
   swapItineraryDays: (dayA: number, dayB: number) => void;
-  locale: "he";
+  locale: "en";
 
   // Common packing actions
   addCommonPackingItem: (item: Omit<PackingItem, "id">) => void;
@@ -145,7 +145,7 @@ export const useTripStore = create<TripState>()(
       },
       tripMode: "planning",
       dayAnchors: {},
-      locale: "he" as const,
+      locale: "en" as const,
 
       // Common packing fields
       commonPackingList: initialPackingList,
@@ -376,7 +376,7 @@ export const useTripStore = create<TripState>()(
           },
           tripMode: "planning",
           dayAnchors: {},
-          locale: "he" as const,
+          locale: "en" as const,
         }),
 
       // New actions implementations
@@ -481,7 +481,7 @@ export const useTripStore = create<TripState>()(
           if (exists) {
             return {
               savedAttractions: state.savedAttractions.filter((a) => a.id !== place.id),
-              toast: { message: "הוסר מיעדים", type: "info" as const },
+              toast: { message: "Removed from Locations", type: "info" as const },
             };
           }
           return {
@@ -489,7 +489,7 @@ export const useTripStore = create<TripState>()(
               ...state.savedAttractions,
               { ...place, upvotes: place.upvotes ?? [], downvotes: place.downvotes ?? [] },
             ],
-            toast: { message: "נשמר ליעדים ✓", type: "success" as const },
+            toast: { message: "Saved to Locations ✓", type: "success" as const },
           };
         }),
     }),
@@ -536,9 +536,9 @@ export const useTripStore = create<TripState>()(
             state.commonCheckmarks = {};
           }
 
-          // Feature 008: pin locale to "he" — coerce any legacy "en" value
-          if ((state.locale as string) !== "he") {
-            state.locale = "he";
+          // Feature 009: pin locale to "en" — coerce any legacy "he" value
+          if ((state.locale as string) !== "en") {
+            state.locale = "en";
           }
         }
       },
