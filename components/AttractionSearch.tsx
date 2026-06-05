@@ -15,6 +15,41 @@ import { useLocation } from "@/hooks/useLocation";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { DEFAULT_ITALY_ITINERARY } from "./ItineraryCard";
 import { useTranslation } from "@/lib/translations";
+import type { SearchAnchor } from "@/lib/searchIntent";
+import {
+  parseKeywordInLocation,
+  parseNameWithArea,
+  isLocationBrowseCandidate,
+} from "@/lib/searchIntent";
+
+const LOCALITY_TYPES = new Set([
+  "locality",
+  "administrative_area_level_1",
+  "administrative_area_level_2",
+  "administrative_area_level_3",
+  "political",
+]);
+
+interface GeocodeProbeResult {
+  lat: number;
+  lng: number;
+  cityName: string;
+  placeTypes?: string[];
+  matchedName?: string;
+}
+
+async function geocodeQuery(query: string): Promise<GeocodeProbeResult> {
+  const res = await fetch(`/api/geocode?query=${encodeURIComponent(query)}`);
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error((errData as { error?: string }).error || `Failed to locate "${query}"`);
+  }
+  return res.json() as Promise<GeocodeProbeResult>;
+}
+
+function probeLooksLikeLocality(probe: GeocodeProbeResult): boolean {
+  return (probe.placeTypes ?? []).some((t) => LOCALITY_TYPES.has(t));
+}
 
 const PLACE_FALLBACK_PHOTOS = [
   "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=300&q=80", // Colosseum
@@ -36,7 +71,17 @@ const isVegan = (placeId: string) => {
   return placeId.charCodeAt(placeId.length - 4) % 2 === 0;
 };
 
-export default function AttractionSearch({ defaultQuery, headless }: { defaultQuery?: string; headless?: boolean }) {
+export default function AttractionSearch({
+  defaultQuery,
+  headless,
+  investigateMode,
+  searchAnchor,
+}: {
+  defaultQuery?: string;
+  headless?: boolean;
+  investigateMode?: "target" | "around-me";
+  searchAnchor?: SearchAnchor;
+}) {
   const router = useRouter();
   const toggleSearchBookmark = useTripStore((s) => s.toggleSearchBookmark);
   const savedAttractions = useTripStore((s) => s.savedAttractions);
@@ -63,6 +108,7 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
   const [visibleCount, setVisibleCount] = useState<number>(5);
   const results = allResults.slice(0, visibleCount);
   const [error, setError] = useState<string | null>(null);
+  const [emptyHint, setEmptyHint] = useState<string | null>(null);
   
   // Custom states for precision search & direct itinerary binding
   const [localWeather, setLocalWeather] = useState<string | null>(null);
@@ -79,14 +125,58 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
   // Search Radius States
   const [selectedRadius, setSelectedRadius] = useState<number>(5); // Default is 5km
   const [lastSearchCoords, setLastSearchCoords] = useState<{ lat: number; lng: number; cityName: string | null; keyword?: string } | null>(null);
+  const [lastSearchMode, setLastSearchMode] = useState<"nearby" | "text" | null>(null);
+  const [lastTextQuery, setLastTextQuery] = useState<string | null>(null);
 
-  const fetchPlacesNearCoords = useCallback(async (lat: number, lng: number, cityName: string | null, keyword?: string, radiusOverride?: number) => {
+  const applyResultFilters = useCallback(
+    (places: PlaceDetail[]) => {
+      const sorted = places
+        .filter((p) => p.name)
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+      if (searchType !== "restaurant") return sorted;
+
+      let filtered = sorted;
+      if (openNowOnly) filtered = filtered.filter((p) => p.open_now !== false);
+      if (glutenFreeOnly) filtered = filtered.filter((p) => isGlutenFree(p.place_id));
+      if (diabeticFriendlyOnly) filtered = filtered.filter((p) => isDiabeticFriendly(p.place_id));
+      if (moreOptions.includes("vegetarian")) filtered = filtered.filter((p) => isVegetarian(p.place_id));
+      if (moreOptions.includes("vegan")) filtered = filtered.filter((p) => isVegan(p.place_id));
+      return filtered;
+    },
+    [searchType, openNowOnly, glutenFreeOnly, diabeticFriendlyOnly, moreOptions]
+  );
+
+  const fetchWeatherForCoords = useCallback(async (lat: number, lng: number) => {
+    try {
+      const weatherRes = await fetch(`/api/weather?lat=${lat}&lng=${lng}`);
+      if (weatherRes.ok) {
+        const weatherData = await weatherRes.json();
+        if (weatherData?.condition) {
+          setLocalWeather(weatherData.condition.toLowerCase());
+        }
+      }
+    } catch (weatherErr) {
+      console.warn("Could not fetch weather for search warning check:", weatherErr);
+    }
+  }, []);
+
+  const fetchPlacesNearCoords = useCallback(async (
+    lat: number,
+    lng: number,
+    cityName: string | null,
+    keyword?: string,
+    radiusOverride?: number
+  ): Promise<boolean> => {
     setLoading(true);
     setError(null);
+    setEmptyHint(null);
     setAllResults([]);
     setVisibleCount(5);
     setLocalWeather(null);
     setLastSearchCoords({ lat, lng, cityName, keyword });
+    setLastSearchMode("nearby");
+    setLastTextQuery(null);
 
     const radiusVal = radiusOverride !== undefined ? radiusOverride : selectedRadius;
     const radiusMeters = radiusVal * 1000;
@@ -98,71 +188,102 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
       );
       if (!placesRes.ok) {
         const errData = await placesRes.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to load spots");
+        throw new Error((errData as { error?: string }).error || "Failed to load spots");
       }
       const placesData: PlaceDetail[] = await placesRes.json();
-      
-      const sorted = placesData
-        .filter((p) => p.name)
-        .sort((a, b) => (b.rating || 0) - (a.rating || 0));
-
-      let filtered = sorted;
-      if (searchType === "restaurant") {
-        if (openNowOnly) {
-          filtered = filtered.filter(p => p.open_now !== false);
-        }
-        if (glutenFreeOnly) {
-          filtered = filtered.filter(p => isGlutenFree(p.place_id));
-        }
-        if (diabeticFriendlyOnly) {
-          filtered = filtered.filter(p => isDiabeticFriendly(p.place_id));
-        }
-        if (moreOptions.includes("vegetarian")) {
-          filtered = filtered.filter(p => isVegetarian(p.place_id));
-        }
-        if (moreOptions.includes("vegan")) {
-          filtered = filtered.filter(p => isVegan(p.place_id));
-        }
-      }
+      const filtered = applyResultFilters(placesData);
 
       setAllResults(filtered);
       setVisibleCount(5);
       if (filtered.length === 0) {
-        setError(`No matching ${searchType === "restaurant" ? "restaurants" : "attractions"} found in ${cityName || "this location"} for the selected filters.`);
+        setEmptyHint(t.searchNoResultsHint);
+        return false;
       }
 
-      // Fetch local weather to check for rain alerts
-      try {
-        const weatherRes = await fetch(`/api/weather?lat=${lat}&lng=${lng}`);
-        if (weatherRes.ok) {
-          const weatherData = await weatherRes.json();
-          if (weatherData?.condition) {
-            setLocalWeather(weatherData.condition.toLowerCase());
-          }
-        }
-      } catch (weatherErr) {
-        console.warn("Could not fetch weather for search warning check:", weatherErr);
-      }
+      await fetchWeatherForCoords(lat, lng);
+      return true;
     } catch (err) {
       console.error("Search failed:", err);
       const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
       setError(errMsg);
+      return false;
     } finally {
       setLoading(false);
     }
   }, [
     searchType,
-    openNowOnly,
-    glutenFreeOnly,
-    diabeticFriendlyOnly,
-    moreOptions,
     selectedRadius,
-    setVisibleCount,
-    setLoading,
-    setError,
-    setAllResults,
-    setLocalWeather,
-    setLastSearchCoords
+    applyResultFilters,
+    fetchWeatherForCoords,
+    t.searchNoResultsHint,
+  ]);
+
+  const fetchPlacesByText = useCallback(async (
+    textQuery: string,
+    biasLat: number,
+    biasLng: number,
+    biasLabel: string | null,
+    radiusOverride?: number,
+    options?: { suppressEmptyHint?: boolean }
+  ): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    if (!options?.suppressEmptyHint) setEmptyHint(null);
+    setAllResults([]);
+    setVisibleCount(5);
+    setLocalWeather(null);
+    setLastSearchCoords({ lat: biasLat, lng: biasLng, cityName: biasLabel });
+    setLastSearchMode("text");
+    setLastTextQuery(textQuery);
+
+    const radiusVal = radiusOverride !== undefined ? radiusOverride : selectedRadius;
+    const radiusMeters = radiusVal * 1000;
+
+    try {
+      const params = new URLSearchParams({
+        q: textQuery,
+        lat: String(biasLat),
+        lng: String(biasLng),
+        radius: String(radiusMeters),
+        type: searchType,
+      });
+      const placesRes = await fetch(`/api/places/text?${params.toString()}`);
+
+      if (placesRes.status === 404) {
+        if (!options?.suppressEmptyHint) setEmptyHint(t.searchNoResultsHint);
+        return false;
+      }
+      if (!placesRes.ok) {
+        const errData = await placesRes.json().catch(() => ({}));
+        throw new Error((errData as { error?: string }).error || "Failed to load places by name");
+      }
+
+      const placesData: PlaceDetail[] = await placesRes.json();
+      const filtered = applyResultFilters(placesData);
+
+      setAllResults(filtered);
+      setVisibleCount(5);
+      if (filtered.length === 0) {
+        if (!options?.suppressEmptyHint) setEmptyHint(t.searchNoResultsHint);
+        return false;
+      }
+
+      await fetchWeatherForCoords(biasLat, biasLng);
+      return true;
+    } catch (err) {
+      console.error("Text search failed:", err);
+      const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
+      setError(errMsg);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    searchType,
+    selectedRadius,
+    applyResultFilters,
+    fetchWeatherForCoords,
+    t.searchNoResultsHint,
   ]);
 
   useEffect(() => {
@@ -208,49 +329,96 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const queryStr = query.trim();
-    if (!queryStr) return;
+    if (queryStr.length < 3) return;
 
-    setLoading(true);
-    setError(null);
-    setAllResults([]);
-    setVisibleCount(5);
-
-    let searchCity = queryStr;
-    let keyword: string | undefined = undefined;
-
-    const inIndex = queryStr.toLowerCase().indexOf(" in ");
-    if (inIndex !== -1) {
-      keyword = queryStr.substring(0, inIndex).trim();
-      searchCity = queryStr.substring(inIndex + 4).trim();
+    if (investigateMode === "around-me" && searchAnchor && !searchAnchor.ready) {
+      setError("Location permission denied. Please search by city name.");
+      return;
     }
 
-    
+    setError(null);
+    setEmptyHint(null);
+
+    const keywordSplit = parseKeywordInLocation(queryStr);
+    if (keywordSplit) {
+      try {
+        const geocodeData = await geocodeQuery(keywordSplit.locationText);
+        await fetchPlacesNearCoords(
+          geocodeData.lat,
+          geocodeData.lng,
+          geocodeData.cityName,
+          keywordSplit.keyword
+        );
+      } catch (err) {
+        console.error("Search failed:", err);
+        setError(err instanceof Error ? err.message : "An unexpected error occurred during search.");
+        setLoading(false);
+      }
+      return;
+    }
+
+    const nameAreaSplit = parseNameWithArea(queryStr);
+    let textQuery = queryStr;
+    let biasLat = searchAnchor?.lat ?? 0;
+    let biasLng = searchAnchor?.lng ?? 0;
+    let biasLabel = searchAnchor?.label ?? null;
 
     try {
-      // Step 1: Geocode the city query to get lat & lng
-      const geocodeRes = await fetch(`/api/geocode?query=${encodeURIComponent(searchCity)}`);
-      if (!geocodeRes.ok) {
-        const errData = await geocodeRes.json().catch(() => ({}));
-        throw new Error(errData.error || `Failed to locate "${searchCity}"`);
+      if (nameAreaSplit) {
+        textQuery = nameAreaSplit.nameText;
+        const areaProbe = await geocodeQuery(nameAreaSplit.areaText);
+        biasLat = areaProbe.lat;
+        biasLng = areaProbe.lng;
+        biasLabel = areaProbe.cityName;
+        await fetchPlacesByText(textQuery, biasLat, biasLng, biasLabel);
+        return;
       }
-      const geocodeData = await geocodeRes.json();
-      const { lat, lng, cityName } = geocodeData;
 
-      // Step 2: Search places near coords
-      await fetchPlacesNearCoords(lat, lng, cityName, keyword);
+      const probe = await geocodeQuery(queryStr);
+
+      if (isLocationBrowseCandidate(queryStr, probe)) {
+        await fetchPlacesNearCoords(probe.lat, probe.lng, probe.cityName);
+        return;
+      }
+
+      if (searchAnchor && !searchAnchor.ready) {
+        setError("Location permission denied. Please search by city name.");
+        return;
+      }
+
+      const textFound = await fetchPlacesByText(
+        textQuery,
+        biasLat,
+        biasLng,
+        biasLabel,
+        undefined,
+        { suppressEmptyHint: searchType === "restaurant" && probeLooksLikeLocality(probe) }
+      );
+
+      if (!textFound && searchType === "restaurant" && probeLooksLikeLocality(probe)) {
+        await fetchPlacesNearCoords(probe.lat, probe.lng, probe.cityName);
+      }
     } catch (err) {
       console.error("Search failed:", err);
-      const errMsg = err instanceof Error ? err.message : "An unexpected error occurred during search.";
-      setError(errMsg);
+      setError(err instanceof Error ? err.message : "An unexpected error occurred during search.");
       setLoading(false);
     }
   };
+
+  const searchExamples = [
+    { key: "gardaland", value: t.searchExampleGardaland },
+    { key: "verona", value: t.searchExampleVerona },
+    { key: "pizzaInMilan", value: t.searchExamplePizzaInMilan },
+  ];
 
   const handlePlaceTap = (place: { name: string }) => {
     const prompt = `Tell me more about ${place.name}. What should I know before visiting? Any tips?`;
     setPendingPrompt(prompt);
     router.push("/chat");
   };
+
+  const anchorBlocksSearch = searchAnchor != null && !searchAnchor.ready;
+  const queryTooShort = query.trim().length > 0 && query.trim().length < 3;
 
   const content = (
     <CardContent className="p-4 space-y-4">
@@ -285,7 +453,7 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
             <Button
               id="attraction-search-btn"
               type="submit"
-              disabled={loading || !query.trim()}
+              disabled={loading || query.trim().length < 3 || anchorBlocksSearch}
               size="sm"
               className="h-9.5 bg-[#006400] hover:bg-[#004d00] dark:bg-[#86df72] dark:hover:bg-[#9df888] text-white dark:text-zinc-950 px-4 gap-1.5 shrink-0 rounded-xl"
               data-testid="search-button"
@@ -298,6 +466,31 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
               {t.searchBtn}
             </Button>
           </div>
+
+          <p
+            data-testid="search-helper-hint"
+            className="text-[10px] text-muted-foreground leading-snug px-0.5"
+          >
+            {t.searchHelperHint}
+          </p>
+
+          <div className="flex flex-wrap gap-1.5">
+            {searchExamples.map(({ key, value }) => (
+              <button
+                key={key}
+                type="button"
+                data-testid="search-example-chip"
+                onClick={() => setQuery(value)}
+                className="px-2.5 py-1 rounded-full text-[10px] font-semibold border border-outline-variant/30 bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+
+          {queryTooShort && (
+            <p className="text-[10px] text-muted-foreground px-0.5">Enter at least 3 characters to search.</p>
+          )}
 
           {/* Search Category Toggle Chips */}
           <div className="flex gap-2 justify-start items-center pt-0.5">
@@ -350,8 +543,16 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
                 id={`search-radius-${r}km`}
                 onClick={() => {
                   setSelectedRadius(r);
-                  if (lastSearchCoords) {
-                    fetchPlacesNearCoords(
+                  if (lastSearchMode === "text" && lastTextQuery && lastSearchCoords) {
+                    void fetchPlacesByText(
+                      lastTextQuery,
+                      lastSearchCoords.lat,
+                      lastSearchCoords.lng,
+                      lastSearchCoords.cityName,
+                      r
+                    );
+                  } else if (lastSearchCoords) {
+                    void fetchPlacesNearCoords(
                       lastSearchCoords.lat,
                       lastSearchCoords.lng,
                       lastSearchCoords.cityName,
@@ -475,6 +676,15 @@ export default function AttractionSearch({ defaultQuery, headless }: { defaultQu
         {error && (
           <p className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2 text-center font-medium">
             {error}
+          </p>
+        )}
+
+        {emptyHint && !loading && !error && (
+          <p
+            data-testid="search-empty-hint"
+            className="text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 text-center font-medium"
+          >
+            {emptyHint}
           </p>
         )}
 

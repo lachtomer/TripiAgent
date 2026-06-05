@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getDistanceMeters,
   getProgressiveNearbyPlaces,
+  searchPlacesByText,
   PLACE_DETAILS_ENRICHMENT_CAP,
   buildGoogleMapsUrl,
 } from "./places";
@@ -195,5 +196,116 @@ describe("places utilities", () => {
     expect(data[8].website_url).toBeUndefined();
     expect(data[8].maps_url).toBe(buildGoogleMapsUrl("place-8"));
     expect(data[19].maps_url).toBe(buildGoogleMapsUrl("place-19"));
+  });
+});
+
+describe("searchPlacesByText", () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("returns biased results sorted by distance when Phase A has hits", async () => {
+    global.fetch = vi.fn().mockImplementation(async (url: string) => {
+      if (url.includes("/place/details/json")) {
+        return {
+          ok: true,
+          json: async () => ({ status: "OK", result: {} }),
+        } as Response;
+      }
+
+      expect(url).toContain("textsearch/json");
+      expect(url).toContain("location=45.44%2C10.71");
+      expect(url).toContain("radius=50000");
+
+      return {
+        ok: true,
+        json: async () => ({
+          status: "OK",
+          results: [
+            {
+              place_id: "far",
+              name: "Far Park",
+              rating: 4.9,
+              geometry: { location: { lat: 45.5, lng: 10.8 } },
+            },
+            {
+              place_id: "near",
+              name: "Gardaland",
+              rating: 4.6,
+              geometry: { location: { lat: 45.45, lng: 10.72 } },
+            },
+          ],
+        }),
+      } as Response;
+    });
+
+    const data = await searchPlacesByText(
+      "Gardaland",
+      45.44,
+      10.71,
+      "tourist_attraction",
+      "mock-key"
+    );
+
+    expect(data[0].name).toBe("Gardaland");
+    expect(data[0].distance).toBeDefined();
+    expect(data[1].name).toBe("Far Park");
+  });
+
+  it("runs Phase B without location when Phase A is empty", async () => {
+    const textSearchUrls: string[] = [];
+
+    global.fetch = vi.fn().mockImplementation(async (url: string) => {
+      if (url.includes("/place/details/json")) {
+        return {
+          ok: true,
+          json: async () => ({ status: "OK", result: {} }),
+        } as Response;
+      }
+
+      textSearchUrls.push(url);
+
+      if (textSearchUrls.length === 1) {
+        return {
+          ok: true,
+          json: async () => ({ status: "ZERO_RESULTS", results: [] }),
+        } as Response;
+      }
+
+      expect(url).not.toContain("location=");
+      expect(url).toMatch(/query=Colosseum(%2C|\+).*Italy/);
+
+      return {
+        ok: true,
+        json: async () => ({
+          status: "OK",
+          results: [
+            {
+              place_id: "colosseum",
+              name: "Colosseum",
+              rating: 4.8,
+              geometry: { location: { lat: 41.89, lng: 12.49 } },
+            },
+          ],
+        }),
+      } as Response;
+    });
+
+    const data = await searchPlacesByText(
+      "Colosseum",
+      45.44,
+      10.71,
+      "tourist_attraction",
+      "mock-key"
+    );
+
+    expect(textSearchUrls.length).toBe(2);
+    expect(data[0].name).toBe("Colosseum");
   });
 });

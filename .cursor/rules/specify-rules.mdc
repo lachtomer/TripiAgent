@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- SPECKIT START -->
-Active feature plan: `specs/009-english-ui-hebrew-chat/plan.md`
-Spec: `specs/009-english-ui-hebrew-chat/spec.md`
-Feature: 009 — English UI only; Hebrew supported in chat
+Active feature plan: `specs/010-attraction-name-search/plan.md`
+Spec: `specs/010-attraction-name-search/spec.md`
+Feature: 010 — Search by attraction name in Investigate
 <!-- SPECKIT END -->

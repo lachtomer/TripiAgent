@@ -24,6 +24,7 @@ interface GooglePlaceResult {
   };
   types?: string[];
   vicinity?: string;
+  formatted_address?: string;
   geometry?: {
     location?: {
       lat?: number;
@@ -198,4 +199,117 @@ export async function getProgressiveNearbyPlaces(
 
   const results = await getGoogleNearbyPlaces(lat, lng, 5000, type, apiKey, keyword);
   return enrichPlacesWithDetails(results, apiKey);
+}
+
+const TEXT_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json";
+
+function mapTextSearchResults(
+  results: GooglePlaceResult[],
+  biasLat?: number,
+  biasLng?: number
+): PlaceDetail[] {
+  return results.map((place) => {
+    const placeLat = place.geometry?.location?.lat;
+    const placeLng = place.geometry?.location?.lng;
+    const distance =
+      biasLat !== undefined &&
+      biasLng !== undefined &&
+      placeLat !== undefined &&
+      placeLng !== undefined
+        ? getDistanceMeters(biasLat, biasLng, placeLat, placeLng)
+        : undefined;
+
+    return {
+      place_id: place.place_id,
+      name: place.name,
+      rating: place.rating,
+      open_now: place.opening_hours?.open_now,
+      types: place.types || [],
+      distance,
+      maps_url: buildGoogleMapsUrl(place.place_id),
+      formatted_address: place.formatted_address,
+      address: place.vicinity ?? place.formatted_address,
+    };
+  });
+}
+
+function sortBiasedTextResults(places: PlaceDetail[]): PlaceDetail[] {
+  return [...places].sort((a, b) => {
+    const distA = a.distance ?? Number.POSITIVE_INFINITY;
+    const distB = b.distance ?? Number.POSITIVE_INFINITY;
+    if (distA !== distB) return distA - distB;
+    return (b.rating ?? 0) - (a.rating ?? 0);
+  });
+}
+
+function sortNationalTextResults(places: PlaceDetail[]): PlaceDetail[] {
+  return [...places].sort((a, b) => {
+    const ratingDiff = (b.rating ?? 0) - (a.rating ?? 0);
+    if (ratingDiff !== 0) return ratingDiff;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+async function fetchGoogleTextSearch(
+  query: string,
+  apiKey: string,
+  type: string | undefined,
+  bias?: { lat: number; lng: number; radius: number }
+): Promise<GooglePlaceResult[]> {
+  const params = new URLSearchParams({
+    query,
+    key: apiKey,
+  });
+  if (type) params.set("type", type);
+  if (bias) {
+    params.set("location", `${bias.lat},${bias.lng}`);
+    params.set("radius", String(bias.radius));
+  }
+
+  const response = await fetch(`${TEXT_SEARCH_URL}?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Google Text Search HTTP error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
+    throw new Error(`Google Text Search API error: ${data.status}`);
+  }
+
+  return (data.results as GooglePlaceResult[] | undefined) ?? [];
+}
+
+/** Name-led search: biased Phase A, national Phase B if empty. */
+export async function searchPlacesByText(
+  query: string,
+  biasLat: number,
+  biasLng: number,
+  type: "tourist_attraction" | "restaurant" | undefined,
+  apiKey: string,
+  radiusMeters = 50_000
+): Promise<PlaceDetail[]> {
+  const phaseAResults = await fetchGoogleTextSearch(query, apiKey, type, {
+    lat: biasLat,
+    lng: biasLng,
+    radius: radiusMeters,
+  });
+
+  if (phaseAResults.length > 0) {
+    const mapped = mapTextSearchResults(phaseAResults, biasLat, biasLng);
+    const sorted = sortBiasedTextResults(mapped).slice(0, 20);
+    return enrichPlacesWithDetails(sorted, apiKey);
+  }
+
+  const nationalQuery = query.toLowerCase().includes("italy")
+    ? query
+    : `${query}, Italy`;
+  const phaseBResults = await fetchGoogleTextSearch(nationalQuery, apiKey, type);
+
+  if (phaseBResults.length === 0) {
+    return [];
+  }
+
+  const mapped = mapTextSearchResults(phaseBResults);
+  const sorted = sortNationalTextResults(mapped).slice(0, 20);
+  return enrichPlacesWithDetails(sorted, apiKey);
 }

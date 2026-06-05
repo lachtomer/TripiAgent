@@ -50,6 +50,18 @@ export const PlacesQuerySchema = z.object({
   radius: z.string().optional().transform((val) => val ? parseInt(val, 10) : 500).refine((val) => !isNaN(val)),
 });
 
+export const PlacesTextQuerySchema = z.object({
+  q: z.string().min(3).max(120),
+  lat: z.string().transform((val) => parseFloat(val)).refine((val) => !isNaN(val)),
+  lng: z.string().transform((val) => parseFloat(val)).refine((val) => !isNaN(val)),
+  type: z.enum(["tourist_attraction", "restaurant"]).optional(),
+  radius: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 50_000))
+    .refine((val) => !isNaN(val) && val > 0),
+});
+
 export const LocationCoordsSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),

@@ -60,8 +60,17 @@ export async function GET(request: NextRequest) {
 
       // Extract city name or formatted address fallback
       const cityName = result.name || formattedAddress.split(",")[0];
+      const placeTypes = (result.types as string[] | undefined) ?? [];
+      const matchedName = (result.name as string | undefined) ?? cityName;
 
-      return NextResponse.json({ lat, lng, cityName, formattedAddress });
+      return NextResponse.json({
+        lat,
+        lng,
+        cityName,
+        formattedAddress,
+        placeTypes,
+        matchedName,
+      });
     } catch (error) {
       console.error("Forward geocoding via Places API failed:", error);
       return NextResponse.json({ error: "Failed to geocode address" }, { status: 500 });

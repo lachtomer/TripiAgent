@@ -74,6 +74,10 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
 
           cityName: "Verona",
 
+          matchedName: "Verona",
+
+          placeTypes: ["locality", "political"],
+
         }),
 
       });
@@ -84,9 +88,14 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
 
     const requestedRadii: string[] = [];
 
-    await page.route("**/api/places*", async (route) => {
+    await page.route("**/api/places?**", async (route) => {
 
       const url = new URL(route.request().url());
+
+      if (url.pathname.includes("/places/text")) {
+        await route.continue();
+        return;
+      }
 
       const radius = url.searchParams.get("radius");
 

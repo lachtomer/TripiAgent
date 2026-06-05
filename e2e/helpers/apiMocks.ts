@@ -151,3 +151,126 @@ export async function mockBankPlacesSubmit(page: Page) {
     });
   });
 }
+
+export const MOCK_GARDALAND_TEXT = [
+  {
+    place_id: "mock-gardaland-1",
+    name: "Gardaland",
+    rating: 4.6,
+    formatted_address: "Castelnuovo del Garda, Italy",
+    maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=mock-gardaland-1",
+  },
+];
+
+export async function mockGardalandTextSearch(page: Page) {
+  await page.route("**/api/geocode**", async (route) => {
+    const url = new URL(route.request().url());
+    const query = (url.searchParams.get("query") ?? "").toLowerCase();
+    if (query === "gardaland") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          lat: 45.4542,
+          lng: 10.7137,
+          cityName: "Gardaland",
+          matchedName: "Gardaland",
+          placeTypes: ["amusement_park", "point_of_interest", "establishment"],
+        }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.route("**/api/places/text**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(MOCK_GARDALAND_TEXT),
+    });
+  });
+
+  await page.route("**/api/weather**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ condition: "Clear", temp: 22 }),
+    });
+  });
+}
+
+export async function mockGardalandTextSearchEmpty(page: Page) {
+  await page.route("**/api/geocode**", async (route) => {
+    const url = new URL(route.request().url());
+    const query = (url.searchParams.get("query") ?? "").toLowerCase();
+    if (query === "gardaland") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          lat: 45.4542,
+          lng: 10.7137,
+          cityName: "Gardaland",
+          matchedName: "Gardaland",
+          placeTypes: ["amusement_park", "point_of_interest", "establishment"],
+        }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.route("**/api/places/text**", async (route) => {
+    await route.fulfill({
+      status: 404,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "No places found for this name" }),
+    });
+  });
+}
+
+export async function mockVeronaLocationBrowse(page: Page) {
+  await page.route("**/api/geocode**", async (route) => {
+    const url = new URL(route.request().url());
+    const query = (url.searchParams.get("query") ?? "").toLowerCase();
+    if (query === "verona") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          lat: 45.4384,
+          lng: 10.9916,
+          cityName: "Verona",
+          matchedName: "Verona",
+          placeTypes: ["locality", "political"],
+        }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.route("**/api/places**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([
+        {
+          place_id: "mock-verona-arena",
+          name: "Arena di Verona",
+          rating: 4.7,
+          maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=mock-verona-arena",
+        },
+      ]),
+    });
+  });
+
+  await page.route("**/api/weather**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ condition: "Clear", temp: 20 }),
+    });
+  });
+}

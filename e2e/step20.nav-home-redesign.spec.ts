@@ -38,8 +38,13 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
     ];
 
     for (const [selector, expectedPath] of routes) {
-      await page.locator(selector).click();
-      await page.waitForURL(`**${expectedPath}`, { waitUntil: "domcontentloaded", timeout: 20000 });
+      const tab = page.locator(selector);
+      await tab.scrollIntoViewIfNeeded();
+      await expect(tab).toBeVisible({ timeout: 10000 });
+      await tab.click();
+      await expect(page).toHaveURL(new RegExp(`${expectedPath.replace("/", "\\/")}$`), {
+        timeout: 20000,
+      });
       await page.waitForLoadState("domcontentloaded");
     }
 

@@ -35,11 +35,13 @@ test.describe("Step 16 — Search Results Pagination", () => {
           lng: 12.3155,
           cityName: "Venice",
           formattedAddress: "Venice, Italy",
+          placeTypes: ["locality", "political"],
+          matchedName: "Venice",
         }),
       });
     });
 
-    await page.route("**/api/places*", async (route) => {
+    await page.route(/\/api\/places(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -60,9 +62,8 @@ test.describe("Step 16 — Search Results Pagination", () => {
     const searchBtn = page.locator("#attraction-search-btn");
     await searchBtn.click();
 
-    // 3. Wait for results to render
-    const resultsContainer = page.locator("div.space-y-3").last();
-    const resultCards = resultsContainer.locator("div.group.animate-in");
+    // 3. Wait for results to render (semantic cards, not form layout)
+    const resultCards = page.locator("[data-testid='investigate-section'] [data-place-id]");
     await expect(resultCards.first()).toBeVisible({ timeout: 10000 });
 
     // 4. Assert exactly 5 results are rendered initially
