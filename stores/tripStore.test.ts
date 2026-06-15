@@ -43,6 +43,7 @@ describe("tripStore Zustand store", () => {
     expect(added?.lat).toBe(43.7678);
     expect(added?.lng).toBe(11.2553);
     expect(added?.time).toBe("14:00");
+    expect(added?.sourceAttractionId).toBe("poi-uffizi");
   });
 
   it("should add place to itinerary via addPlaceToItinerary", () => {

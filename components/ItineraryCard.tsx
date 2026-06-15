@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TargetBankDayPicker from "@/components/TargetBankDayPicker";
+import PlanBDayPanel from "@/components/PlanBDayPanel";
 import ActivityNearbyPanel from "@/components/ActivityNearbyPanel";
 import { 
   Calendar, 
@@ -793,6 +794,15 @@ export default function ItineraryCard() {
                     })}
                   </div>
                 )}
+
+                <PlanBDayPanel
+                  dayNumber={day.dayNumber}
+                  defaultAddTime="14:00"
+                  disabled={isPlanning}
+                  showWeatherHint={day.activities.some((act) =>
+                    checkRainAlert(act, day.dayNumber)
+                  )}
+                />
               </CardContent>
             </Card>
           );

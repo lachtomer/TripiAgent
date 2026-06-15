@@ -14,6 +14,8 @@ export interface Activity {
   lat?: number;
   lng?: number;
   weatherForecast?: string;
+  /** Target Bank entry id when activity was added from the bank */
+  sourceAttractionId?: string;
 }
 
 export interface ItineraryDay {
@@ -100,6 +102,12 @@ export interface SavedAttraction {
   upvotes?: string[]; // array of user IDs who upvoted
   downvotes?: string[]; // array of user IDs who downvoted
   createdBy?: string;
+  /** 1-based itinerary day this entry backs up (Plan B hint) */
+  backupForDay?: number;
+  /** Activity title or bank id this entry is an alternate for */
+  alternateFor?: string;
+  /** One-line Plan B reason shown on itinerary day cards */
+  planBReason?: string;
 }
 
 export interface UserProfile {

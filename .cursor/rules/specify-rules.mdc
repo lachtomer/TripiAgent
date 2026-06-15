@@ -5,7 +5,9 @@ alwaysApply: false
 ---
 
 <!-- SPECKIT START -->
-Active feature plan: `specs/010-attraction-name-search/plan.md`
-Spec: `specs/010-attraction-name-search/spec.md`
-Feature: 010 — Search by attraction name in Investigate
+Active feature plan: `specs/011-bank-planned-plan-ab/plan.md`
+Tasks: `specs/011-bank-planned-plan-ab/tasks.md`
+Spec: `specs/011-bank-planned-plan-ab/spec.md`
+Feature: 011 — Planned bank sorting & Plan A/B per day
+Next: Feature 011 implementation complete — commit/deploy on request
 <!-- SPECKIT END -->

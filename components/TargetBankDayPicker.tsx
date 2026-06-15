@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bookmark, Clock } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Bookmark, CalendarCheck, Clock } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/sheet";
 import { useTripStore } from "@/stores/tripStore";
 import { useTranslation } from "@/lib/translations";
+import { DEFAULT_ITALY_ITINERARY } from "@/lib/defaultItalyItinerary";
+import { sortBankEntries } from "@/lib/bankPlanned";
 
 interface TargetBankDayPickerProps {
   dayNumber: number;
@@ -30,14 +32,34 @@ export default function TargetBankDayPicker({
 }: TargetBankDayPickerProps) {
   const { t } = useTranslation();
   const savedAttractions = useTripStore((s) => s.savedAttractions);
+  const itinerary = useTripStore((s) => s.itinerary);
   const addAttractionToItinerary = useTripStore((s) => s.addAttractionToItinerary);
   const setToast = useTripStore((s) => s.setToast);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [scheduleTime, setScheduleTime] = useState("12:00");
 
+  const activeItinerary =
+    itinerary && itinerary.length > 0 ? itinerary : DEFAULT_ITALY_ITINERARY;
+
+  const sortedEntries = useMemo(
+    () => sortBankEntries(savedAttractions, activeItinerary),
+    [savedAttractions, activeItinerary]
+  );
+
+  const formatScheduledDaysLabel = (days: number[]) => {
+    if (days.length === 0) return "";
+    if (days.length === 1) {
+      return t.bankScheduledOnDay.replace("{day}", String(days[0]));
+    }
+    return days.map((day) => `Day ${day}`).join(", ");
+  };
+
   const handleConfirm = () => {
     if (!selectedId) return;
+    const selectedRow = sortedEntries.find((row) => row.entry.id === selectedId);
+    if (selectedRow?.plannedStatus.isPlanned) return;
+
     addAttractionToItinerary(dayNumber, selectedId, scheduleTime);
     const name = savedAttractions.find((a) => a.id === selectedId)?.name ?? "";
     setToast({
@@ -79,24 +101,44 @@ export default function TargetBankDayPicker({
         ) : (
           <div className="space-y-3 overflow-y-auto max-h-[50vh] pe-1">
             <ul className="space-y-2" data-testid="target-bank-picker-list">
-              {savedAttractions.map((attraction) => {
+              {sortedEntries.map(({ entry: attraction, plannedStatus }) => {
+                const isPlanned = plannedStatus.isPlanned;
                 const isSelected = selectedId === attraction.id;
                 const up = (attraction.upvotes || []).length;
                 const down = (attraction.downvotes || []).length;
+                const scheduledLabel = formatScheduledDaysLabel(plannedStatus.scheduledDayNumbers);
+                const rowDisabled = disabled || isPlanned;
+
                 return (
                   <li key={attraction.id}>
                     <button
                       type="button"
                       data-testid={`target-bank-picker-row-${attraction.id}`}
-                      disabled={disabled}
-                      onClick={() => setSelectedId(attraction.id)}
-                      className={`w-full flex gap-3 p-3 rounded-xl border text-start transition-colors min-h-12 cursor-pointer ${
+                      disabled={rowDisabled}
+                      onClick={() => {
+                        if (isPlanned) return;
+                        setSelectedId(attraction.id);
+                      }}
+                      className={`w-full flex gap-3 p-3 rounded-xl border text-start transition-colors min-h-12 ${
+                        rowDisabled && !isPlanned
+                          ? "opacity-50 cursor-not-allowed"
+                          : isPlanned
+                            ? "opacity-70 cursor-not-allowed border-outline-variant/20 bg-muted/20"
+                            : "cursor-pointer"
+                      } ${
                         isSelected
                           ? "border-[#006400]/40 bg-[#006400]/5 dark:border-[#86df72]/30 dark:bg-[#86df72]/10"
-                          : "border-outline-variant/25 bg-card hover:bg-muted/10"
+                          : !isPlanned
+                            ? "border-outline-variant/25 bg-card hover:bg-muted/10"
+                            : ""
                       }`}
                       aria-pressed={isSelected}
-                      aria-label={t.targetBankPickerSelect.replace("{name}", attraction.name)}
+                      aria-disabled={isPlanned}
+                      aria-label={
+                        isPlanned
+                          ? `${attraction.name}: ${t.targetBankPickerAlreadyPlanned}`
+                          : t.targetBankPickerSelect.replace("{name}", attraction.name)
+                      }
                     >
                       {attraction.image && (
                         <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 relative">
@@ -110,7 +152,32 @@ export default function TargetBankDayPicker({
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-foreground truncate">{attraction.name}</p>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <p className="text-xs font-bold text-foreground truncate">{attraction.name}</p>
+                          {isPlanned && (
+                            <span
+                              data-testid="bank-planned-badge"
+                              aria-label={`${t.bankPlannedBadge}: ${scheduledLabel}`}
+                              className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded border shrink-0 bg-sky-500/10 text-sky-700 border-sky-500/20 dark:text-sky-300 flex items-center gap-0.5"
+                            >
+                              <CalendarCheck className="h-3 w-3" aria-hidden="true" />
+                              {t.bankPlannedBadge}
+                            </span>
+                          )}
+                        </div>
+                        {isPlanned && scheduledLabel && (
+                          <p
+                            data-testid="bank-scheduled-days"
+                            className="text-[9px] font-semibold text-sky-700/80 dark:text-sky-300/80 mt-0.5"
+                          >
+                            {scheduledLabel}
+                          </p>
+                        )}
+                        {isPlanned && (
+                          <p className="text-[9px] font-semibold text-muted-foreground mt-0.5">
+                            {t.targetBankPickerAlreadyPlanned}
+                          </p>
+                        )}
                         {attraction.locationName && (
                           <p className="text-[10px] text-muted-foreground truncate">{attraction.locationName}</p>
                         )}

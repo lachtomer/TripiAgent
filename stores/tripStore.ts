@@ -302,6 +302,7 @@ export const useTripStore = create<TripState>()(
                         locationName: attraction.locationName ?? attraction.name,
                         lat: attraction.lat,
                         lng: attraction.lng,
+                        sourceAttractionId: attractionId,
                       },
                     ],
                   }
