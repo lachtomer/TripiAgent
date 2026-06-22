@@ -24,6 +24,54 @@ export interface ItineraryDay {
   activities: Activity[];
 }
 
+/** Curated must-see highlight under a day-guide location */
+export interface DayGuideSpot {
+  id: string;
+  title: string;
+  detail?: string;
+  optional?: boolean;
+  link?: string;
+  linkLabel?: string;
+}
+
+/** Location block in a day guide (what to see) */
+export interface DayGuideLocation {
+  id: string;
+  name: string;
+  mapsUrl: string;
+  websiteUrl?: string;
+  mustSee: DayGuideSpot[];
+  optional?: boolean;
+}
+
+/** Casual food suggestion for a day guide */
+export interface DayGuideFood {
+  id: string;
+  name: string;
+  style: string;
+  when: "lunch" | "dinner" | "snack";
+  mapsUrl: string;
+  websiteUrl?: string;
+  isPrimary?: boolean;
+}
+
+/** Mutually exclusive plan branch (e.g. Verona OR Monte Baldo) */
+export interface DayGuideOption {
+  id: string;
+  label: string;
+  locations: DayGuideLocation[];
+  food: DayGuideFood[];
+}
+
+/** Bundled reference content for an itinerary day (Calendar view) */
+export interface DayGuide {
+  dayNumber: number;
+  locations?: DayGuideLocation[];
+  food?: DayGuideFood[];
+  options?: DayGuideOption[];
+  bannerNote?: string;
+}
+
 export interface WeatherInfo {
   temp: number;
   description: string;

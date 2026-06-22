@@ -5,24 +5,26 @@ import { getPlanBOptionsForDay } from "./planB";
 import type { ItineraryDay } from "@/types";
 
 describe("getPlanBOptionsForDay", () => {
-  it("returns up to two unplanned backups for day 3", () => {
+  it("returns up to two unplanned backups for day 3 nature day", () => {
     const options = getPlanBOptionsForDay(3, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
     expect(options).toHaveLength(2);
     expect(options.map((option) => option.bankId)).toEqual([
-      "bank-caneva-aqua",
       "bank-movieland",
+      "bank-vittoriale",
     ]);
-    expect(options[0].reason).toContain("Rain backup");
+    expect(options.some((option) => option.alternateFor?.includes("Rimbalzello"))).toBe(false);
+    expect(options.some((option) => option.alternateFor?.includes("Desenzano"))).toBe(false);
   });
 
-  it("returns Gardaland alternates for day 6", () => {
-    const options = getPlanBOptionsForDay(6, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
-    expect(options).toHaveLength(2);
-    expect(options.every((option) => option.alternateFor === "Gardaland Theme Park")).toBe(true);
+  it("returns Gardaland alternates for day 5 (CanevaWorld already on day 7)", () => {
+    const options = getPlanBOptionsForDay(5, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
+    expect(options).toHaveLength(1);
+    expect(options[0].bankId).toBe("bank-movieland");
+    expect(options[0].alternateFor).toBe("Gardaland Theme Park");
   });
 
-  it("returns paragliding backup for day 7", () => {
-    const options = getPlanBOptionsForDay(7, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
+  it("returns paragliding backup for day 4 when Monte Baldo not scheduled", () => {
+    const options = getPlanBOptionsForDay(4, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
     expect(options).toHaveLength(1);
     expect(options[0].bankId).toBe("bank-paragliding-malcesine");
     expect(options[0].alternateFor).toBe("Monte Baldo Cable Car");
@@ -34,9 +36,9 @@ describe("getPlanBOptionsForDay", () => {
     );
   });
 
-  it("skips planned backups and promotes tertiary candidate on day 3", () => {
+  it("skips planned backups and promotes tertiary candidate on day 5", () => {
     const itinerary: ItineraryDay[] = DEFAULT_ITALY_ITINERARY.map((day) =>
-      day.dayNumber === 3
+      day.dayNumber === 5
         ? {
             ...day,
             activities: [
@@ -53,17 +55,14 @@ describe("getPlanBOptionsForDay", () => {
         : day
     );
 
-    const options = getPlanBOptionsForDay(3, itinerary, LAKE_GARDA_TEEN_TARGET_BANK);
-    expect(options).toHaveLength(2);
-    expect(options.map((option) => option.bankId)).toEqual([
-      "bank-movieland",
-      "bank-jungle-adventure",
-    ]);
+    const options = getPlanBOptionsForDay(5, itinerary, LAKE_GARDA_TEEN_TARGET_BANK);
+    expect(options).toHaveLength(1);
+    expect(options[0].bankId).toBe("bank-movieland");
   });
 
   it("returns empty when all mapped backups are planned", () => {
     const itinerary: ItineraryDay[] = DEFAULT_ITALY_ITINERARY.map((day) =>
-      day.dayNumber === 7
+      day.dayNumber === 4
         ? {
             ...day,
             activities: [
@@ -80,6 +79,6 @@ describe("getPlanBOptionsForDay", () => {
         : day
     );
 
-    expect(getPlanBOptionsForDay(7, itinerary, LAKE_GARDA_TEEN_TARGET_BANK)).toEqual([]);
+    expect(getPlanBOptionsForDay(4, itinerary, LAKE_GARDA_TEEN_TARGET_BANK)).toEqual([]);
   });
 });

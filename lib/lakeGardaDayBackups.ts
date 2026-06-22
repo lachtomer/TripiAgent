@@ -10,22 +10,24 @@ export const LAKE_GARDA_DAY_BACKUPS: Readonly<
 > = {
   3: [
     {
-      bankId: "bank-caneva-aqua",
-      reason: "Rain backup · same area",
-      alternateFor: "Self-Drive Boat Rental",
-    },
-    {
       bankId: "bank-movieland",
-      reason: "Indoor backup · Caneva park",
-      alternateFor: "Self-Drive Boat Rental",
+      reason: "Indoor rain backup · Lazise resort",
+      alternateFor: "Parco Giardino Sigurtà",
     },
     {
-      bankId: "bank-jungle-adventure",
-      reason: "Active backup · near Desenzano",
-      alternateFor: "Rimbalzello Adventure Park",
+      bankId: "bank-vittoriale",
+      reason: "Museum backup · west lake",
+      alternateFor: "Borghetto sul Mincio",
     },
   ],
-  6: [
+  4: [
+    {
+      bankId: "bank-paragliding-malcesine",
+      reason: "Cable car backup · book tandem flight",
+      alternateFor: "Monte Baldo Cable Car",
+    },
+  ],
+  5: [
     {
       bankId: "bank-caneva-aqua",
       reason: "Rain backup · water park",
@@ -37,11 +39,16 @@ export const LAKE_GARDA_DAY_BACKUPS: Readonly<
       alternateFor: "Gardaland Theme Park",
     },
   ],
-  7: [
+  8: [
     {
-      bankId: "bank-paragliding-malcesine",
-      reason: "Cable car backup · book tandem flight",
-      alternateFor: "Monte Baldo Cable Car",
+      bankId: "bank-movieland",
+      reason: "Rain backup · indoor",
+      alternateFor: "Manerba — Self-Drive Boat Rental",
+    },
+    {
+      bankId: "bank-caneva-aqua",
+      reason: "Rain backup · water park",
+      alternateFor: "Manerba — Self-Drive Boat Rental",
     },
   ],
 };

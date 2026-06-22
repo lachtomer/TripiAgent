@@ -17,10 +17,10 @@ test.describe("Step 19 — Garda itinerary refresh", () => {
     await page.goto(`${BASE}/itinerary`, { waitUntil: "domcontentloaded" });
   });
 
-  test("1. Default itinerary shows Gardaland and Monte Baldo days", async ({ page }) => {
-    await expect(page.locator("text=Jun 30 – Gardaland")).toBeVisible({ timeout: 15000 });
-    await expect(page.locator("text=Jul 1 – Monte Baldo Nature Day")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("text=Jul 3 – Shopping & Milan Transition")).toBeVisible({ timeout: 10000 });
+  test("1. Default itinerary shows Gardaland and CanevaWorld days", async ({ page }) => {
+    await expect(page.locator("text=Jun 29 – Gardaland")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("text=Jul 1 – CanevaWorld & Peschiera")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=Jul 3 – Serravalle & Milan")).toBeVisible({ timeout: 10000 });
   });
 
   test("2. Target Bank lists Serravalle outlet", async ({ page }) => {

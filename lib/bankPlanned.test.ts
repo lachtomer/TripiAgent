@@ -37,31 +37,32 @@ describe("titleTokensMatch", () => {
 });
 
 describe("getBankPlannedStatus", () => {
-  it("marks Gardaland planned on day 6", () => {
+  it("marks Gardaland planned on day 5", () => {
     const status = getBankPlannedStatus(findBank("bank-gardaland"), DEFAULT_ITALY_ITINERARY);
     expect(status.isPlanned).toBe(true);
-    expect(status.scheduledDayNumbers).toContain(6);
-    expect(status.matchKind).toBe("title_fuzzy");
+    expect(status.scheduledDayNumbers).toContain(5);
+    expect(status.matchKind).toBe("id_link");
   });
 
-  it("marks CanevaWorld unplanned", () => {
+  it("marks CanevaWorld planned on day 7", () => {
     const status = getBankPlannedStatus(findBank("bank-caneva-aqua"), DEFAULT_ITALY_ITINERARY);
-    expect(status.isPlanned).toBe(false);
-    expect(status.scheduledDayNumbers).toEqual([]);
-    expect(status.matchKind).toBeNull();
+    expect(status.isPlanned).toBe(true);
+    expect(status.scheduledDayNumbers).toContain(7);
+    expect(status.matchKind).toBe("id_link");
   });
 
   it("marks Verona Arena planned on day 4 with exact title match", () => {
     const status = getBankPlannedStatus(findBank("bank-verona-arena"), DEFAULT_ITALY_ITINERARY);
     expect(status.isPlanned).toBe(true);
     expect(status.scheduledDayNumbers).toEqual([4]);
-    expect(status.matchKind).toBe("title_exact");
+    expect(status.matchKind).toBe("id_link");
   });
 
-  it("marks Rimbalzello planned on day 3", () => {
-    const status = getBankPlannedStatus(findBank("bank-rimbalzello"), DEFAULT_ITALY_ITINERARY);
+  it("marks Borghetto planned on day 3", () => {
+    const status = getBankPlannedStatus(findBank("bank-borghetto"), DEFAULT_ITALY_ITINERARY);
     expect(status.isPlanned).toBe(true);
     expect(status.scheduledDayNumbers).toContain(3);
+    expect(status.matchKind).toBe("id_link");
   });
 
   it("uses sourceAttractionId link when titles differ", () => {
@@ -96,10 +97,14 @@ describe("sortBankEntries", () => {
     const sorted = sortBankEntries(LAKE_GARDA_TEEN_TARGET_BANK, DEFAULT_ITALY_ITINERARY);
     const canevaIdx = sorted.findIndex((row) => row.entry.id === "bank-caneva-aqua");
     const gardalandIdx = sorted.findIndex((row) => row.entry.id === "bank-gardaland");
+    const movielandIdx = sorted.findIndex((row) => row.entry.id === "bank-movieland");
     expect(canevaIdx).toBeGreaterThanOrEqual(0);
     expect(gardalandIdx).toBeGreaterThanOrEqual(0);
-    expect(canevaIdx).toBeLessThan(gardalandIdx);
-    expect(sorted[canevaIdx].plannedStatus.isPlanned).toBe(false);
+    expect(movielandIdx).toBeGreaterThanOrEqual(0);
+    expect(movielandIdx).toBeLessThan(canevaIdx);
+    expect(movielandIdx).toBeLessThan(gardalandIdx);
+    expect(sorted[movielandIdx].plannedStatus.isPlanned).toBe(false);
+    expect(sorted[canevaIdx].plannedStatus.isPlanned).toBe(true);
     expect(sorted[gardalandIdx].plannedStatus.isPlanned).toBe(true);
   });
 });
@@ -110,7 +115,7 @@ describe("filterBankEntries", () => {
     const unplanned = filterBankEntries(sorted, "unplanned");
     expect(unplanned.every((row) => !row.plannedStatus.isPlanned)).toBe(true);
     expect(unplanned.some((row) => row.entry.id === "bank-gardaland")).toBe(false);
-    expect(unplanned.some((row) => row.entry.id === "bank-caneva-aqua")).toBe(true);
+    expect(unplanned.some((row) => row.entry.id === "bank-movieland")).toBe(true);
   });
 
   it("filters to planned only", () => {

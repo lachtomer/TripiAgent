@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TargetBankDayPicker from "@/components/TargetBankDayPicker";
 import PlanBDayPanel from "@/components/PlanBDayPanel";
+import DayGuidePanel from "@/components/DayGuidePanel";
 import ActivityNearbyPanel from "@/components/ActivityNearbyPanel";
 import { 
   Calendar, 
@@ -99,8 +100,7 @@ export default function ItineraryCard() {
   const checkRainAlert = (act: Activity, dayNum: number) => {
     const isOutdoor = isOutdoorActivity(act.title, act.description);
     const isRainy = weatherCondition?.includes("rain") || weatherCondition?.includes("drizzle") || weatherCondition?.includes("shower");
-    // Simulate rain on Day 3 activity a8 for testing and demo purposes
-    const isSimulatedRain = dayNum === 3 && act.id === "a8";
+    const isSimulatedRain = dayNum === 8 && act.id === "a8boat";
     return isOutdoor && (isRainy || isSimulatedRain);
   };
 
@@ -455,6 +455,10 @@ export default function ItineraryCard() {
               
 
               <CardContent className="p-4 pt-0 space-y-3">
+                <DayGuidePanel
+                  dayNumber={day.dayNumber}
+                  defaultExpanded={todayDayNumber === day.dayNumber}
+                />
                 {/* Add Activity Inline Form */}
                 {addingActivityDay === day.dayNumber && (
                   <div 

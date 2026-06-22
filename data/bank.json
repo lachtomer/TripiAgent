@@ -3,7 +3,7 @@
     {
       "name": "Gardaland",
       "category": "theme_park",
-      "description": "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Full day; arrive at opening.",
+      "description": "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Mon Jun 29 weekday visit; arrive at opening.",
       "lat": 45.4542,
       "lng": 10.7137,
       "createdBy": "TripiAgent"
@@ -11,7 +11,7 @@
     {
       "name": "CanevaWorld Aqua Paradise",
       "category": "theme_park",
-      "description": "Water park with extreme slides and pools — ideal hot-day alternative to Gardaland.",
+      "description": "Water park with extreme slides and pools — scheduled Wed Jul 1; also Gardaland rain backup.",
       "lat": 45.4817,
       "lng": 10.7936,
       "createdBy": "TripiAgent"
@@ -19,31 +19,15 @@
     {
       "name": "Movieland Park",
       "category": "theme_park",
-      "description": "Movie-themed rides and stunt shows — same resort area as CanevaWorld.",
+      "description": "Movie-themed rides and stunt shows — indoor rain backup near CanevaWorld resort.",
       "lat": 45.483,
       "lng": 10.794,
       "createdBy": "TripiAgent"
     },
     {
-      "name": "Jungle Adventure Park",
-      "category": "adventure",
-      "description": "Tree-top ropes and zip lines near Gardaland — good half-day add-on.",
-      "lat": 45.503,
-      "lng": 10.726,
-      "createdBy": "TripiAgent"
-    },
-    {
-      "name": "Rimbalzello Adventure Park",
-      "category": "adventure",
-      "description": "Lake-view adventure park — Tibetan bridges, zip lines, treetop courses.",
-      "lat": 45.492,
-      "lng": 10.6055,
-      "createdBy": "TripiAgent"
-    },
-    {
       "name": "Monte Baldo Cable Car",
       "category": "nature",
-      "description": "Rotating cable car from Malcesine — panoramic views; gateway to hiking and paragliding.",
+      "description": "Rotating cable car from Malcesine — panoramic views; Option B for Sun Jun 28 vs Verona.",
       "lat": 45.7634,
       "lng": 10.8123,
       "createdBy": "TripiAgent"
@@ -59,47 +43,39 @@
     {
       "name": "Malcesine",
       "category": "town",
-      "description": "Scaliger castle old town — combine with Monte Baldo cable car or lake ferry.",
+      "description": "Scaliger castle old town — combine with Monte Baldo cable car (Sun Jun 28 Option B).",
       "lat": 45.7628,
       "lng": 10.8115,
       "createdBy": "TripiAgent"
     },
     {
-      "name": "Riva del Garda — SUP & Water Sports",
-      "category": "water_sports",
-      "description": "SUP, kayak, wakeboard rentals — active lake day at the north shore.",
-      "lat": 45.8858,
-      "lng": 10.8411,
+      "name": "Bergamo Città Alta",
+      "category": "culture",
+      "description": "Funicular to upper town — Piazza Vecchia, basilica, Venetian walls. Fri Jun 26 drive stop.",
+      "lat": 45.704,
+      "lng": 9.662,
       "createdBy": "TripiAgent"
     },
     {
-      "name": "Torbole — Windsurfing & Sailing",
-      "category": "water_sports",
-      "description": "Wind capital of Lake Garda — lessons and rentals for windsurf and sailing.",
-      "lat": 45.8708,
-      "lng": 10.8756,
+      "name": "Castellaro Lagusello",
+      "category": "town",
+      "description": "Medieval hamlet and laghetto loop — borghi più belli; Sat Jun 27 morning, 10 min from villa.",
+      "lat": 45.368,
+      "lng": 10.528,
       "createdBy": "TripiAgent"
     },
     {
-      "name": "Desenzano — Self-Drive Boat Rental",
+      "name": "Manerba — Self-Drive Boat Rental",
       "category": "water_sports",
-      "description": "Rent a small boat (no license, up to 40 HP) — more engaging than a guided tour.",
-      "lat": 45.4711,
-      "lng": 10.5358,
-      "createdBy": "TripiAgent"
-    },
-    {
-      "name": "Natura Viva Safari Park",
-      "category": "nature",
-      "description": "Safari park and zoo near Verona — strong appeal for teens; ~45 min from Monzambano.",
-      "lat": 45.4431,
-      "lng": 10.8706,
+      "description": "Rent a small family boat from Manerba marina (no license, up to 40 HP). Thu Jul 2 — book ahead.",
+      "lat": 45.492,
+      "lng": 10.6055,
       "createdBy": "TripiAgent"
     },
     {
       "name": "Vittoriale degli Italiani",
       "category": "culture",
-      "description": "Eccentric poet's estate with a warship in the garden — quirky hit with older teens.",
+      "description": "Eccentric poet's estate with a warship in the garden — quirky indoor backup west of the lake.",
       "lat": 45.6236,
       "lng": 10.5672,
       "createdBy": "TripiAgent"
@@ -107,7 +83,7 @@
     {
       "name": "Verona Arena",
       "category": "culture",
-      "description": "1st-century Roman amphitheater — scheduled Jun 28 day trip.",
+      "description": "1st-century Roman amphitheater — Sun Jun 28 Verona day trip (Option A).",
       "lat": 45.439,
       "lng": 10.9944,
       "createdBy": "TripiAgent"
@@ -115,7 +91,7 @@
     {
       "name": "Sirmione — Scaligero Castle",
       "category": "culture",
-      "description": "Medieval castle on the peninsula — keep visit short if teens prefer the spa.",
+      "description": "Medieval castle on the peninsula — Tue Jun 30 morning; keep visit short if teens prefer the spa.",
       "lat": 45.4928,
       "lng": 10.6085,
       "createdBy": "TripiAgent"
@@ -123,7 +99,7 @@
     {
       "name": "Aquaria Thermal Spa",
       "category": "wellness",
-      "description": "Lakeside thermal pools — group booking Jun 29; book in advance.",
+      "description": "Lakeside thermal pools — group booking Tue Jun 30 afternoon; book in advance.",
       "lat": 45.4903,
       "lng": 10.6084,
       "createdBy": "TripiAgent"
@@ -131,7 +107,7 @@
     {
       "name": "Borghetto sul Mincio",
       "category": "nature",
-      "description": "Medieval watermill village — riverside walk ~1 hr. Jul 2 nature day.",
+      "description": "Medieval watermill village — riverside walk ~1 hr. Sat Jun 27 nature day, 15 min from Monzambano.",
       "lat": 45.3533,
       "lng": 10.7378,
       "createdBy": "TripiAgent"
@@ -139,15 +115,23 @@
     {
       "name": "Parco Giardino Sigurtà",
       "category": "nature",
-      "description": "Flat garden paths and flowers — gentle ~2 hr nature walk.",
+      "description": "Flat garden paths and flowers — gentle ~2 hr nature walk. Pair with Borghetto on Jun 27.",
       "lat": 45.3628,
       "lng": 10.7347,
       "createdBy": "TripiAgent"
     },
     {
+      "name": "Peschiera del Garda",
+      "category": "town",
+      "description": "Fortress walls, canals, and harbor stroll — Wed Jul 1 after CanevaWorld (~45 min).",
+      "lat": 45.439,
+      "lng": 10.692,
+      "createdBy": "TripiAgent"
+    },
+    {
       "name": "Serravalle Designer Outlet",
       "category": "shopping",
-      "description": "Designer outlet shopping ~3 hrs — Jul 3 en route to Milan.",
+      "description": "Designer outlet shopping ~3 hrs — Fri Jul 3 en route to Milan.",
       "lat": 44.6533,
       "lng": 8.7847,
       "createdBy": "TripiAgent"
@@ -155,7 +139,7 @@
     {
       "name": "Trattoria del Ponte",
       "category": "dining",
-      "description": "Welcome dinner — lake fish and local pasta in Monzambano.",
+      "description": "Welcome dinner — lake fish and local pasta in Monzambano. Fri Jun 26 evening.",
       "lat": 45.337,
       "lng": 10.528,
       "createdBy": "TripiAgent"
@@ -163,7 +147,7 @@
     {
       "name": "Ristorante Pace",
       "category": "dining",
-      "description": "Desenzano waterfront — fresh lake fish and risotto.",
+      "description": "Desenzano waterfront — fresh lake fish and risotto. Backup south-shore lunch.",
       "lat": 45.4711,
       "lng": 10.5358,
       "createdBy": "TripiAgent"
@@ -171,7 +155,7 @@
     {
       "name": "Trattoria Al Pompiere",
       "category": "dining",
-      "description": "Classic Verona grill — pollo alla griglia.",
+      "description": "Classic Verona grill — pollo alla griglia. Sun Jun 28 lunch.",
       "lat": 45.443,
       "lng": 10.998,
       "createdBy": "TripiAgent"
@@ -179,7 +163,7 @@
     {
       "name": "Locanda al Bersagliere",
       "category": "dining",
-      "description": "Sirmione castle area — lake-view lunch.",
+      "description": "Sirmione castle area — lake-view lunch. Tue Jun 30.",
       "lat": 45.491,
       "lng": 10.607,
       "createdBy": "TripiAgent"
@@ -187,7 +171,7 @@
     {
       "name": "Taverna del Silenzio",
       "category": "dining",
-      "description": "Famous Tortellini di Valeggio — book ahead in Borghetto.",
+      "description": "Famous Tortellini di Valeggio — book ahead! Sat Jun 27 lunch in Borghetto.",
       "lat": 45.353,
       "lng": 10.735,
       "createdBy": "TripiAgent"
@@ -195,7 +179,7 @@
     {
       "name": "Ristorante Vecchia Malcesine",
       "category": "dining",
-      "description": "Pre-cable-car lunch in Malcesine old town.",
+      "description": "Pre-cable-car lunch in Malcesine old town. Sun Jun 28 Monte Baldo option.",
       "lat": 45.764,
       "lng": 10.809,
       "createdBy": "TripiAgent"
@@ -203,7 +187,7 @@
     {
       "name": "Trattoria del Nuovo Macello",
       "category": "dining",
-      "description": "Milan farewell steak dinner. Alternative: Spontini pizza.",
+      "description": "Milan farewell steak dinner. Fri Jul 3 evening. Alternative: Spontini pizza.",
       "lat": 45.452,
       "lng": 9.175,
       "createdBy": "TripiAgent"

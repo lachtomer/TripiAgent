@@ -14,10 +14,10 @@ interface ChecklistItem {
 
 const ESSENTIALS_ITEMS: ChecklistItem[] = [
   { id: "e4", task: "Portable CO/Smoke Detector", subtext: "⚠️ Villa Eunice has no detectors — highly recommended to bring one." },
-  { id: "e6", task: "Aquaria Thermal Spa Booking", subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 29." },
-  { id: "e7", task: "Gardaland Tickets", subtext: "Buy online for Jun 30. Consider Fast Pass if peak season." },
-  { id: "e8", task: "Taverna del Silenzio Reservation", subtext: "Book lunch in Borghetto for Jul 2 — famous tortellini, fills up in summer." },
-  { id: "e9", task: "Desenzano Boat Rental", subtext: "Reserve self-drive boat for Jun 27 at 11:00 (no license, up to 40 HP)." },
+  { id: "e6", task: "Aquaria Thermal Spa Booking", subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 30." },
+  { id: "e7", task: "Gardaland Tickets", subtext: "Buy online for Mon Jun 29. Consider Fast Pass if peak season." },
+  { id: "e8", task: "Taverna del Silenzio Reservation", subtext: "Book lunch in Borghetto for Sat Jun 27 — famous tortellini, fills up in summer." },
+  { id: "e9", task: "Manerba Boat Rental", subtext: "Reserve self-drive boat for Thu Jul 2 at 09:30 (no license, up to 40 HP)." },
 ];
 
 export default function EssentialsChecklist() {

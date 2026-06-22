@@ -114,7 +114,7 @@ export const translations = {
     item_e5_task: "Milan Area C / ZTL Registration",
     item_e5_subtext: "Required fee (€7.50) for entry before 19:30 on Jul 3.",
     item_e6_task: "Aquaria Thermal Spa Booking",
-    item_e6_subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 29.",
+    item_e6_subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 30.",
 
 
     // ItineraryCard
@@ -152,6 +152,13 @@ export const translations = {
     targetBankPickerSelect: "Select {name}",
     targetBankPickerConfirm: "Add to this day",
     targetBankPickerAlreadyPlanned: "Already on itinerary",
+    dayGuideTitle: "Day guide",
+    dayGuideWhatToSee: "What to see",
+    dayGuideFood: "Food",
+    dayGuideOptional: "Optional",
+    dayGuideLunch: "Lunch",
+    dayGuideDinner: "Dinner",
+    dayGuideSnack: "Snack",
     exploreNearby: "Explore nearby",
     activityNearbyTitle: "Near this stop",
     activityNearbyLoading: "Finding places nearby…",
@@ -330,7 +337,7 @@ export const translations = {
     item_e5_task: "רישום לאזור C מילאנו / ZTL",
     item_e5_subtext: "תשלום חובה (€7.50) לכניסה לפני 19:30 ב-3 ביולי.",
     item_e6_task: "הזמנת ספא תרמי אקוואריה",
-    item_e6_subtext: "אמת הזמנה לספא התרמי שעל גדות האגם בסירמיונה ב-29 ביוני.",
+    item_e6_subtext: "אמת הזמנה לספא התרמי שעל גדות האגם בסירמיונה ב-30 ביוני.",
 
 
     // ItineraryCard
@@ -367,6 +374,13 @@ export const translations = {
     targetBankPickerEmptyHint: "שמור מקומות בדף הבית או הוסף נקודת עניין מותאמת בסרגל.",
     targetBankPickerSelect: "בחר {name}",
     targetBankPickerConfirm: "הוסף ליום זה",
+    dayGuideTitle: "מדריך יום",
+    dayGuideWhatToSee: "מה לראות",
+    dayGuideFood: "אוכל",
+    dayGuideOptional: "אופציונלי",
+    dayGuideLunch: "צהריים",
+    dayGuideDinner: "ערב",
+    dayGuideSnack: "חטיף",
     exploreNearby: "חקור בקרבת מקום",
     activityNearbyTitle: "ליד התחנה הזו",
     activityNearbyLoading: "מחפש מקומות בקרבת מקום…",
