@@ -186,6 +186,124 @@ const DAY_3: DayGuide = {
 
 const DAY_4: DayGuide = {
   dayNumber: 4,
+  locations: [
+    {
+      id: "loc-sirmione",
+      name: "Sirmione",
+      mapsUrl: maps("Scaligero Castle Sirmione"),
+      websiteUrl: "https://www.visitgarda.com/en/place/scaliger-castle/",
+      mustSee: [
+        {
+          id: "sirmione-castle",
+          title: "Scaligero Castle",
+          detail: "Peninsula fortress — short visit ~45 min",
+        },
+        {
+          id: "sirmione-oldtown",
+          title: "Old town lanes",
+          detail: "Gelato + stroll to the tip",
+        },
+        {
+          id: "sirmione-grotte",
+          title: "Grotte di Catullo",
+          detail: "Roman villa ruins & lake views — only if castle stays short",
+          optional: true,
+          link: "https://www.grottedicatullo.it/en/",
+          linkLabel: "Official site",
+        },
+      ],
+    },
+    {
+      id: "loc-aquaria",
+      name: "Aquaria Thermal Spa",
+      mapsUrl: maps("Aquaria Thermal Spa Sirmione"),
+      websiteUrl: "https://www.aquaria.it/en/",
+      mustSee: [
+        {
+          id: "aquaria-pools",
+          title: "Thermal pools",
+          detail: "Indoor/outdoor, lake-edge — group booking confirmed ✅",
+        },
+        {
+          id: "aquaria-wellness",
+          title: "Saunas & wellness",
+          detail: "Pre-booked afternoon slot",
+        },
+      ],
+    },
+  ],
+  food: [
+    {
+      id: "food-la-roccia",
+      name: "La Roccia",
+      style: "Pizza, lake fish · waterfront",
+      when: "lunch",
+      mapsUrl: maps("La Roccia Sirmione"),
+      isPrimary: true,
+    },
+    {
+      id: "food-san-lorenzo",
+      name: "Trattoria San Lorenzo",
+      style: "Pizza, pasta · old town",
+      when: "lunch",
+      mapsUrl: maps("Trattoria San Lorenzo Sirmione"),
+    },
+    {
+      id: "food-locanda-bersagliere",
+      name: "Locanda al Bersagliere",
+      style: "Near castle · lake views",
+      when: "lunch",
+      mapsUrl: maps("Locanda al Bersagliere Sirmione"),
+    },
+  ],
+};
+
+const DAY_5: DayGuide = {
+  dayNumber: 5,
+  locations: [
+    {
+      id: "loc-gardaland",
+      name: "Gardaland",
+      mapsUrl: maps("Gardaland"),
+      websiteUrl: "https://www.gardaland.it/en/",
+      mustSee: [
+        {
+          id: "gardaland-coasters",
+          title: "Roller coasters",
+          detail: "Adrenaline, Raptor, Oblivion — check height limits",
+        },
+        {
+          id: "gardaland-water",
+          title: "Water rides",
+          detail: "Cooling on hot days",
+        },
+        {
+          id: "gardaland-sealife",
+          title: "SEA LIFE aquarium",
+          detail: "Inside the resort",
+        },
+        {
+          id: "gardaland-shows",
+          title: "Shows & themed areas",
+          detail: "Stunt and family rides",
+        },
+      ],
+    },
+  ],
+  food: [
+    {
+      id: "food-gardaland-park",
+      name: "In-park food courts",
+      style: "Burgers, pizza, fries · casual",
+      when: "lunch",
+      mapsUrl: maps("Gardaland restaurant"),
+      isPrimary: true,
+    },
+  ],
+};
+
+const DAY_6: DayGuide = {
+  dayNumber: 6,
   bannerNote: "Group vote: pick Verona OR Monte Baldo — do not try both in one day.",
   options: [
     {
@@ -320,124 +438,6 @@ const DAY_4: DayGuide = {
           mapsUrl: maps("Rifugio Altissimo Monte Baldo"),
         },
       ],
-    },
-  ],
-};
-
-const DAY_5: DayGuide = {
-  dayNumber: 5,
-  locations: [
-    {
-      id: "loc-gardaland",
-      name: "Gardaland",
-      mapsUrl: maps("Gardaland"),
-      websiteUrl: "https://www.gardaland.it/en/",
-      mustSee: [
-        {
-          id: "gardaland-coasters",
-          title: "Roller coasters",
-          detail: "Adrenaline, Raptor, Oblivion — check height limits",
-        },
-        {
-          id: "gardaland-water",
-          title: "Water rides",
-          detail: "Cooling on hot days",
-        },
-        {
-          id: "gardaland-sealife",
-          title: "SEA LIFE aquarium",
-          detail: "Inside the resort",
-        },
-        {
-          id: "gardaland-shows",
-          title: "Shows & themed areas",
-          detail: "Stunt and family rides",
-        },
-      ],
-    },
-  ],
-  food: [
-    {
-      id: "food-gardaland-park",
-      name: "In-park food courts",
-      style: "Burgers, pizza, fries · casual",
-      when: "lunch",
-      mapsUrl: maps("Gardaland restaurant"),
-      isPrimary: true,
-    },
-  ],
-};
-
-const DAY_6: DayGuide = {
-  dayNumber: 6,
-  locations: [
-    {
-      id: "loc-sirmione",
-      name: "Sirmione",
-      mapsUrl: maps("Scaligero Castle Sirmione"),
-      websiteUrl: "https://www.visitgarda.com/en/place/scaliger-castle/",
-      mustSee: [
-        {
-          id: "sirmione-castle",
-          title: "Scaligero Castle",
-          detail: "Peninsula fortress — short visit ~45 min",
-        },
-        {
-          id: "sirmione-oldtown",
-          title: "Old town lanes",
-          detail: "Gelato + stroll to the tip",
-        },
-        {
-          id: "sirmione-grotte",
-          title: "Grotte di Catullo",
-          detail: "Roman villa ruins & lake views — only if castle stays short",
-          optional: true,
-          link: "https://www.grottedicatullo.it/en/",
-          linkLabel: "Official site",
-        },
-      ],
-    },
-    {
-      id: "loc-aquaria",
-      name: "Aquaria Thermal Spa",
-      mapsUrl: maps("Aquaria Thermal Spa Sirmione"),
-      websiteUrl: "https://www.aquaria.it/en/",
-      mustSee: [
-        {
-          id: "aquaria-pools",
-          title: "Thermal pools",
-          detail: "Indoor/outdoor, lake-edge — group booking confirmed",
-        },
-        {
-          id: "aquaria-wellness",
-          title: "Saunas & wellness",
-          detail: "Pre-booked afternoon slot",
-        },
-      ],
-    },
-  ],
-  food: [
-    {
-      id: "food-locanda-bersagliere",
-      name: "Locanda al Bersagliere",
-      style: "Near castle · lake views",
-      when: "lunch",
-      mapsUrl: maps("Locanda al Bersagliere Sirmione"),
-      isPrimary: true,
-    },
-    {
-      id: "food-la-roccia",
-      name: "La Roccia",
-      style: "Pizza, lake fish · waterfront",
-      when: "lunch",
-      mapsUrl: maps("La Roccia Sirmione"),
-    },
-    {
-      id: "food-san-lorenzo",
-      name: "Trattoria San Lorenzo",
-      style: "Pizza, pasta · old town",
-      when: "lunch",
-      mapsUrl: maps("Trattoria San Lorenzo Sirmione"),
     },
   ],
 };

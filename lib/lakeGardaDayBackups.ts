@@ -20,7 +20,7 @@ export const LAKE_GARDA_DAY_BACKUPS: Readonly<
       alternateFor: "Borghetto sul Mincio",
     },
   ],
-  4: [
+  6: [
     {
       bankId: "bank-paragliding-malcesine",
       reason: "Cable car backup · book tandem flight",

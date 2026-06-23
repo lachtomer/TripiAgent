@@ -537,6 +537,16 @@ export const useTripStore = create<TripState>()(
             state.commonCheckmarks = {};
           }
 
+          // Feature 012b: refresh default itinerary when Sun/Tue days swap (Jun 28 Sirmione, Jun 30 Verona)
+          const ITINERARY_TEMPLATE_VERSION = 2;
+          const storedVersion = (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion;
+          if (storedVersion !== ITINERARY_TEMPLATE_VERSION) {
+            (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion =
+              ITINERARY_TEMPLATE_VERSION;
+            state.itinerary = null;
+            state.savedAttractions = LAKE_GARDA_TEEN_TARGET_BANK;
+          }
+
           // Feature 009: pin locale to "en" — coerce any legacy "he" value
           if ((state.locale as string) !== "en") {
             state.locale = "en";

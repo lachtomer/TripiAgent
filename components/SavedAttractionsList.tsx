@@ -517,11 +517,12 @@ export default function SavedAttractionsList() {
                     </div>
                   )}
                   {plannedEntries.length > 0 && (
-                    <div className="space-y-3">
+                    <div className="space-y-3 pt-4 mt-2 border-t-2 border-sky-500/15">
                       <p
                         data-testid="bank-section-planned"
-                        className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground"
+                        className="text-[10px] font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300 flex items-center gap-1.5"
                       >
+                        <CalendarCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                         {t.bankSectionPlanned}
                       </p>
                       {plannedEntries.map(renderAttractionCard)}

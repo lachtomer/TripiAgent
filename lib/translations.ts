@@ -114,7 +114,7 @@ export const translations = {
     item_e5_task: "Milan Area C / ZTL Registration",
     item_e5_subtext: "Required fee (€7.50) for entry before 19:30 on Jul 3.",
     item_e6_task: "Aquaria Thermal Spa Booking",
-    item_e6_subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Jun 30.",
+    item_e6_subtext: "Verify reservation for the lakeside thermal spa in Sirmione on Sun Jun 28.",
 
 
     // ItineraryCard
@@ -337,7 +337,7 @@ export const translations = {
     item_e5_task: "רישום לאזור C מילאנו / ZTL",
     item_e5_subtext: "תשלום חובה (€7.50) לכניסה לפני 19:30 ב-3 ביולי.",
     item_e6_task: "הזמנת ספא תרמי אקוואריה",
-    item_e6_subtext: "אמת הזמנה לספא התרמי שעל גדות האגם בסירמיונה ב-30 ביוני.",
+    item_e6_subtext: "אמת הזמנה לספא התרמי שעל גדות האגם בסירמיונה ב-28 ביוני (יום ראשון).",
 
 
     // ItineraryCard

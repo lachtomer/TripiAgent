@@ -41,19 +41,19 @@ describe("TRIP_DAY_GUIDES content", () => {
     }
   });
 
-  it("Day 4 has exactly two dual options with banner", () => {
-    const day4 = getDayGuide(4)!;
-    expect(day4.options).toHaveLength(2);
-    expect(day4.options?.[0].id).toBe("option-a-verona");
-    expect(day4.options?.[1].id).toBe("option-b-baldo");
-    expect(day4.bannerNote).toBeTruthy();
-    expect(day4.locations).toBeUndefined();
-    expect(day4.food).toBeUndefined();
+  it("Day 6 has exactly two dual options with banner", () => {
+    const day6 = getDayGuide(6)!;
+    expect(day6.options).toHaveLength(2);
+    expect(day6.options?.[0].id).toBe("option-a-verona");
+    expect(day6.options?.[1].id).toBe("option-b-baldo");
+    expect(day6.bannerNote).toBeTruthy();
+    expect(day6.locations).toBeUndefined();
+    expect(day6.food).toBeUndefined();
   });
 
-  it("marks Grotte di Catullo as optional on Day 6", () => {
-    const day6 = getDayGuide(6)!;
-    const sirmione = day6.locations?.find((l) => l.id === "loc-sirmione");
+  it("marks Grotte di Catullo as optional on Day 4", () => {
+    const day4 = getDayGuide(4)!;
+    const sirmione = day4.locations?.find((l) => l.id === "loc-sirmione");
     const grotte = sirmione?.mustSee.find((s) => s.id === "sirmione-grotte");
     expect(grotte?.optional).toBe(true);
   });

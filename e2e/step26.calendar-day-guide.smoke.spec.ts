@@ -40,12 +40,12 @@ test.describe("Step 26 — Calendar Day Guide", () => {
     await expect(page.getByTestId("day-guide-spot-bergamo-piazza-vecchia")).not.toBeVisible();
   });
 
-  test("2. Day 4 shows dual-option banner and both option blocks", async ({ page }) => {
-    await page.locator("#day-card-4").scrollIntoViewIfNeeded();
-    await expect(page.getByTestId("day-guide-4")).toBeVisible({ timeout: 15000 });
+  test("2. Day 6 shows dual-option banner and both option blocks", async ({ page }) => {
+    await page.locator("#day-card-6").scrollIntoViewIfNeeded();
+    await expect(page.getByTestId("day-guide-6")).toBeVisible({ timeout: 15000 });
 
-    await page.locator("#day-guide-toggle-4").click();
-    await expect(page.getByTestId("day-guide-banner-4")).toContainText("Group vote");
+    await page.locator("#day-guide-toggle-6").click();
+    await expect(page.getByTestId("day-guide-banner-6")).toContainText("Group vote");
     await expect(page.getByTestId("day-guide-option-option-a-verona")).toBeVisible();
     await expect(page.getByTestId("day-guide-option-option-b-baldo")).toBeVisible();
     await expect(page.getByTestId("day-guide-option-option-a-verona")).toContainText(

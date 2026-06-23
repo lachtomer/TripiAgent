@@ -51,8 +51,15 @@ describe("getBankPlannedStatus", () => {
     expect(status.matchKind).toBe("id_link");
   });
 
-  it("marks Verona Arena planned on day 4 with exact title match", () => {
+  it("marks Verona Arena planned on day 6 with exact title match", () => {
     const status = getBankPlannedStatus(findBank("bank-verona-arena"), DEFAULT_ITALY_ITINERARY);
+    expect(status.isPlanned).toBe(true);
+    expect(status.scheduledDayNumbers).toEqual([6]);
+    expect(status.matchKind).toBe("id_link");
+  });
+
+  it("marks Aquaria planned on day 4", () => {
+    const status = getBankPlannedStatus(findBank("bank-aquaria-spa"), DEFAULT_ITALY_ITINERARY);
     expect(status.isPlanned).toBe(true);
     expect(status.scheduledDayNumbers).toEqual([4]);
     expect(status.matchKind).toBe("id_link");

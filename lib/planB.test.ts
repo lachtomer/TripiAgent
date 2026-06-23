@@ -23,8 +23,8 @@ describe("getPlanBOptionsForDay", () => {
     expect(options[0].alternateFor).toBe("Gardaland Theme Park");
   });
 
-  it("returns paragliding backup for day 4 when Monte Baldo not scheduled", () => {
-    const options = getPlanBOptionsForDay(4, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
+  it("returns paragliding backup for day 6 when Monte Baldo not scheduled", () => {
+    const options = getPlanBOptionsForDay(6, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
     expect(options).toHaveLength(1);
     expect(options[0].bankId).toBe("bank-paragliding-malcesine");
     expect(options[0].alternateFor).toBe("Monte Baldo Cable Car");
@@ -62,7 +62,7 @@ describe("getPlanBOptionsForDay", () => {
 
   it("returns empty when all mapped backups are planned", () => {
     const itinerary: ItineraryDay[] = DEFAULT_ITALY_ITINERARY.map((day) =>
-      day.dayNumber === 4
+      day.dayNumber === 6
         ? {
             ...day,
             activities: [
@@ -79,6 +79,6 @@ describe("getPlanBOptionsForDay", () => {
         : day
     );
 
-    expect(getPlanBOptionsForDay(4, itinerary, LAKE_GARDA_TEEN_TARGET_BANK)).toEqual([]);
+    expect(getPlanBOptionsForDay(6, itinerary, LAKE_GARDA_TEEN_TARGET_BANK)).toEqual([]);
   });
 });

@@ -27,7 +27,7 @@
     {
       "name": "Monte Baldo Cable Car",
       "category": "nature",
-      "description": "Rotating cable car from Malcesine — panoramic views; Option B for Sun Jun 28 vs Verona.",
+      "description": "Rotating cable car from Malcesine — panoramic views; Option B for Tue Jun 30 vs Verona.",
       "lat": 45.7634,
       "lng": 10.8123,
       "createdBy": "TripiAgent"
@@ -43,7 +43,7 @@
     {
       "name": "Malcesine",
       "category": "town",
-      "description": "Scaliger castle old town — combine with Monte Baldo cable car (Sun Jun 28 Option B).",
+      "description": "Scaliger castle old town — combine with Monte Baldo cable car (Tue Jun 30 Option B).",
       "lat": 45.7628,
       "lng": 10.8115,
       "createdBy": "TripiAgent"
@@ -83,7 +83,7 @@
     {
       "name": "Verona Arena",
       "category": "culture",
-      "description": "1st-century Roman amphitheater — Sun Jun 28 Verona day trip (Option A).",
+      "description": "1st-century Roman amphitheater — Tue Jun 30 Verona day trip (Option A).",
       "lat": 45.439,
       "lng": 10.9944,
       "createdBy": "TripiAgent"
@@ -91,7 +91,7 @@
     {
       "name": "Sirmione — Scaligero Castle",
       "category": "culture",
-      "description": "Medieval castle on the peninsula — Tue Jun 30 morning; keep visit short if teens prefer the spa.",
+      "description": "Medieval castle on the peninsula — Sun Jun 28 morning; keep visit short if teens prefer the spa.",
       "lat": 45.4928,
       "lng": 10.6085,
       "createdBy": "TripiAgent"
@@ -99,7 +99,7 @@
     {
       "name": "Aquaria Thermal Spa",
       "category": "wellness",
-      "description": "Lakeside thermal pools — group booking Tue Jun 30 afternoon; book in advance.",
+      "description": "Lakeside thermal pools — group booking Sun Jun 28 afternoon; book in advance.",
       "lat": 45.4903,
       "lng": 10.6084,
       "createdBy": "TripiAgent"
@@ -155,7 +155,7 @@
     {
       "name": "Trattoria Al Pompiere",
       "category": "dining",
-      "description": "Classic Verona grill — pollo alla griglia. Sun Jun 28 lunch.",
+      "description": "Classic Verona grill — pollo alla griglia. Tue Jun 30 lunch.",
       "lat": 45.443,
       "lng": 10.998,
       "createdBy": "TripiAgent"
@@ -163,7 +163,7 @@
     {
       "name": "Locanda al Bersagliere",
       "category": "dining",
-      "description": "Sirmione castle area — lake-view lunch. Tue Jun 30.",
+      "description": "Sirmione castle area — lake-view lunch. Sun Jun 28.",
       "lat": 45.491,
       "lng": 10.607,
       "createdBy": "TripiAgent"
@@ -179,7 +179,7 @@
     {
       "name": "Ristorante Vecchia Malcesine",
       "category": "dining",
-      "description": "Pre-cable-car lunch in Malcesine old town. Sun Jun 28 Monte Baldo option.",
+      "description": "Pre-cable-car lunch in Malcesine old town. Tue Jun 30 Monte Baldo option.",
       "lat": 45.764,
       "lng": 10.809,
       "createdBy": "TripiAgent"

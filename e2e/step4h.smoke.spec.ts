@@ -25,12 +25,12 @@ test.describe("Step 4h — Itinerary Planner", () => {
     await expect(page.locator("text=Jun 26 – Bergamo & Monzambano")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà").scrollIntoViewIfNeeded();
     await expect(page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà")).toBeVisible({ timeout: 5000 });
-    await page.locator("text=Jun 28 – Verona (or Monte Baldo — see Day guide)").scrollIntoViewIfNeeded();
-    await expect(page.locator("text=Jun 28 – Verona (or Monte Baldo — see Day guide)")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 28 – Sirmione & Aquaria Spa").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 28 – Sirmione & Aquaria Spa")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 29 – Gardaland").scrollIntoViewIfNeeded();
     await expect(page.locator("text=Jun 29 – Gardaland")).toBeVisible({ timeout: 5000 });
-    await page.locator("text=Jun 30 – Sirmione & Aquaria Spa").scrollIntoViewIfNeeded();
-    await expect(page.locator("text=Jun 30 – Sirmione & Aquaria Spa")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 30 – Verona (or Monte Baldo — see Day guide)").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 30 – Verona (or Monte Baldo — see Day guide)")).toBeVisible({ timeout: 5000 });
 
     // Verify Milan/Monzambano activities exist
     await expect(page.locator("text=Flight 6404 Departs TLV")).toBeVisible();

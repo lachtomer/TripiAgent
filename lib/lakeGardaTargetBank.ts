@@ -44,7 +44,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-monte-baldo",
     name: "Monte Baldo Cable Car",
-    description: "Rotating cable car from Malcesine — panoramic views; Option B for Sun Jun 28 vs Verona.",
+    description: "Rotating cable car from Malcesine — panoramic views; Option B for Tue Jun 30 vs Verona.",
     locationName: "Malcesine",
     lat: 45.7634,
     lng: 10.8123,
@@ -59,7 +59,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
     locationName: "Malcesine",
     lat: 45.816,
     lng: 10.852,
-    backupForDay: 4,
+    backupForDay: 6,
     alternateFor: "Monte Baldo Cable Car",
     planBReason: "Cable car backup · book tandem flight",
     upvotes: [],
@@ -69,7 +69,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-malcesine",
     name: "Malcesine",
-    description: "Scaliger castle old town — combine with Monte Baldo cable car (Sun Jun 28 Option B).",
+    description: "Scaliger castle old town — combine with Monte Baldo cable car (Tue Jun 30 Option B).",
     locationName: "Malcesine",
     lat: 45.7628,
     lng: 10.8115,
@@ -127,7 +127,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-verona-arena",
     name: "Verona Arena",
-    description: "1st-century Roman amphitheater — Sun Jun 28 Verona day trip (Option A).",
+    description: "1st-century Roman amphitheater — Tue Jun 30 Verona day trip (Option A).",
     locationName: "Verona",
     lat: 45.439,
     lng: 10.9944,
@@ -138,7 +138,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-sirmione-castle",
     name: "Sirmione — Scaligero Castle",
-    description: "Medieval castle on the peninsula — Tue Jun 30 morning; keep visit short if teens prefer the spa.",
+    description: "Medieval castle on the peninsula — Sun Jun 28 morning; keep visit short if teens prefer the spa.",
     locationName: "Sirmione",
     lat: 45.4928,
     lng: 10.6085,
@@ -149,7 +149,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-aquaria-spa",
     name: "Aquaria Thermal Spa",
-    description: "Lakeside thermal pools — group booking Tue Jun 30 afternoon; book in advance.",
+    description: "Lakeside thermal pools — group booking Sun Jun 28 afternoon; book in advance.",
     locationName: "Sirmione",
     lat: 45.4903,
     lng: 10.6084,
@@ -226,7 +226,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-pompiere",
     name: "Trattoria Al Pompiere",
-    description: "Classic Verona grill — pollo alla griglia. Sun Jun 28 lunch.",
+    description: "Classic Verona grill — pollo alla griglia. Tue Jun 30 lunch.",
     locationName: "Verona",
     lat: 45.443,
     lng: 10.998,
@@ -237,7 +237,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-bersagliere",
     name: "Locanda al Bersagliere",
-    description: "Sirmione castle area — lake-view lunch. Tue Jun 30.",
+    description: "Sirmione castle area — lake-view lunch. Sun Jun 28.",
     locationName: "Sirmione",
     lat: 45.491,
     lng: 10.607,
@@ -259,7 +259,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-malcesine",
     name: "Ristorante Vecchia Malcesine",
-    description: "Pre-cable-car lunch in Malcesine old town. Sun Jun 28 Monte Baldo option.",
+    description: "Pre-cable-car lunch in Malcesine old town. Tue Jun 30 Monte Baldo option.",
     locationName: "Malcesine",
     lat: 45.764,
     lng: 10.809,
