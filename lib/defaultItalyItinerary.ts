@@ -31,7 +31,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
   },
   {
     dayNumber: 2,
-    date: "Jun 26 – Bergamo & Monzambano",
+    date: "Jun 26 – Lakeside or Bergamo & Monzambano",
     activities: [
       {
         id: "a4",
@@ -50,17 +50,16 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a5b",
         time: "12:00",
-        title: "Stop — Bergamo Upper Town",
-        description: "Funicular up to the upper town — Old Square (Piazza Vecchia), cathedral, Venetian walls, and civic bell tower (~60–90 min). Lunch: La Bruschetta or Pizzeria Sant'Angelo.",
-        locationName: "Bergamo",
-        lat: 45.704,
-        lng: 9.662,
+        title: "Stop — Lungolago Virgilio OR Bergamo Upper Town",
+        description:
+          "Group picks one en-route stop (see Day guide). Option A: lakeside walk at Lungolago Virgilio, Peschiera (~45–60 min) + pizza/panini lunch. Option B: funicular to Bergamo upper town — Old Square, cathedral, Venetian walls (~60–90 min) + pizza/panini lunch.",
+        locationName: "En route to Lake Garda",
       },
       {
         id: "a5c",
         time: "13:30",
         title: "Drive to Monzambano",
-        description: "Continue to Villa Eunice (~1.5 hrs from Bergamo). Confirm late check-in ~15:00 if needed.",
+        description: "Continue to Villa Eunice (~1–1.5 hrs from the stop). Confirm late check-in ~15:00 if needed.",
         locationName: "Monzambano, Lake Garda",
       },
       {

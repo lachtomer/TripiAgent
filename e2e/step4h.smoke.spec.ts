@@ -21,8 +21,8 @@ test.describe("Step 4h — Itinerary Planner", () => {
 
     // Check that Day 1 to Day 5 headers are rendered
     await expect(page.locator("text=Jun 25 – Milan Arrival")).toBeVisible({ timeout: 10000 });
-    await page.locator("text=Jun 26 – Bergamo & Monzambano").scrollIntoViewIfNeeded();
-    await expect(page.locator("text=Jun 26 – Bergamo & Monzambano")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 26 – Lakeside or Bergamo & Monzambano").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 26 – Lakeside or Bergamo & Monzambano")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà").scrollIntoViewIfNeeded();
     await expect(page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 28 – Manerba Boat & Rocca Walk").scrollIntoViewIfNeeded();

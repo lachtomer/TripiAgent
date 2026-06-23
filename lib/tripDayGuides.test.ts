@@ -41,6 +41,16 @@ describe("TRIP_DAY_GUIDES content", () => {
     }
   });
 
+  it("Day 2 has exactly two dual options with banner", () => {
+    const day2 = getDayGuide(2)!;
+    expect(day2.options).toHaveLength(2);
+    expect(day2.options?.[0].id).toBe("option-a-virgilio");
+    expect(day2.options?.[1].id).toBe("option-b-bergamo");
+    expect(day2.bannerNote).toBeTruthy();
+    expect(day2.locations).toBeUndefined();
+    expect(day2.food).toBeUndefined();
+  });
+
   it("Day 6 has exactly two dual options with banner", () => {
     const day6 = getDayGuide(6)!;
     expect(day6.options).toHaveLength(2);

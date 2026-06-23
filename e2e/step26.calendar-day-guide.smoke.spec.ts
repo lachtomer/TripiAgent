@@ -18,17 +18,23 @@ test.describe("Step 26 — Calendar Day Guide", () => {
     await page.waitForSelector("#trip-start-date", { timeout: 15000 });
   });
 
-  test("1. Day 2 guide expands with Bergamo must-see and food link", async ({ page }) => {
+  test("1. Day 2 guide shows dual-option banner and both drive stops", async ({ page }) => {
     await expect(page.getByTestId("day-guide-2")).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("day-guide-spot-bergamo-piazza-vecchia")).not.toBeVisible();
 
     await page.locator("#day-guide-toggle-2").click();
+    await expect(page.getByTestId("day-guide-banner-2")).toContainText("Pick one drive stop");
+    await expect(page.getByTestId("day-guide-option-option-a-virgilio")).toBeVisible();
+    await expect(page.getByTestId("day-guide-option-option-b-bergamo")).toBeVisible();
+    await expect(page.getByTestId("day-guide-option-option-a-virgilio")).toContainText(
+      "Option A: Lungolago Virgilio"
+    );
+    await expect(page.getByTestId("day-guide-option-option-b-bergamo")).toContainText(
+      "Option B: Bergamo Upper Town"
+    );
     await expect(page.getByTestId("day-guide-spot-bergamo-piazza-vecchia")).toBeVisible({
       timeout: 5000,
     });
-    await expect(page.getByTestId("day-guide-location-loc-bergamo-alta")).toContainText(
-      "Old Square"
-    );
 
     const foodLink = page
       .getByTestId("day-guide-food-item-food-la-bruschetta")

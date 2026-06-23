@@ -41,7 +41,7 @@ describe("itineraryTemplate", () => {
     expect(buildItineraryFingerprint(altered)).not.toBe(DEFAULT_ITINERARY_FINGERPRINT);
   });
 
-  it("exports template version 6", () => {
-    expect(ITINERARY_TEMPLATE_VERSION).toBe(6);
+  it("exports template version 7", () => {
+    expect(ITINERARY_TEMPLATE_VERSION).toBe(7);
   });
 });

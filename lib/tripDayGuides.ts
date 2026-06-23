@@ -7,88 +7,127 @@ function maps(q: string): string {
 
 const DAY_2: DayGuide = {
   dayNumber: 2,
-  locations: [
+  bannerNote:
+    "Pick one drive stop: lakeside Peschiera (Option A) OR Bergamo upper town (Option B) — then continue to Monzambano.",
+  options: [
     {
-      id: "loc-bergamo-alta",
-      name: "Bergamo Upper Town",
-      mapsUrl: maps("Bergamo Città Alta"),
-      websiteUrl: "https://www.visitbergamo.net/en/",
-      mustSee: [
+      id: "option-a-virgilio",
+      label: "Option A: Lungolago Virgilio (Peschiera)",
+      locations: [
         {
-          id: "bergamo-piazza-vecchia",
-          title: "Old Square (Piazza Vecchia)",
-          detail: "One of the prettiest squares in northern Italy",
+          id: "loc-virgilio",
+          name: "Lungolago Virgilio",
+          mapsUrl: maps("Lungolago Virgilio Peschiera del Garda"),
+          mustSee: [
+            {
+              id: "virgilio-promenade",
+              title: "Lakefront promenade",
+              detail: "Easy lakeside walk — first Lake Garda views (~45–60 min)",
+            },
+            {
+              id: "virgilio-fortress",
+              title: "Peschiera fortress glimpse",
+              detail: "Quick photo from the shore path",
+            },
+          ],
+        },
+      ],
+      food: [
+        {
+          id: "food-virgilio-lunch",
+          name: "Lakeside pizza & panini",
+          style: "Casual cafés along the promenade",
+          when: "lunch",
+          mapsUrl: maps("pizza Lungolago Virgilio Peschiera del Garda"),
+          isPrimary: true,
         },
         {
-          id: "bergamo-basilica",
-          title: "Santa Maria Maggiore Basilica",
-          detail: "Richly decorated cathedral interior",
+          id: "food-trattoria-ponte-a",
+          name: "Trattoria del Ponte",
+          style: "Lake fish, local pasta",
+          when: "dinner",
+          mapsUrl: maps("Trattoria del Ponte Monzambano"),
+          isPrimary: true,
         },
         {
-          id: "bergamo-walls",
-          title: "Venetian Walls (UNESCO)",
-          detail: "Walk along them for valley views",
-        },
-        {
-          id: "bergamo-campanone",
-          title: "Civic Bell Tower (Campanone)",
-          detail: "Climb for a panorama over the Alps and plains",
-        },
-        {
-          id: "bergamo-funicular",
-          title: "Funicular ride",
-          detail: "Lower town ↔ upper town — part of the experience",
+          id: "food-osteria-moro-a",
+          name: "Osteria del Moro",
+          style: "Village restaurant",
+          when: "dinner",
+          mapsUrl: maps("Osteria del Moro Monzambano"),
         },
       ],
     },
     {
-      id: "loc-monzambano-eve",
-      name: "Monzambano (evening)",
-      mapsUrl: maps("Monzambano Lake Garda"),
-      mustSee: [
+      id: "option-b-bergamo",
+      label: "Option B: Bergamo Upper Town",
+      locations: [
         {
-          id: "monzambano-castle",
-          title: "Monzambano Castle Ruins",
-          detail: "Ruins + lake views — short stroll",
-        },
-        {
-          id: "monzambano-shore",
-          title: "Lake shore",
-          detail: "Swim or sunset after check-in",
+          id: "loc-bergamo-alta",
+          name: "Bergamo Upper Town",
+          mapsUrl: maps("Bergamo Città Alta"),
+          websiteUrl: "https://www.visitbergamo.net/en/",
+          mustSee: [
+            {
+              id: "bergamo-piazza-vecchia",
+              title: "Old Square (Piazza Vecchia)",
+              detail: "One of the prettiest squares in northern Italy",
+            },
+            {
+              id: "bergamo-basilica",
+              title: "Santa Maria Maggiore Basilica",
+              detail: "Richly decorated cathedral interior",
+            },
+            {
+              id: "bergamo-walls",
+              title: "Venetian Walls (UNESCO)",
+              detail: "Walk along them for valley views",
+            },
+            {
+              id: "bergamo-campanone",
+              title: "Civic Bell Tower (Campanone)",
+              detail: "Climb for a panorama over the Alps and plains",
+            },
+            {
+              id: "bergamo-funicular",
+              title: "Funicular ride",
+              detail: "Lower town ↔ upper town — part of the experience",
+            },
+          ],
         },
       ],
-    },
-  ],
-  food: [
-    {
-      id: "food-la-bruschetta",
-      name: "La Bruschetta",
-      style: "Pizza, pasta, appetizers · casual",
-      when: "lunch",
-      mapsUrl: maps("La Bruschetta Bergamo Alta"),
-      isPrimary: true,
-    },
-    {
-      id: "food-sant-angelo",
-      name: "Pizzeria Sant'Angelo",
-      style: "Pizza by the slice · casual",
-      when: "lunch",
-      mapsUrl: maps("Pizzeria Sant Angelo Bergamo"),
-    },
-    {
-      id: "food-trattoria-ponte",
-      name: "Trattoria del Ponte",
-      style: "Lake fish, local pasta",
-      when: "dinner",
-      mapsUrl: maps("Trattoria del Ponte Monzambano"),
-      isPrimary: true,
-    },
-    {
-      id: "food-osteria-moro",
-      name: "Osteria del Moro",
-      style: "Village restaurant",
-      when: "dinner",
-      mapsUrl: maps("Osteria del Moro Monzambano"),
+      food: [
+        {
+          id: "food-la-bruschetta",
+          name: "La Bruschetta",
+          style: "Pizza, panini, pasta · casual",
+          when: "lunch",
+          mapsUrl: maps("La Bruschetta Bergamo Alta"),
+          isPrimary: true,
+        },
+        {
+          id: "food-sant-angelo",
+          name: "Pizzeria Sant'Angelo",
+          style: "Pizza by the slice · casual",
+          when: "lunch",
+          mapsUrl: maps("Pizzeria Sant Angelo Bergamo"),
+        },
+        {
+          id: "food-trattoria-ponte",
+          name: "Trattoria del Ponte",
+          style: "Lake fish, local pasta",
+          when: "dinner",
+          mapsUrl: maps("Trattoria del Ponte Monzambano"),
+          isPrimary: true,
+        },
+        {
+          id: "food-osteria-moro",
+          name: "Osteria del Moro",
+          style: "Village restaurant",
+          when: "dinner",
+          mapsUrl: maps("Osteria del Moro Monzambano"),
+        },
+      ],
     },
   ],
 };
