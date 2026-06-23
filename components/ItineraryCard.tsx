@@ -398,9 +398,16 @@ export default function ItineraryCard() {
                 </div>
                 </CardHeader>
 
+                {day.dayNumber >= 2 && day.dayNumber <= 9 && (
+                  <div className="px-4 pb-2">
+                    <DayGuidePanel
+                      dayNumber={day.dayNumber}
+                      defaultExpanded={todayDayNumber === day.dayNumber}
+                    />
+                  </div>
+                )}
 
-
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 px-4 pb-2">
                   {/* Day Swap button */}
                   <Button
                     id={`swap-day-btn-${day.dayNumber}`}
@@ -455,10 +462,6 @@ export default function ItineraryCard() {
               
 
               <CardContent className="p-4 pt-0 space-y-3">
-                <DayGuidePanel
-                  dayNumber={day.dayNumber}
-                  defaultExpanded={todayDayNumber === day.dayNumber}
-                />
                 {/* Add Activity Inline Form */}
                 {addingActivityDay === day.dayNumber && (
                   <div 

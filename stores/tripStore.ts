@@ -4,6 +4,10 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { Activity, ChatMessage, ItineraryDay, LocationDetails, PackingItem, SavedAttraction, TravelLogistics, MorningBriefing, SerendipitySuggestion, UserProfile } from "@/types";
 import { isBankAdminUser } from "@/lib/bankPermissions";
 import { LAKE_GARDA_TEEN_TARGET_BANK } from "@/lib/lakeGardaTargetBank";
+import {
+  ITINERARY_TEMPLATE_VERSION,
+  isPersistedItineraryStale,
+} from "@/lib/itineraryTemplate";
 
 interface TripState {
   location: LocationDetails | null;
@@ -78,6 +82,7 @@ interface TripState {
   voteAttraction: (attractionId: string, vote: "up" | "down" | null, userId: string) => void;
   swapItineraryDays: (dayA: number, dayB: number) => void;
   locale: "en";
+  itineraryTemplateVersion: number;
 
   // Common packing actions
   addCommonPackingItem: (item: Omit<PackingItem, "id">) => void;
@@ -146,6 +151,7 @@ export const useTripStore = create<TripState>()(
       tripMode: "planning",
       dayAnchors: {},
       locale: "en" as const,
+      itineraryTemplateVersion: ITINERARY_TEMPLATE_VERSION,
 
       // Common packing fields
       commonPackingList: initialPackingList,
@@ -378,6 +384,7 @@ export const useTripStore = create<TripState>()(
           tripMode: "planning",
           dayAnchors: {},
           locale: "en" as const,
+          itineraryTemplateVersion: ITINERARY_TEMPLATE_VERSION,
         }),
 
       // New actions implementations
@@ -537,13 +544,13 @@ export const useTripStore = create<TripState>()(
             state.commonCheckmarks = {};
           }
 
-          // Feature 012b: refresh default itinerary when Sun/Tue days swap (Jun 28 Sirmione, Jun 30 Verona)
-          // Feature 012c: English copy refresh for activity descriptions
-          const ITINERARY_TEMPLATE_VERSION = 3;
-          const storedVersion = (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion;
-          if (storedVersion !== ITINERARY_TEMPLATE_VERSION) {
-            (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion =
-              ITINERARY_TEMPLATE_VERSION;
+          // Refresh default itinerary when template version changes or cached plan is stale
+          const needsItineraryRefresh =
+            state.itineraryTemplateVersion !== ITINERARY_TEMPLATE_VERSION ||
+            isPersistedItineraryStale(state.itinerary);
+
+          if (needsItineraryRefresh) {
+            state.itineraryTemplateVersion = ITINERARY_TEMPLATE_VERSION;
             state.itinerary = null;
             state.savedAttractions = LAKE_GARDA_TEEN_TARGET_BANK;
           }
