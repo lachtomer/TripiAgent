@@ -67,7 +67,7 @@
     {
       "name": "Manerba — Self-Drive Boat Rental",
       "category": "water_sports",
-      "description": "Rent a small family boat from Manerba marina (no license, up to 40 HP). Thu Jul 2 — book ahead.",
+      "description": "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — book ahead.",
       "lat": 45.492,
       "lng": 10.6055,
       "createdBy": "TripiAgent"
@@ -91,7 +91,7 @@
     {
       "name": "Sirmione — Scaligero Castle",
       "category": "culture",
-      "description": "Medieval castle on the peninsula — Sun Jun 28 morning; keep visit short if teens prefer the spa.",
+      "description": "Medieval castle on the peninsula — Thu Jul 2 morning; keep visit short if teens prefer the spa.",
       "lat": 45.4928,
       "lng": 10.6085,
       "createdBy": "TripiAgent"
@@ -99,7 +99,7 @@
     {
       "name": "Aquaria Thermal Spa",
       "category": "wellness",
-      "description": "Lakeside thermal pools — group booking Sun Jun 28 afternoon; book in advance.",
+      "description": "Lakeside thermal pools — group booking Thu Jul 2 afternoon; book in advance.",
       "lat": 45.4903,
       "lng": 10.6084,
       "createdBy": "TripiAgent"
@@ -163,7 +163,7 @@
     {
       "name": "Locanda al Bersagliere",
       "category": "dining",
-      "description": "Sirmione castle area — lake-view lunch. Sun Jun 28.",
+      "description": "Sirmione castle area — lake-view lunch. Thu Jul 2.",
       "lat": 45.491,
       "lng": 10.607,
       "createdBy": "TripiAgent"

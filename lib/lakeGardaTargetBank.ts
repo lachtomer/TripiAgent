@@ -102,7 +102,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-manerba-boat",
     name: "Manerba — Self-Drive Boat Rental",
-    description: "Rent a small family boat from Manerba marina (no license, up to 40 HP). Thu Jul 2 — book ahead.",
+    description: "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — book ahead.",
     locationName: "Manerba del Garda",
     lat: 45.492,
     lng: 10.6055,
@@ -138,7 +138,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-sirmione-castle",
     name: "Sirmione — Scaligero Castle",
-    description: "Medieval castle on the peninsula — Sun Jun 28 morning; keep visit short if teens prefer the spa.",
+    description: "Medieval castle on the peninsula — Thu Jul 2 morning; keep visit short if teens prefer the spa.",
     locationName: "Sirmione",
     lat: 45.4928,
     lng: 10.6085,
@@ -149,7 +149,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-aquaria-spa",
     name: "Aquaria Thermal Spa",
-    description: "Lakeside thermal pools — group booking Sun Jun 28 afternoon; book in advance.",
+    description: "Lakeside thermal pools — group booking Thu Jul 2 afternoon; book in advance.",
     locationName: "Sirmione",
     lat: 45.4903,
     lng: 10.6084,
@@ -237,7 +237,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-bersagliere",
     name: "Locanda al Bersagliere",
-    description: "Sirmione castle area — lake-view lunch. Sun Jun 28.",
+    description: "Sirmione castle area — lake-view lunch. Thu Jul 2.",
     locationName: "Sirmione",
     lat: 45.491,
     lng: 10.607,

@@ -51,16 +51,16 @@ describe("TRIP_DAY_GUIDES content", () => {
     expect(day6.food).toBeUndefined();
   });
 
-  it("marks Grotte di Catullo as optional on Day 4", () => {
-    const day4 = getDayGuide(4)!;
-    const sirmione = day4.locations?.find((l) => l.id === "loc-sirmione");
+  it("marks Grotte di Catullo as optional on Day 8", () => {
+    const day8 = getDayGuide(8)!;
+    const sirmione = day8.locations?.find((l) => l.id === "loc-sirmione");
     const grotte = sirmione?.mustSee.find((s) => s.id === "sirmione-grotte");
     expect(grotte?.optional).toBe(true);
   });
 
-  it("marks Manerba village as optional on Day 8", () => {
-    const day8 = getDayGuide(8)!;
-    const village = day8.locations?.find((l) => l.id === "loc-manerba-village");
+  it("marks Manerba village as optional on Day 4", () => {
+    const day4 = getDayGuide(4)!;
+    const village = day4.locations?.find((l) => l.id === "loc-manerba-village");
     expect(village?.optional).toBe(true);
   });
 

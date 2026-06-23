@@ -29,7 +29,7 @@ describe("itineraryTemplate", () => {
 
   it("fingerprint changes when activity ids change", () => {
     const altered = DEFAULT_ITALY_ITINERARY.map((day) =>
-      day.dayNumber === 4
+      day.dayNumber === 8
         ? {
             ...day,
             activities: day.activities.map((activity) =>
@@ -41,7 +41,7 @@ describe("itineraryTemplate", () => {
     expect(buildItineraryFingerprint(altered)).not.toBe(DEFAULT_ITINERARY_FINGERPRINT);
   });
 
-  it("exports template version 5", () => {
-    expect(ITINERARY_TEMPLATE_VERSION).toBe(5);
+  it("exports template version 6", () => {
+    expect(ITINERARY_TEMPLATE_VERSION).toBe(6);
   });
 });

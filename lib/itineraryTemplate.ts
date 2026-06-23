@@ -2,7 +2,7 @@ import type { ItineraryDay } from "@/types";
 import { DEFAULT_ITALY_ITINERARY } from "@/lib/defaultItalyItinerary";
 
 /** Bump when default itinerary content or structure changes — triggers client re-seed. */
-export const ITINERARY_TEMPLATE_VERSION = 5;
+export const ITINERARY_TEMPLATE_VERSION = 6;
 
 export function buildItineraryFingerprint(itinerary: ItineraryDay[]): string {
   return itinerary
