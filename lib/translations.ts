@@ -4,7 +4,7 @@ export const translations = {
     home: "Home",
     calendar: "Calendar",
     locations: "Locations",
-    bookings: "Logistics",
+    bookings: "Bookings",
     explore: "Explore",
     chat: "Chat",
     itinerary: "Itinerary",
@@ -62,19 +62,17 @@ export const translations = {
     todaySchedule: "Today's Schedule",
     activeDaySchedule: "Active Day Schedule",
 
-    // LogisticsCard
-    travelLogistics: "Logistics & Bookings",
-    logisticsDescription: "Voucher references, flight codes & lockboxes",
-    ztlPaidBadge: "ZTL Paid",
-    outboundFlight: "Outbound Flight (TLV → MXP)",
-    returnFlight: "Return Flight (MXP → TLV)",
+    // BookingsCard
+    bookingsCardTitle: "Flights & Vouchers",
+    bookingsCardDescription: "Wizz Air schedule, confirmation code, and car rental voucher",
+    flightsSectionTitle: "Flight schedule",
+    wizzConfirmationLabel: "Wizz Air confirmation code",
     carRentalVoucher: "Centauro Car Voucher",
-    villaLockboxLabel: "Villa Eunice Lockbox / Keys",
-    milanZtlLabel: "Milan ZTL Area C Fee Paid (€7.50)",
-    ztlDescription: "Required for Friday, July 3rd entry before 19:30. Must register and pay online by Saturday night.",
-    saveLogistics: "Save Logistics",
+    saveBookings: "Save Bookings",
     detailsSaved: "Booking Details Saved",
-    loadingLogistics: "Loading travel logistics...",
+    loadingBookings: "Loading bookings...",
+    logisticsPageTitle: "Bookings",
+    logisticsPageSubtitle: "Flight times, confirmation codes, and reservations to verify",
 
     // SavedAttractionsList
     savedAttractionBank: "Saved Attraction Bank",
@@ -97,9 +95,7 @@ export const translations = {
 
     // EssentialsChecklist
     essentialsTitle: "Reservations to Verify",
-    essentialsDesc: "Activities, dining, and safety items to confirm before the trip",
-    logisticsPageTitle: "Logistics & Bookings",
-    logisticsPageSubtitle: "Flights, vouchers, lockbox — plus reservations to verify before the trip",
+    essentialsDesc: "Book tickets and reservations to confirm before the trip",
     prepProgress: "Preparation Progress",
     percentReady: "{progress}% Ready",
     loadingChecklist: "Loading checklist...",
@@ -241,7 +237,7 @@ export const translations = {
     home: "בית",
     calendar: "תכנון",
     locations: "יעדים",
-    bookings: "לוגיסטיקה",
+    bookings: "הזמנות",
     explore: "חקור",
     chat: "צ'אט",
     itinerary: "מסלול",
@@ -299,19 +295,17 @@ export const translations = {
     todaySchedule: "לוח הזמנים להיום",
     activeDaySchedule: "לוח הזמנים ליום הפעיל",
 
-    // LogisticsCard
-    travelLogistics: "לוגיסטיקה והזמנות",
-    logisticsDescription: "אסמכתאות שוברים, קודי טיסות וכספות מפתח",
-    ztlPaidBadge: "ZTL שולם",
-    outboundFlight: "טיסת הלוך (TLV ← MXP)",
-    returnFlight: "טיסת חזור (MXP ← TLV)",
+    // BookingsCard
+    bookingsCardTitle: "טיסות ושוברים",
+    bookingsCardDescription: "לוח טיסות Wizz Air, קוד אישור והשכרת רכב",
+    flightsSectionTitle: "לוח טיסות",
+    wizzConfirmationLabel: "קוד אישור Wizz Air",
     carRentalVoucher: "שובר רכב Centauro",
-    villaLockboxLabel: "כספת מפתח / מפתחות וילה יוניס",
-    milanZtlLabel: "אגרת כניסה לאזור C מילאנו שולמה (€7.50)",
-    ztlDescription: "נדרש עבור כניסה ביום שישי, 3 ביולי לפני 19:30. יש להירשם ולשלם אונליין עד מוצאי שבת.",
-    saveLogistics: "שמור לוגיסטיקה",
+    saveBookings: "שמור הזמנות",
     detailsSaved: "פרטי ההזמנות נשמרו",
-    loadingLogistics: "טוען לוגיסטיקה...",
+    loadingBookings: "טוען הזמנות...",
+    logisticsPageTitle: "הזמנות",
+    logisticsPageSubtitle: "זמני טיסה, קודי אישור והזמנות לאימות לפני הנסיעה",
 
     // SavedAttractionsList
     savedAttractionBank: "בנק אטרקציות שמורות",
@@ -320,9 +314,7 @@ export const translations = {
 
     // EssentialsChecklist
     essentialsTitle: "הזמנות לבדיקה",
-    essentialsDesc: "פעילויות, מסעדות ופריטי בטיחות לאישור לפני הנסיעה",
-    logisticsPageTitle: "לוגיסטיקה והזמנות",
-    logisticsPageSubtitle: "טיסות, שוברים, כספת — והזמנות לבדוק לפני הנסיעה",
+    essentialsDesc: "כרטיסים והזמנות לאישור לפני הנסיעה",
     prepProgress: "התקדמות ההכנה",
     percentReady: "{progress}% מוכן",
     loadingChecklist: "טוען רשימת משימות...",

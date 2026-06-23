@@ -37,8 +37,8 @@ test.describe("Step 17 — Checklist i18n & Search Radius E2E Smoke Tests", () =
 
 
     await expect(page.getByText("Reservations to Verify", { exact: true })).toBeVisible({ timeout: 10000 });
-
-    await expect(page.getByText("Portable CO/Smoke Detector", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("flight-leg-outbound")).toContainText("W5 6404");
+    await expect(page.getByText("Portable CO/Smoke Detector", { exact: true })).not.toBeVisible();
 
 
 

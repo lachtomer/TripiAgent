@@ -106,15 +106,13 @@ test.describe("Step 15 — English UI & LTR", () => {
 
 
 
-    const logisticsHeader = page.getByText("Logistics & Bookings", { exact: true }).first();
+    const bookingsHeading = page.getByRole("heading", { name: "Bookings", exact: true });
 
-    await expect(logisticsHeader).toBeVisible({ timeout: 15000 });
+    await expect(bookingsHeading).toBeVisible({ timeout: 15000 });
 
-    await logisticsHeader.click();
+    await expect(page.getByTestId("flight-leg-outbound")).toBeVisible({ timeout: 10000 });
 
-
-
-    const flightInput = page.locator("#logistics-flight-tlv-mxp");
+    const flightInput = page.locator("#bookings-flight-confirmation");
 
     await expect(flightInput).toBeVisible({ timeout: 10000 });
 

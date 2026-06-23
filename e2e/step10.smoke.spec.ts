@@ -108,25 +108,23 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await expect(page.locator("text=Car Rental Pickup – Centauro")).toBeVisible();
   });
 
-  test("4. Logistics card displays, updates, and persists state", async ({ page }) => {
+  test("4. Bookings card displays, updates, and persists state", async ({ page }) => {
     await page.goto(`${BASE}/bookings`);
     await page.waitForLoadState("networkidle");
 
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByRole("heading", { name: "Logistics & Bookings" })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Bookings" })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId("flight-leg-outbound")).toContainText("18:55");
+    await expect(page.getByTestId("flight-leg-return")).toContainText("13:05");
 
-    await page.fill("#logistics-flight-tlv-mxp", "LY381-E2E");
-    const ztlCheckbox = page.locator("#logistics-milan-ztl-paid");
-    await ztlCheckbox.setChecked(true);
+    await page.fill("#bookings-flight-confirmation", "LY381-E2E");
 
-    await page.click("#logistics-save-button");
+    await page.click("#bookings-save-button");
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
 
     await page.reload();
     await page.waitForLoadState("networkidle");
 
-    // Wait for Zustand to rehydrate and sync into local form state (toHaveValue retries internally)
-    await expect(page.locator("#logistics-flight-tlv-mxp")).toHaveValue("LY381-E2E", { timeout: 10000 });
-    await expect(ztlCheckbox).toBeChecked({ timeout: 5000 });
+    await expect(page.locator("#bookings-flight-confirmation")).toHaveValue("LY381-E2E", { timeout: 10000 });
   });
 });

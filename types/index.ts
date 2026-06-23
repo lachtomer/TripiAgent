@@ -165,11 +165,9 @@ export interface UserProfile {
 }
 
 export interface TravelLogistics {
-  flightTlvMxpCode?: string;
-  flightMxpTlvCode?: string;
+  /** Wizz Air booking confirmation (covers both legs). */
+  flightConfirmationCode?: string;
   carRentalVoucherCode?: string;
-  villaEuniceLockboxCode?: string;
-  milanZtlPaid: boolean;
 }
 
 export interface MorningBriefing {

@@ -49,26 +49,19 @@ test.describe("Travel Agent Persona E2E Validation (Giulia, Destination Planner)
 
     await ensureInTripMode(page);
 
-    console.log("Navigating to Logistics & Bookings page...");
+    console.log("Navigating to Bookings page...");
     await page.goto(`${BASE}/bookings`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 15000 });
 
-    console.log("Entering flight and ZTL information in the Logistics card...");
-    const ztlCheckbox = page.locator("#logistics-milan-ztl-paid");
+    console.log("Entering Wizz confirmation in the bookings card...");
+    await page.fill("#bookings-flight-confirmation", "AZ402-Giulia");
 
-    // Fill flight detail and milan ZTL status (card starts expanded)
-    await page.fill("#logistics-flight-tlv-mxp", "AZ402-Giulia");
-    await ztlCheckbox.setChecked(true);
-
-    // Save and verify save notification
-    await page.click("#logistics-save-button");
+    await page.click("#bookings-save-button");
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
 
-    // Reload page to verify local storage state persistence (use toHaveValue to wait for Zustand rehydration)
     console.log("Reloading bookings page to verify state persistence...");
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.locator("#logistics-flight-tlv-mxp")).toHaveValue("AZ402-Giulia", { timeout: 8000 });
-    await expect(ztlCheckbox).toBeChecked({ timeout: 5000 });
+    await expect(page.locator("#bookings-flight-confirmation")).toHaveValue("AZ402-Giulia", { timeout: 8000 });
 
     // 3. Add Custom Luxury Attraction for the client
     console.log("Navigating to Locations page to add custom attraction...");

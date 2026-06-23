@@ -9,8 +9,8 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a1",
         time: "18:55",
-        title: "Flight 6404 Departs TLV",
-        description: "Depart Tel Aviv (TLV) on flight 6404. Estimated flight time ~4 hrs.",
+        title: "Flight 6404 Departs TLV (Wizz Air W5 6404)",
+        description: "Depart Tel Aviv (TLV) 18:55 — arrive Milan Malpensa (MXP) 22:10. Duration ~4h 15m. Confirmation PQGFPN.",
         locationName: "Tel Aviv",
       },
       {
@@ -421,8 +421,8 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a31",
         time: "13:05",
-        title: "Flight 6403 Departs MXP → TLV",
-        description: "Board flight 6403 departing MXP at 13:05. Scheduled arrival in Tel Aviv (TLV) at 18:00.",
+        title: "Flight 6403 Departs MXP → TLV (Wizz Air W4 6403)",
+        description: "Depart Milan Malpensa (MXP) 13:05 — arrive Tel Aviv (TLV) 18:00. Duration ~3h 55m. Confirmation PQGFPN.",
         locationName: "Malpensa Airport",
       },
     ],

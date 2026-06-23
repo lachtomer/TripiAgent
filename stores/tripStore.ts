@@ -111,11 +111,8 @@ const initialUsers: UserProfile[] = [
 ];
 
 const initialLogistics: TravelLogistics = {
-  flightTlvMxpCode: "",
-  flightMxpTlvCode: "",
+  flightConfirmationCode: "PQGFPN",
   carRentalVoucherCode: "",
-  villaEuniceLockboxCode: "",
-  milanZtlPaid: false,
 };
 
 export const useTripStore = create<TripState>()(
@@ -554,6 +551,22 @@ export const useTripStore = create<TripState>()(
             state.itinerary = null;
             state.savedAttractions = LAKE_GARDA_TEEN_TARGET_BANK;
           }
+
+          // Migrate legacy logistics fields → booking-only shape
+          const legacy = state.logistics as TravelLogistics & {
+            flightTlvMxpCode?: string;
+            flightMxpTlvCode?: string;
+          };
+          if (!legacy.flightConfirmationCode) {
+            legacy.flightConfirmationCode =
+              legacy.flightTlvMxpCode ||
+              legacy.flightMxpTlvCode ||
+              initialLogistics.flightConfirmationCode;
+          }
+          state.logistics = {
+            flightConfirmationCode: legacy.flightConfirmationCode,
+            carRentalVoucherCode: legacy.carRentalVoucherCode ?? "",
+          };
 
           // Feature 009: pin locale to "en" — coerce any legacy "he" value
           if ((state.locale as string) !== "en") {
