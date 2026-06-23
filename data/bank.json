@@ -49,9 +49,9 @@
       "createdBy": "TripiAgent"
     },
     {
-      "name": "Bergamo Città Alta",
+      "name": "Bergamo Upper Town",
       "category": "culture",
-      "description": "Funicular to upper town — Piazza Vecchia, basilica, Venetian walls. Fri Jun 26 drive stop.",
+      "description": "Funicular to the upper town — Old Square, cathedral, Venetian walls. Fri Jun 26 drive stop.",
       "lat": 45.704,
       "lng": 9.662,
       "createdBy": "TripiAgent"
@@ -59,7 +59,7 @@
     {
       "name": "Castellaro Lagusello",
       "category": "town",
-      "description": "Medieval hamlet and laghetto loop — borghi più belli; Sat Jun 27 morning, 10 min from villa.",
+      "description": "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, 10 min from villa.",
       "lat": 45.368,
       "lng": 10.528,
       "createdBy": "TripiAgent"
@@ -155,7 +155,7 @@
     {
       "name": "Trattoria Al Pompiere",
       "category": "dining",
-      "description": "Classic Verona grill — pollo alla griglia. Tue Jun 30 lunch.",
+      "description": "Classic Verona grill — grilled chicken. Tue Jun 30 lunch.",
       "lat": 45.443,
       "lng": 10.998,
       "createdBy": "TripiAgent"
@@ -171,7 +171,7 @@
     {
       "name": "Taverna del Silenzio",
       "category": "dining",
-      "description": "Famous Tortellini di Valeggio — book ahead! Sat Jun 27 lunch in Borghetto.",
+      "description": "Famous Valeggio-style tortellini — book ahead! Sat Jun 27 lunch in Borghetto.",
       "lat": 45.353,
       "lng": 10.735,
       "createdBy": "TripiAgent"

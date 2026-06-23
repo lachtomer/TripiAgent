@@ -27,7 +27,7 @@ test.describe("Step 26 — Calendar Day Guide", () => {
       timeout: 5000,
     });
     await expect(page.getByTestId("day-guide-location-loc-bergamo-alta")).toContainText(
-      "Piazza Vecchia"
+      "Old Square"
     );
 
     const foodLink = page

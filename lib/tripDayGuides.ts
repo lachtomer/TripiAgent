@@ -10,19 +10,19 @@ const DAY_2: DayGuide = {
   locations: [
     {
       id: "loc-bergamo-alta",
-      name: "Bergamo Città Alta",
+      name: "Bergamo Upper Town",
       mapsUrl: maps("Bergamo Città Alta"),
       websiteUrl: "https://www.visitbergamo.net/en/",
       mustSee: [
         {
           id: "bergamo-piazza-vecchia",
-          title: "Piazza Vecchia",
+          title: "Old Square (Piazza Vecchia)",
           detail: "One of the prettiest squares in northern Italy",
         },
         {
           id: "bergamo-basilica",
-          title: "Basilica di Santa Maria Maggiore",
-          detail: "Richly decorated interior",
+          title: "Santa Maria Maggiore Basilica",
+          detail: "Richly decorated cathedral interior",
         },
         {
           id: "bergamo-walls",
@@ -31,13 +31,13 @@ const DAY_2: DayGuide = {
         },
         {
           id: "bergamo-campanone",
-          title: "Campanone (Torre Civica)",
+          title: "Civic Bell Tower (Campanone)",
           detail: "Climb for a panorama over the Alps and plains",
         },
         {
           id: "bergamo-funicular",
           title: "Funicular ride",
-          detail: "Città Bassa ↔ Città Alta — part of the experience",
+          detail: "Lower town ↔ upper town — part of the experience",
         },
       ],
     },
@@ -48,7 +48,7 @@ const DAY_2: DayGuide = {
       mustSee: [
         {
           id: "monzambano-castle",
-          title: "Castello di Monzambano",
+          title: "Monzambano Castle Ruins",
           detail: "Ruins + lake views — short stroll",
         },
         {
@@ -63,7 +63,7 @@ const DAY_2: DayGuide = {
     {
       id: "food-la-bruschetta",
       name: "La Bruschetta",
-      style: "Pizza, pasta, bruschette · casual",
+      style: "Pizza, pasta, appetizers · casual",
       when: "lunch",
       mapsUrl: maps("La Bruschetta Bergamo Alta"),
       isPrimary: true,
@@ -86,7 +86,7 @@ const DAY_2: DayGuide = {
     {
       id: "food-osteria-moro",
       name: "Osteria del Moro",
-      style: "Village trattoria",
+      style: "Village restaurant",
       when: "dinner",
       mapsUrl: maps("Osteria del Moro Monzambano"),
     },
@@ -104,11 +104,11 @@ const DAY_3: DayGuide = {
         {
           id: "castellaro-hamlet",
           title: "Medieval hamlet",
-          detail: "One of Italy's borghi più belli",
+          detail: "Listed among Italy's most beautiful villages",
         },
         {
           id: "castellaro-lake",
-          title: "Laghetto di Castellaro",
+          title: "Castellaro Small Lake",
           detail: "Small lake loop walk (~20 min)",
         },
         {
@@ -131,7 +131,7 @@ const DAY_3: DayGuide = {
         },
         {
           id: "borghetto-bridge",
-          title: "Ponte Visconteo",
+          title: "Visconti Bridge (Ponte Visconteo)",
           detail: "Medieval bridge — walk or view from village",
         },
         {
@@ -169,7 +169,7 @@ const DAY_3: DayGuide = {
     {
       id: "food-taverna-silenzio",
       name: "Taverna del Silenzio",
-      style: "Tortellini di Valeggio · book ahead",
+      style: "Valeggio-style tortellini · book ahead",
       when: "lunch",
       mapsUrl: maps("Taverna del Silenzio Borghetto"),
       isPrimary: true,
@@ -201,11 +201,11 @@ const DAY_4: DayGuide = {
         {
           id: "sirmione-oldtown",
           title: "Old town lanes",
-          detail: "Gelato + stroll to the tip",
+          detail: "Ice cream + stroll to the tip",
         },
         {
           id: "sirmione-grotte",
-          title: "Grotte di Catullo",
+          title: "Catullus Caves (Grotte di Catullo)",
           detail: "Roman villa ruins & lake views — only if castle stays short",
           optional: true,
           link: "https://www.grottedicatullo.it/en/",
@@ -323,12 +323,12 @@ const DAY_6: DayGuide = {
             },
             {
               id: "verona-erbe",
-              title: "Piazza delle Erbe",
+              title: "Herbs Square (Piazza delle Erbe)",
               detail: "Market square, frescoed buildings",
             },
             {
               id: "verona-lamberti",
-              title: "Torre dei Lamberti",
+              title: "Lamberti Tower",
               detail: "City views — optional climb",
             },
             {
@@ -338,7 +338,7 @@ const DAY_6: DayGuide = {
             },
             {
               id: "verona-ponte",
-              title: "Ponte Pietra",
+              title: "Stone Bridge (Ponte Pietra)",
               detail: "Roman bridge over the Adige",
             },
             {
@@ -386,7 +386,7 @@ const DAY_6: DayGuide = {
             {
               id: "malcesine-harbor",
               title: "Old harbor",
-              detail: "Narrow lanes and gelato",
+              detail: "Narrow lanes and ice cream",
             },
             {
               id: "malcesine-castle",
@@ -426,14 +426,14 @@ const DAY_6: DayGuide = {
         {
           id: "food-bar-derby",
           name: "Bar Derby",
-          style: "Panini, pizza · very casual",
+          style: "Sandwiches, pizza · very casual",
           when: "lunch",
           mapsUrl: maps("Bar Derby Malcesine"),
         },
         {
           id: "food-rifugio-altissimo",
           name: "Rifugio Altissimo",
-          style: "Simple mountain plates",
+          style: "Mountain lodge plates",
           when: "lunch",
           mapsUrl: maps("Rifugio Altissimo Monte Baldo"),
         },
@@ -495,7 +495,7 @@ const DAY_7: DayGuide = {
     {
       id: "food-caneva-cafe",
       name: "CanevaWorld park cafés",
-      style: "Burgers, panini · casual",
+      style: "Burgers, sandwiches · casual",
       when: "lunch",
       mapsUrl: maps("CanevaWorld restaurant"),
       isPrimary: true,
@@ -509,7 +509,7 @@ const DAY_7: DayGuide = {
     },
     {
       id: "food-peschiera-snack",
-      name: "Gelato in Peschiera",
+      name: "Ice cream in Peschiera",
       style: "Canal-side snack ~16:00",
       when: "snack",
       mapsUrl: maps("Peschiera del Garda centro"),
@@ -534,7 +534,7 @@ const DAY_8: DayGuide = {
     },
     {
       id: "loc-rocca-manerba",
-      name: "Rocca di Manerba",
+      name: "Manerba Rocca",
       mapsUrl: maps("Rocca di Manerba"),
       websiteUrl: "https://www.visitgarda.com/en/place/rocca-di-manerba/",
       mustSee: [
@@ -559,7 +559,7 @@ const DAY_8: DayGuide = {
         {
           id: "manerba-harbor",
           title: "Harbor stroll",
-          detail: "Optional gelato if time after Rocca",
+          detail: "Optional ice cream if time after the Rocca",
           optional: true,
         },
       ],

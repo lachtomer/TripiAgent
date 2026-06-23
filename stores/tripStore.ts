@@ -538,7 +538,8 @@ export const useTripStore = create<TripState>()(
           }
 
           // Feature 012b: refresh default itinerary when Sun/Tue days swap (Jun 28 Sirmione, Jun 30 Verona)
-          const ITINERARY_TEMPLATE_VERSION = 2;
+          // Feature 012c: English copy refresh for activity descriptions
+          const ITINERARY_TEMPLATE_VERSION = 3;
           const storedVersion = (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion;
           if (storedVersion !== ITINERARY_TEMPLATE_VERSION) {
             (state as { itineraryTemplateVersion?: number }).itineraryTemplateVersion =

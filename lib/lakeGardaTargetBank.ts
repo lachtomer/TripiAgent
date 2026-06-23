@@ -79,8 +79,8 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   },
   {
     id: "bank-bergamo",
-    name: "Bergamo Città Alta",
-    description: "Funicular to upper town — Piazza Vecchia, basilica, Venetian walls. Fri Jun 26 drive stop.",
+    name: "Bergamo Upper Town",
+    description: "Funicular to the upper town — Old Square, cathedral, Venetian walls. Fri Jun 26 drive stop.",
     locationName: "Bergamo",
     lat: 45.704,
     lng: 9.662,
@@ -91,7 +91,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-castellaro",
     name: "Castellaro Lagusello",
-    description: "Medieval hamlet and laghetto loop — borghi più belli; Sat Jun 27 morning, 10 min from villa.",
+    description: "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, 10 min from villa.",
     locationName: "Castellaro Lagusello",
     lat: 45.368,
     lng: 10.528,
@@ -226,7 +226,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-pompiere",
     name: "Trattoria Al Pompiere",
-    description: "Classic Verona grill — pollo alla griglia. Tue Jun 30 lunch.",
+    description: "Classic Verona grill — grilled chicken. Tue Jun 30 lunch.",
     locationName: "Verona",
     lat: 45.443,
     lng: 10.998,
@@ -248,7 +248,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-silenzio",
     name: "Taverna del Silenzio",
-    description: "Famous Tortellini di Valeggio — book ahead! Sat Jun 27 lunch in Borghetto.",
+    description: "Famous Valeggio-style tortellini — book ahead! Sat Jun 27 lunch in Borghetto.",
     locationName: "Borghetto sul Mincio",
     lat: 45.353,
     lng: 10.735,
