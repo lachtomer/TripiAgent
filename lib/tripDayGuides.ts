@@ -195,7 +195,7 @@ const DAY_4: DayGuide = {
       mustSee: [
         {
           id: "sirmione-castle",
-          title: "Scaligero Castle",
+          title: "Scaliger Castle",
           detail: "Peninsula fortress — short visit ~45 min",
         },
         {
