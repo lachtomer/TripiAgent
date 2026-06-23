@@ -93,7 +93,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
   },
   {
     dayNumber: 3,
-    date: "Jun 27 – Castellaro, Borghetto & Sigurtà",
+    date: "Jun 27 – Castellaro, Borghetto & Sigurta Gardens",
     activities: [
       {
         id: "a7",
@@ -107,7 +107,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a7b",
         time: "10:15",
-        title: "Borghetto sul Mincio",
+        title: "Borghetto Village",
         description: "Watermills on the Mincio River — riverside village walk (~1 hr). Visconti Bridge.",
         locationName: "Borghetto sul Mincio",
         lat: 45.3533,
@@ -117,7 +117,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a7c",
         time: "12:00",
-        title: "Lunch — Taverna del Silenzio",
+        title: "Lunch — Taverna del Silenzio (book ahead)",
         description: "Book ahead! Famous Valeggio-style tortellini in Borghetto.",
         locationName: "Borghetto sul Mincio",
         lat: 45.353,
@@ -127,7 +127,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a7d",
         time: "13:30",
-        title: "Parco Giardino Sigurtà",
+        title: "Sigurta Garden Park",
         description: "Flat garden paths, flowers, and shade (~2 hrs walking). Gentle nature day close to base.",
         locationName: "Valeggio sul Mincio",
         lat: 45.3628,
@@ -150,7 +150,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a13",
         time: "10:00",
-        title: "Sirmione — Scaligero Castle",
+        title: "Sirmione — Scaliger Castle",
         description: "Castle visit ~45 min, then old-town stroll and ice cream (~30 min). Optional: Catullus Caves if time — see Day guide.",
         locationName: "Sirmione",
         lat: 45.4928,
@@ -161,7 +161,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
         id: "a14",
         time: "12:15",
         title: "Lunch — La Roccia or San Lorenzo",
-        description: "Casual lake lunch near the castle. Alternatives: Locanda al Bersagliere (lake views) or Trattoria San Lorenzo.",
+        description: "Casual lake lunch near the castle. Alternatives: Locanda al Bersagliere or San Lorenzo restaurant.",
         locationName: "Sirmione",
         lat: 45.491,
         lng: 10.607,
@@ -244,7 +244,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a12",
         time: "12:30",
-        title: "Lunch — Trattoria Al Pompiere",
+        title: "Lunch — Al Pompiere or pizza",
         description: "Classic Verona grill — grilled chicken. Alternative: Osteria da Dante or Pizzeria Du de Cope.",
         locationName: "Verona",
         lat: 45.443,
@@ -295,7 +295,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
       {
         id: "a19c",
         time: "15:30",
-        title: "Peschiera del Garda",
+        title: "Peschiera Harbor Walk",
         description: "Fortress walls, canals, and harbor stroll (~45 min) — same south-shore area.",
         locationName: "Peschiera del Garda",
         lat: 45.439,
@@ -393,7 +393,7 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
         id: "a28",
         time: "20:00",
         title: "Farewell Dinner in Milan",
-        description: "Trattoria del Nuovo Macello (steak) or Spontini pizza. Navigli district for evening drinks.",
+        description: "Steak at Nuovo Macello or Spontini pizza. Navigli canals for evening drinks.",
         locationName: "Milan",
         lat: 45.452,
         lng: 9.175,

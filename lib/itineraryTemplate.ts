@@ -1,24 +1,23 @@
 import type { ItineraryDay } from "@/types";
+import { DEFAULT_ITALY_ITINERARY } from "@/lib/defaultItalyItinerary";
 
 /** Bump when default itinerary content or structure changes — triggers client re-seed. */
-export const ITINERARY_TEMPLATE_VERSION = 4;
+export const ITINERARY_TEMPLATE_VERSION = 5;
 
-/** Detect persisted trips that predate the Jun 2026 replan or English copy refresh. */
+export function buildItineraryFingerprint(itinerary: ItineraryDay[]): string {
+  return itinerary
+    .map(
+      (day) =>
+        `${day.dayNumber}|${day.date ?? ""}|${day.activities.map((activity) => activity.id).join(",")}`
+    )
+    .join(";");
+}
+
+export const DEFAULT_ITINERARY_FINGERPRINT =
+  buildItineraryFingerprint(DEFAULT_ITALY_ITINERARY);
+
+/** True when persisted trip does not match the shipped default schedule. */
 export function isPersistedItineraryStale(itinerary: ItineraryDay[] | null): boolean {
   if (!itinerary?.length) return false;
-
-  const day4 = itinerary.find((d) => d.dayNumber === 4);
-  const day6 = itinerary.find((d) => d.dayNumber === 6);
-  if (!day4?.date?.includes("Sirmione")) return true;
-  if (!day6?.date?.includes("Verona")) return true;
-
-  const day2 = itinerary.find((d) => d.dayNumber === 2);
-  const bergamoStop = day2?.activities.find((a) => a.id === "a5b");
-  if (bergamoStop?.title?.includes("Città Alta")) return true;
-  if (bergamoStop?.description?.includes("Città Alta")) return true;
-
-  const oldDay3 = itinerary.find((d) => d.dayNumber === 3)?.date;
-  if (oldDay3?.includes("Rimbalzello") || oldDay3?.includes("Lake Boat")) return true;
-
-  return false;
+  return buildItineraryFingerprint(itinerary) !== DEFAULT_ITINERARY_FINGERPRINT;
 }
