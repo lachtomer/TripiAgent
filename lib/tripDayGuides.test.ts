@@ -96,4 +96,14 @@ describe("TRIP_DAY_GUIDES content", () => {
       2, 3, 4, 5, 6, 7, 8, 9,
     ]);
   });
+
+  it("each activity day banner references Desenzano base or Villa Bella", () => {
+    for (const day of ACTIVITY_DAYS) {
+      const banner = getDayGuide(day)?.bannerNote ?? "";
+      expect(
+        /desenzano|villa bella/i.test(banner),
+        `Day ${day} banner should mention Desenzano base`
+      ).toBe(true);
+    }
+  });
 });

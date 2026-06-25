@@ -82,14 +82,14 @@ export default function MapPreview() {
           <MapPin className="h-4 w-4 text-zinc-500 mt-0.5" />
         </div>
 
-        {/* 2. Monzambano (Villa Eunice - Base) */}
+        {/* 2. Desenzano (Villa Bella - Base) */}
         <div className="absolute left-[54%] top-[65%] flex flex-col items-center z-10">
           <div className="relative">
             {/* Glow ring */}
             <span className="absolute -inset-1 rounded-full bg-primary/20 dark:bg-[#86df72]/20 animate-ping opacity-75"></span>
             <div className="relative flex items-center gap-1.5 bg-primary dark:bg-[#86df72] border border-primary/20 px-2.5 py-1 rounded-lg shadow-md text-[10px] font-extrabold text-white dark:text-zinc-950">
               <span className="w-2 h-2 rounded-full bg-[#86df72] dark:bg-[#004900] animate-pulse"></span>
-              Monzambano (Base)
+              Desenzano (Base)
             </div>
           </div>
           <MapPin className="h-5 w-5 text-primary dark:text-[#86df72] mt-0.5 filter drop-shadow" />
@@ -123,7 +123,7 @@ export default function MapPreview() {
         <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 via-black/45 to-transparent text-white flex justify-between items-end">
           <div className="space-y-0.5">
             <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#86df72]">Lake Garda Route</h4>
-            <p className="text-[10px] text-white/80 font-medium">Drive base: Villa Eunice, Monzambano</p>
+            <p className="text-[10px] text-white/80 font-medium">Drive base: Villa Bella Desenzano</p>
           </div>
           <div className="flex gap-3 text-right">
             <div>

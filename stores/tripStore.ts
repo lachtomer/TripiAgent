@@ -8,6 +8,7 @@ import {
   ITINERARY_TEMPLATE_VERSION,
   isPersistedItineraryStale,
 } from "@/lib/itineraryTemplate";
+import { DEFAULT_ACCOMMODATION_BOOKING } from "@/lib/defaultAccommodationBooking";
 
 interface TripState {
   location: LocationDetails | null;
@@ -113,6 +114,10 @@ const initialUsers: UserProfile[] = [
 const initialLogistics: TravelLogistics = {
   flightConfirmationCode: "PQGFPN",
   carRentalVoucherCode: "",
+  accommodationName: DEFAULT_ACCOMMODATION_BOOKING.name,
+  vrboConfirmationCode: DEFAULT_ACCOMMODATION_BOOKING.vrboConfirmationCode,
+  vrboPropertyId: DEFAULT_ACCOMMODATION_BOOKING.vrboPropertyId,
+  accommodationBalanceDue: DEFAULT_ACCOMMODATION_BOOKING.balanceDueEuro,
 };
 
 export const useTripStore = create<TripState>()(
@@ -566,6 +571,14 @@ export const useTripStore = create<TripState>()(
           state.logistics = {
             flightConfirmationCode: legacy.flightConfirmationCode,
             carRentalVoucherCode: legacy.carRentalVoucherCode ?? "",
+            accommodationName:
+              legacy.accommodationName ?? initialLogistics.accommodationName,
+            vrboConfirmationCode:
+              legacy.vrboConfirmationCode ?? initialLogistics.vrboConfirmationCode,
+            vrboPropertyId:
+              legacy.vrboPropertyId ?? initialLogistics.vrboPropertyId,
+            accommodationBalanceDue:
+              legacy.accommodationBalanceDue ?? initialLogistics.accommodationBalanceDue,
           };
 
           // Feature 009: pin locale to "en" — coerce any legacy "he" value

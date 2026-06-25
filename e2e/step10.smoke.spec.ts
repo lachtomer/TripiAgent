@@ -118,6 +118,9 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await expect(page.getByTestId("flight-leg-return")).toContainText("13:05");
 
     await page.fill("#bookings-flight-confirmation", "LY381-E2E");
+    await expect(page.locator("#bookings-vrbo-confirmation")).toHaveValue("HA-HC6RCW", {
+      timeout: 5000,
+    });
 
     await page.click("#bookings-save-button");
     await expect(page.locator("text=Booking Details Saved")).toBeVisible();
@@ -126,5 +129,9 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await page.waitForLoadState("networkidle");
 
     await expect(page.locator("#bookings-flight-confirmation")).toHaveValue("LY381-E2E", { timeout: 10000 });
+    await expect(page.locator("#bookings-vrbo-confirmation")).toHaveValue("HA-HC6RCW", {
+      timeout: 10000,
+    });
+    await expect(page.getByTestId("accommodation-summary")).toContainText("Villa Bella Desenzano");
   });
 });

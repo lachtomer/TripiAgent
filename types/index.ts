@@ -168,6 +168,12 @@ export interface TravelLogistics {
   /** Wizz Air booking confirmation (covers both legs). */
   flightConfirmationCode?: string;
   carRentalVoucherCode?: string;
+  /** VRBO / vacation rental — Lake Garda base. */
+  accommodationName?: string;
+  vrboConfirmationCode?: string;
+  vrboPropertyId?: string;
+  /** Euro amount still due at the property (digits only, e.g. "98"). */
+  accommodationBalanceDue?: string;
 }
 
 export interface MorningBriefing {

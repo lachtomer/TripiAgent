@@ -21,8 +21,8 @@ test.describe("Step 4h — Itinerary Planner", () => {
 
     // Check that Day 1 to Day 5 headers are rendered
     await expect(page.locator("text=Jun 25 – Milan Arrival")).toBeVisible({ timeout: 10000 });
-    await page.locator("text=Jun 26 – Lakeside or Bergamo & Monzambano").scrollIntoViewIfNeeded();
-    await expect(page.locator("text=Jun 26 – Lakeside or Bergamo & Monzambano")).toBeVisible({ timeout: 5000 });
+    await page.locator("text=Jun 26 – Lakeside or Bergamo & Desenzano").scrollIntoViewIfNeeded();
+    await expect(page.locator("text=Jun 26 – Lakeside or Bergamo & Desenzano")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà").scrollIntoViewIfNeeded();
     await expect(page.locator("text=Jun 27 – Castellaro, Borghetto & Sigurtà")).toBeVisible({ timeout: 5000 });
     await page.locator("text=Jun 28 – Manerba Boat & Rocca Walk").scrollIntoViewIfNeeded();
@@ -32,7 +32,7 @@ test.describe("Step 4h — Itinerary Planner", () => {
     await page.locator("text=Jun 30 – Verona (or Monte Baldo — see Day guide)").scrollIntoViewIfNeeded();
     await expect(page.locator("text=Jun 30 – Verona (or Monte Baldo — see Day guide)")).toBeVisible({ timeout: 5000 });
 
-    // Verify Milan/Monzambano activities exist
+    // Verify Milan/Desenzano activities exist
     await expect(page.locator("text=Flight 6404 Departs TLV")).toBeVisible();
     await expect(page.locator("text=Car Rental Pickup – Centauro")).toBeVisible();
   });

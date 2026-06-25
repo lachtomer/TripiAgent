@@ -3,7 +3,7 @@
     {
       "name": "Gardaland",
       "category": "theme_park",
-      "description": "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Mon Jun 29 weekday visit; arrive at opening.",
+      "description": "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Mon Jun 29 weekday visit; ~20 min from Desenzano.",
       "lat": 45.4542,
       "lng": 10.7137,
       "createdBy": "TripiAgent"
@@ -11,7 +11,7 @@
     {
       "name": "CanevaWorld Aqua Paradise",
       "category": "theme_park",
-      "description": "Water park with extreme slides and pools — scheduled Wed Jul 1; also Gardaland rain backup.",
+      "description": "Water park with extreme slides and pools — Wed Jul 1; ~25 min from Desenzano. Also Gardaland rain backup.",
       "lat": 45.4817,
       "lng": 10.7936,
       "createdBy": "TripiAgent"
@@ -59,7 +59,7 @@
     {
       "name": "Castellaro Lagusello",
       "category": "town",
-      "description": "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, 10 min from villa.",
+      "description": "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, ~35 min from Desenzano.",
       "lat": 45.368,
       "lng": 10.528,
       "createdBy": "TripiAgent"
@@ -67,7 +67,7 @@
     {
       "name": "Manerba — Self-Drive Boat Rental",
       "category": "water_sports",
-      "description": "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — book ahead.",
+      "description": "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — ~40 min from Desenzano, book ahead.",
       "lat": 45.492,
       "lng": 10.6055,
       "createdBy": "TripiAgent"
@@ -107,7 +107,7 @@
     {
       "name": "Borghetto sul Mincio",
       "category": "nature",
-      "description": "Medieval watermill village — riverside walk ~1 hr. Sat Jun 27 nature day, 15 min from Monzambano.",
+      "description": "Medieval watermill village — riverside walk ~1 hr. Sat Jun 27 nature day, ~35 min from Desenzano.",
       "lat": 45.3533,
       "lng": 10.7378,
       "createdBy": "TripiAgent"
@@ -139,7 +139,7 @@
     {
       "name": "Trattoria del Ponte",
       "category": "dining",
-      "description": "Welcome dinner — lake fish and local pasta in Monzambano. Fri Jun 26 evening.",
+      "description": "Welcome dinner — lake fish and local pasta in Monzambano. Backup if dining in the Mincio valley.",
       "lat": 45.337,
       "lng": 10.528,
       "createdBy": "TripiAgent"
@@ -147,7 +147,7 @@
     {
       "name": "Ristorante Pace",
       "category": "dining",
-      "description": "Desenzano waterfront — fresh lake fish and risotto. Backup south-shore lunch.",
+      "description": "Desenzano waterfront — fresh lake fish and risotto. Welcome dinner Fri Jun 26 evening.",
       "lat": 45.4711,
       "lng": 10.5358,
       "createdBy": "TripiAgent"

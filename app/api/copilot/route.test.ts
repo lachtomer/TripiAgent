@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 const mockGenerateContent = vi.fn().mockResolvedValue({
   response: {
     text: () => JSON.stringify({
-      morningBriefing: "Welcome to Day 2! The weather is sunny and warm at 22°C. Excellent day for driving to Villa Eunice.",
+      morningBriefing: "Welcome to Day 2! The weather is sunny and warm at 22°C. Excellent day for driving to Villa Bella Desenzano.",
       serendipity: {
         title: "Aperitivo at Piazza delle Erbe",
         description: "Enjoy a Spritz at Verona's oldest square.",

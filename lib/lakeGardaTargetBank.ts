@@ -1,11 +1,11 @@
 import type { SavedAttraction } from "@/types";
 
-/** Curated Target Bank for Lake Garda base (Monzambano) — teens 15–18, Jun 2026 trip. */
+/** Curated Target Bank for Lake Garda base (Desenzano del Garda) — teens 15–18, Jun 2026 trip. */
 export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-gardaland",
     name: "Gardaland",
-    description: "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Mon Jun 29 weekday visit; arrive at opening.",
+    description: "Italy's largest theme park — roller coasters, water rides, SEA LIFE aquarium. Mon Jun 29 weekday visit; ~20 min from Desenzano.",
     locationName: "Castelnuovo del Garda",
     lat: 45.4542,
     lng: 10.7137,
@@ -16,7 +16,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-caneva-aqua",
     name: "CanevaWorld Aqua Paradise",
-    description: "Water park with extreme slides and pools — scheduled Wed Jul 1; also Gardaland rain backup.",
+    description: "Water park with extreme slides and pools — Wed Jul 1; ~25 min from Desenzano. Also Gardaland rain backup.",
     locationName: "Lazise",
     lat: 45.4817,
     lng: 10.7936,
@@ -91,7 +91,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-castellaro",
     name: "Castellaro Lagusello",
-    description: "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, 10 min from villa.",
+    description: "Medieval hamlet and small lake loop — listed among Italy's most beautiful villages; Sat Jun 27 morning, ~35 min from Desenzano.",
     locationName: "Castellaro Lagusello",
     lat: 45.368,
     lng: 10.528,
@@ -102,7 +102,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-manerba-boat",
     name: "Manerba — Self-Drive Boat Rental",
-    description: "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — book ahead.",
+    description: "Rent a small family boat from Manerba marina (no license, up to 40 HP). Sun Jun 28 — ~40 min from Desenzano, book ahead.",
     locationName: "Manerba del Garda",
     lat: 45.492,
     lng: 10.6055,
@@ -160,7 +160,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-borghetto",
     name: "Borghetto sul Mincio",
-    description: "Medieval watermill village — riverside walk ~1 hr. Sat Jun 27 nature day, 15 min from Monzambano.",
+    description: "Medieval watermill village — riverside walk ~1 hr. Sat Jun 27 nature day, ~35 min from Desenzano.",
     locationName: "Borghetto sul Mincio",
     lat: 45.3533,
     lng: 10.7378,
@@ -204,7 +204,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-ponte",
     name: "Trattoria del Ponte",
-    description: "Welcome dinner — lake fish and local pasta in Monzambano. Fri Jun 26 evening.",
+    description: "Welcome dinner — lake fish and local pasta in Monzambano. Backup if dining in the Mincio valley.",
     locationName: "Monzambano",
     lat: 45.337,
     lng: 10.528,
@@ -215,7 +215,7 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-pace",
     name: "Ristorante Pace",
-    description: "Desenzano waterfront — fresh lake fish and risotto. Backup south-shore lunch.",
+    description: "Desenzano waterfront — fresh lake fish and risotto. Welcome dinner Fri Jun 26 evening.",
     locationName: "Desenzano del Garda",
     lat: 45.4711,
     lng: 10.5358,

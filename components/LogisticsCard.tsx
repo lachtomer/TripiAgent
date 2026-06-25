@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plane, Car, Check, Key, ChevronDown, ChevronUp } from "lucide-react";
+import { Plane, Car, Check, Key, ChevronDown, ChevronUp, Home } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useTripStore } from "@/stores/tripStore";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useTranslation } from "@/lib/translations";
 import { DEFAULT_FLIGHT_BOOKINGS } from "@/lib/defaultFlightBookings";
+import { DEFAULT_ACCOMMODATION_BOOKING } from "@/lib/defaultAccommodationBooking";
 
 export default function LogisticsCard() {
   const isHydrated = useIsHydrated();
@@ -20,12 +21,18 @@ export default function LogisticsCard() {
   const [showSavedFeedback, setShowSavedFeedback] = useState(false);
   const [flightConfirmation, setFlightConfirmation] = useState("");
   const [carRentalCode, setCarRentalCode] = useState("");
+  const [vrboConfirmation, setVrboConfirmation] = useState("");
+  const [vrboPropertyId, setVrboPropertyId] = useState("");
+  const [accommodationBalanceDue, setAccommodationBalanceDue] = useState("");
 
   useEffect(() => {
     if (isHydrated && logistics) {
       const timer = setTimeout(() => {
         setFlightConfirmation(logistics.flightConfirmationCode || "");
         setCarRentalCode(logistics.carRentalVoucherCode || "");
+        setVrboConfirmation(logistics.vrboConfirmationCode || "");
+        setVrboPropertyId(logistics.vrboPropertyId || "");
+        setAccommodationBalanceDue(logistics.accommodationBalanceDue || "");
       }, 0);
       return () => clearTimeout(timer);
     }
@@ -45,6 +52,10 @@ export default function LogisticsCard() {
     updateLogistics({
       flightConfirmationCode: flightConfirmation.trim(),
       carRentalVoucherCode: carRentalCode.trim(),
+      accommodationName: logistics.accommodationName ?? DEFAULT_ACCOMMODATION_BOOKING.name,
+      vrboConfirmationCode: vrboConfirmation.trim(),
+      vrboPropertyId: vrboPropertyId.trim(),
+      accommodationBalanceDue: accommodationBalanceDue.trim(),
     });
 
     setShowSavedFeedback(true);
@@ -144,6 +155,91 @@ export default function LogisticsCard() {
               className="h-8 text-xs font-semibold text-start"
               dir="ltr"
             />
+          </div>
+
+          <div className="space-y-3 pt-1 border-t border-outline-variant/20">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+              <Home className="h-3 w-3 text-primary dark:text-[#86df72]" />
+              {t.accommodationSectionTitle}
+            </p>
+
+            <div
+              data-testid="accommodation-summary"
+              className="rounded-xl border border-outline-variant/30 bg-background/50 p-3 space-y-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-extrabold text-foreground">
+                  {logistics.accommodationName ?? DEFAULT_ACCOMMODATION_BOOKING.name}
+                </span>
+                <span className="text-[10px] font-semibold text-muted-foreground">
+                  {DEFAULT_ACCOMMODATION_BOOKING.locationName}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-1.5 text-[10px] text-muted-foreground">
+                <p>
+                  <span className="font-bold text-foreground">{t.accommodationCheckInLabel}:</span>{" "}
+                  {DEFAULT_ACCOMMODATION_BOOKING.checkInLabel}
+                </p>
+                <p>
+                  <span className="font-bold text-foreground">{t.accommodationCheckOutLabel}:</span>{" "}
+                  {DEFAULT_ACCOMMODATION_BOOKING.checkOutLabel}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="bookings-vrbo-confirmation"
+                className="text-[10px] font-bold text-muted-foreground uppercase"
+              >
+                {t.vrboConfirmationLabel}
+              </label>
+              <Input
+                id="bookings-vrbo-confirmation"
+                data-testid="bookings-vrbo-confirmation"
+                placeholder="e.g. HA-HC6RCW"
+                value={vrboConfirmation}
+                onChange={(e) => setVrboConfirmation(e.target.value)}
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="bookings-vrbo-property-id"
+                className="text-[10px] font-bold text-muted-foreground uppercase"
+              >
+                {t.vrboPropertyIdLabel}
+              </label>
+              <Input
+                id="bookings-vrbo-property-id"
+                data-testid="bookings-vrbo-property-id"
+                placeholder="e.g. 10207760"
+                value={vrboPropertyId}
+                onChange={(e) => setVrboPropertyId(e.target.value)}
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="bookings-accommodation-balance"
+                className="text-[10px] font-bold text-muted-foreground uppercase"
+              >
+                {t.accommodationBalanceLabel}
+              </label>
+              <Input
+                id="bookings-accommodation-balance"
+                data-testid="bookings-accommodation-balance"
+                placeholder="e.g. 98"
+                value={accommodationBalanceDue}
+                onChange={(e) => setAccommodationBalanceDue(e.target.value)}
+                className="h-8 text-xs font-semibold text-start"
+                dir="ltr"
+              />
+            </div>
           </div>
 
           <Button

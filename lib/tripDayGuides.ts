@@ -8,7 +8,7 @@ function maps(q: string): string {
 const DAY_2: DayGuide = {
   dayNumber: 2,
   bannerNote:
-    "Pick one drive stop: lakeside Peschiera (Option A) OR Bergamo upper town (Option B) — then continue to Monzambano.",
+    "Base: Villa Bella, Desenzano. Pick one en-route stop — Option A Peschiera (~15 min to villa) OR Option B Bergamo (~1.5–2 hr to villa). VRBO check-in from 17:00.",
   options: [
     {
       id: "option-a-virgilio",
@@ -22,7 +22,7 @@ const DAY_2: DayGuide = {
             {
               id: "virgilio-promenade",
               title: "Lakefront promenade",
-              detail: "Easy lakeside walk — first Lake Garda views (~45–60 min)",
+              detail: "Easy lakeside walk — first Lake Garda views (~45–60 min). ~15 min drive to Desenzano after.",
             },
             {
               id: "virgilio-fortress",
@@ -42,19 +42,19 @@ const DAY_2: DayGuide = {
           isPrimary: true,
         },
         {
-          id: "food-trattoria-ponte-a",
-          name: "Trattoria del Ponte",
-          style: "Lake fish, local pasta",
+          id: "food-ristorante-pace-a",
+          name: "Ristorante Pace",
+          style: "Lake fish, risotto · waterfront",
           when: "dinner",
-          mapsUrl: maps("Trattoria del Ponte Monzambano"),
+          mapsUrl: maps("Ristorante Pace Desenzano del Garda"),
           isPrimary: true,
         },
         {
-          id: "food-osteria-moro-a",
-          name: "Osteria del Moro",
-          style: "Village restaurant",
+          id: "food-desenzano-pizza-a",
+          name: "Lakeside pizzerias",
+          style: "Casual pizza along Via Guglielmo Marconi",
           when: "dinner",
-          mapsUrl: maps("Osteria del Moro Monzambano"),
+          mapsUrl: maps("pizza Desenzano del Garda lungolago"),
         },
       ],
     },
@@ -113,19 +113,19 @@ const DAY_2: DayGuide = {
           mapsUrl: maps("Pizzeria Sant Angelo Bergamo"),
         },
         {
-          id: "food-trattoria-ponte",
-          name: "Trattoria del Ponte",
-          style: "Lake fish, local pasta",
+          id: "food-ristorante-pace",
+          name: "Ristorante Pace",
+          style: "Lake fish, risotto · waterfront",
           when: "dinner",
-          mapsUrl: maps("Trattoria del Ponte Monzambano"),
+          mapsUrl: maps("Ristorante Pace Desenzano del Garda"),
           isPrimary: true,
         },
         {
-          id: "food-osteria-moro",
-          name: "Osteria del Moro",
-          style: "Village restaurant",
+          id: "food-desenzano-pizza",
+          name: "Lakeside pizzerias",
+          style: "Casual pizza along Via Guglielmo Marconi",
           when: "dinner",
-          mapsUrl: maps("Osteria del Moro Monzambano"),
+          mapsUrl: maps("pizza Desenzano del Garda lungolago"),
         },
       ],
     },
@@ -134,6 +134,8 @@ const DAY_2: DayGuide = {
 
 const DAY_3: DayGuide = {
   dayNumber: 3,
+  bannerNote:
+    "Mincio valley loop from Desenzano: Castellaro ~35 min → Borghetto ~10 min → Sigurtà ~20 min → home ~35 min. Leave by 09:00.",
   locations: [
     {
       id: "loc-castellaro",
@@ -143,7 +145,7 @@ const DAY_3: DayGuide = {
         {
           id: "castellaro-hamlet",
           title: "Medieval hamlet",
-          detail: "Listed among Italy's most beautiful villages",
+          detail: "Listed among Italy's most beautiful villages — ~35 min from Desenzano",
         },
         {
           id: "castellaro-lake",
@@ -225,6 +227,8 @@ const DAY_3: DayGuide = {
 
 const DAY_4: DayGuide = {
   dayNumber: 4,
+  bannerNote:
+    "Manerba boat + Rocca day — ~40 min drive each way from Villa Bella, Desenzano. Book marina slot for 09:30.",
   locations: [
     {
       id: "loc-manerba-marina",
@@ -234,7 +238,7 @@ const DAY_4: DayGuide = {
         {
           id: "manerba-boat",
           title: "Self-drive family boat",
-          detail: "2 hr on the lake — book marina slot",
+          detail: "2 hr on the lake — book marina slot (~40 min from Desenzano)",
         },
       ],
     },
@@ -292,6 +296,8 @@ const DAY_4: DayGuide = {
 
 const DAY_5: DayGuide = {
   dayNumber: 5,
+  bannerNote:
+    "Gardaland weekday — only ~20 min from Desenzano. Park opens 10:00; leave base ~09:45.",
   locations: [
     {
       id: "loc-gardaland",
@@ -336,7 +342,8 @@ const DAY_5: DayGuide = {
 
 const DAY_6: DayGuide = {
   dayNumber: 6,
-  bannerNote: "Group vote: pick Verona OR Monte Baldo — do not try both in one day.",
+  bannerNote:
+    "Group vote from Desenzano: Verona (~40 min) OR Monte Baldo + Malcesine (~1 hr) — pick one only.",
   options: [
     {
       id: "option-a-verona",
@@ -476,6 +483,8 @@ const DAY_6: DayGuide = {
 
 const DAY_7: DayGuide = {
   dayNumber: 7,
+  bannerNote:
+    "South-shore day from Desenzano: CanevaWorld ~25 min, then Peschiera harbor ~10 min after the park.",
   locations: [
     {
       id: "loc-canevaworld",
@@ -551,6 +560,8 @@ const DAY_7: DayGuide = {
 
 const DAY_8: DayGuide = {
   dayNumber: 8,
+  bannerNote:
+    "Sirmione castle + Aquaria spa — ~15 min from Desenzano. Spa group booking confirmed ✅.",
   locations: [
     {
       id: "loc-sirmione",
@@ -625,6 +636,8 @@ const DAY_8: DayGuide = {
 
 const DAY_9: DayGuide = {
   dayNumber: 9,
+  bannerNote:
+    "Check out Villa Bella, Desenzano before 10:00, then Serravalle ~1 hr 45 min → Milan ~1 hr 15 min. ZTL €7.50 if entering before 19:30.",
   locations: [
     {
       id: "loc-serravalle",
