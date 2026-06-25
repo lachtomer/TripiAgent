@@ -17,15 +17,18 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
         id: "a2",
         time: "22:10",
         title: "Arrive Malpensa (MXP)",
-        description: "Land at Milan Malpensa Airport. Proceed to baggage claim and head to accommodation in Ferno.",
+        description: "Land at Milan Malpensa Airport. Proceed to baggage claim and drive to overnight stay in Case Nuove (~15 min).",
         locationName: "Malpensa, Milan",
       },
       {
         id: "a3",
         time: "23:00",
-        title: "Check-in: Malpensa Jacuzzi House",
-        description: "Self-check-in via lockbox — code & video instructions sent via WhatsApp. Accommodation for 7 adults in Ferno, right next to the airport.",
-        locationName: "Ferno, Milan",
+        title: "Check-in: C'era una volta room",
+        description:
+          "Via Bellaria, 39, 21019 Case Nuove VA, Italy — overnight Jun 25–26 before car pickup at Malpensa.",
+        locationName: "Case Nuove, Somma Lombardo",
+        lat: 45.631,
+        lng: 8.689,
       },
     ],
   },
@@ -37,7 +40,8 @@ export const DEFAULT_ITALY_ITINERARY: ItineraryDay[] = [
         id: "a4",
         time: "10:00",
         title: "Car Rental Pickup – Centauro",
-        description: "Pick up rental car at Malpensa Airport with Centauro. Group E2 — Hyundai Kona or similar. Check fuel level, note any existing damage, confirm drop-off instructions.",
+        description:
+          "Check out from C'era una volta room (Via Bellaria 39, Case Nuove), then pick up rental car at Malpensa Airport with Centauro. Group E2 — Hyundai Kona or similar. Check fuel level, note any existing damage, confirm drop-off instructions.",
         locationName: "Malpensa Airport",
       },
       {

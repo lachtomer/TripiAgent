@@ -31,7 +31,6 @@ import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { cn } from "@/lib/utils";
 import type { Activity } from "@/types";
 import { DEFAULT_ITALY_ITINERARY } from "@/lib/defaultItalyItinerary";
-import { isPersistedItineraryStale } from "@/lib/itineraryTemplate";
 import { useTranslation } from "@/lib/translations";
 import { buildActivityLocationMapsUrl } from "@/lib/urlSafety";
 
@@ -177,7 +176,7 @@ export default function ItineraryCard() {
 
   useEffect(() => {
     if (!isHydrated) return;
-    if (itinerary === null || isPersistedItineraryStale(itinerary)) {
+    if (itinerary === null) {
       setItinerary(DEFAULT_ITALY_ITINERARY);
     }
   }, [isHydrated, itinerary, setItinerary]);

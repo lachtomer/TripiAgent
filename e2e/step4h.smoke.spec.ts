@@ -111,17 +111,16 @@ test.describe("Step 4h — Itinerary Planner", () => {
   });
 
   test("5. Delete an activity", async ({ page }) => {
-    // Ensure "Check-in: Malpensa Jacuzzi House" is visible
-    await expect(page.locator("text=Check-in: Malpensa Jacuzzi House")).toBeVisible();
+    const checkInRow = page.locator("#activity-row-a3");
+    await checkInRow.scrollIntoViewIfNeeded();
+    await expect(checkInRow).toBeVisible();
 
-    // Expand it (id is a3)
     await page.locator("#activity-header-a3").click();
+    const deleteBtn = page.locator("#delete-activity-btn-a3");
+    await expect(deleteBtn).toBeEnabled();
+    await deleteBtn.click();
 
-    // Tap delete button
-    await page.locator("#delete-activity-btn-a3").click();
-
-    // Verify it is removed
-    await expect(page.locator("text=Check-in: Malpensa Jacuzzi House")).not.toBeVisible();
+    await expect(checkInRow).not.toBeVisible({ timeout: 10000 });
   });
 
   test("6. Ask AI navigates to /chat with pre-filled prompt", async ({ page }) => {
