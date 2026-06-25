@@ -3,6 +3,7 @@ import {
   TRIP_DAY_GUIDES,
   getDayGuide,
   getDayGuideFood,
+  getDayGuideLocations,
   collectDayGuideUrls,
 } from "./tripDayGuides";
 import { isSafeExternalUrl } from "./urlSafety";
@@ -61,6 +62,15 @@ describe("TRIP_DAY_GUIDES content", () => {
     expect(day6.food).toBeUndefined();
   });
 
+  it("Day 7 has exactly two dual options with banner", () => {
+    const day7 = getDayGuide(7)!;
+    expect(day7.options).toHaveLength(2);
+    expect(day7.options?.[0].id).toBe("option-a-caneva");
+    expect(day7.options?.[1].id).toBe("option-b-villages");
+    expect(day7.bannerNote).toMatch(/Option A/i);
+    expect(day7.bannerNote).toMatch(/Option B/i);
+  });
+
   it("marks Grotte di Catullo as optional on Day 8", () => {
     const day8 = getDayGuide(8)!;
     const sirmione = day8.locations?.find((l) => l.id === "loc-sirmione");
@@ -97,6 +107,22 @@ describe("TRIP_DAY_GUIDES content", () => {
     ]);
   });
 
+  it("marks optional Tibetan Bridge on Day 4", () => {
+    const day4 = getDayGuide(4)!;
+    const tibetan = getDayGuideLocations(day4).find((l) => l.id === "loc-tibetan-bridge");
+    expect(tibetan?.optional).toBe(true);
+    expect(collectDayGuideUrls(day4)).toContain(
+      "https://www.gardaclick.com/en/to-do/tibetan-bridge-crero"
+    );
+  });
+
+  it("marks optional Paganella traverse on Day 4", () => {
+    const day4 = getDayGuide(4)!;
+    const paganella = getDayGuideLocations(day4).find((l) => l.id === "loc-paganella-traverse");
+    expect(paganella?.optional).toBe(true);
+    expect(paganella?.websiteUrl).toContain("lagoparkmolveno.it");
+  });
+
   it("each activity day banner references Desenzano base or Villa Bella", () => {
     for (const day of ACTIVITY_DAYS) {
       const banner = getDayGuide(day)?.bannerNote ?? "";
@@ -105,5 +131,24 @@ describe("TRIP_DAY_GUIDES content", () => {
         `Day ${day} banner should mention Desenzano base`
       ).toBe(true);
     }
+  });
+
+  it("includes consolidated guide enrichments on Day 8 Sirmione", () => {
+    const day8 = getDayGuide(8)!;
+    const food = getDayGuideFood(day8).map((f) => f.id);
+    expect(food).toContain("food-gelateria-scaligeri");
+    const sirmione = day8.locations?.find((l) => l.id === "loc-sirmione");
+    expect(sirmione?.mustSee.some((s) => s.id === "sirmione-beaches")).toBe(true);
+  });
+
+  it("dual-option food entries have locationId for grouping", () => {
+    const day7 = getDayGuide(7)!;
+    const optionB = day7.options?.find((o) => o.id === "option-b-villages");
+    expect(optionB).toBeDefined();
+    for (const item of optionB!.food) {
+      expect(item.locationId, item.id).toBeTruthy();
+    }
+    const laziseFood = optionB!.food.filter((f) => f.locationId === "loc-lazise-centro-b");
+    expect(laziseFood.length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -43,7 +43,7 @@
     {
       "name": "Malcesine",
       "category": "town",
-      "description": "Scaliger castle old town — combine with Monte Baldo cable car (Tue Jun 30 Option B).",
+      "description": "Scaliger castle, Punto Panoramico, Palazzo dei Capitani — combine with Monte Baldo cable car (Tue Jun 30 Option B).",
       "lat": 45.7628,
       "lng": 10.8115,
       "createdBy": "TripiAgent"
@@ -123,7 +123,7 @@
     {
       "name": "Peschiera del Garda",
       "category": "town",
-      "description": "Fortress walls, canals, and harbor stroll — Wed Jul 1 after CanevaWorld (~45 min).",
+      "description": "Fortress walls (UNESCO), canals, stilt houses, Mincio bike path — Wed Jul 1 after CanevaWorld (~45 min).",
       "lat": 45.439,
       "lng": 10.692,
       "createdBy": "TripiAgent"
@@ -190,6 +190,134 @@
       "description": "Milan farewell steak dinner. Fri Jul 3 evening. Alternative: Spontini pizza.",
       "lat": 45.452,
       "lng": 9.175,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Bardolino",
+      "category": "town",
+      "description": "Lakeside wine town — promenade, walk to Garda, winery tastings. Day 7 Option B (~25 min from Desenzano).",
+      "lat": 45.5506,
+      "lng": 10.7254,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Garda",
+      "category": "town",
+      "description": "Classic south-lake harbour village — lungolago walk, Punta San Vigilio nearby. Day 7 Option B (~30 min from Desenzano).",
+      "lat": 45.5811,
+      "lng": 10.7094,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Lazise Historic Centre",
+      "category": "town",
+      "description": "Medieval walls, Scaliger castle, Wednesday market — same resort area as CanevaWorld. Day 7 Option A or B.",
+      "lat": 45.4817,
+      "lng": 10.7936,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Rocca di Lonato",
+      "category": "culture",
+      "description": "Hilltop fortress with lake panoramas — quick stop ~15 min from Desenzano. Optional spare evening.",
+      "lat": 45.4608,
+      "lng": 10.4825,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Moniga del Garda",
+      "category": "town",
+      "description": "Castle ruins and lake beaches — teen swim option on the southwest shore (~15 min from Desenzano).",
+      "lat": 45.524,
+      "lng": 10.534,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Limone sul Garda",
+      "category": "town",
+      "description": "Limonaia del Castel, cliffside cycle path, Porto Vecchio lemon sorbet — west shore (~1 hr from Desenzano).",
+      "lat": 45.813,
+      "lng": 10.791,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Navigarda Lake Ferry",
+      "category": "water_sports",
+      "description": "Hop-on hop-off ferry linking Desenzano, Sirmione, Peschiera, and north-lake towns — scenic summer alternative to driving.",
+      "lat": 45.4711,
+      "lng": 10.5358,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Tibetan Bridge — Crero (Torri del Benaco)",
+      "category": "nature",
+      "description": "Ponte Tibetano suspension bridge over Val Vanzana — easy–moderate 1.5–2 hr loop. East shore ~50 min from Desenzano.",
+      "lat": 45.611,
+      "lng": 10.686,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Paganella — Canfedin & Monte Gazza traverse",
+      "category": "nature",
+      "description": "Medium ridge hike from Cima Paganella cable car (Andalo): 5–5.5 hr, Dolomites & Garda views. Full day ~2 hr from Desenzano.",
+      "lat": 46.144,
+      "lng": 10.925,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Torri del Benaco",
+      "category": "town",
+      "description": "East-shore port & Scaliger castle — start point for Tibetan Bridge hike.",
+      "lat": 45.61,
+      "lng": 10.686,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Salò",
+      "category": "town",
+      "description": "West-shore promenade, MU.SA museum, Pasticceria Vassalli — optional spare afternoon (~45 min from Desenzano).",
+      "lat": 45.606,
+      "lng": 10.521,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Padenghe sul Garda — pebble beach",
+      "category": "nature",
+      "description": "Small tranquil pebble beach — picnic-friendly swim spot (~20 min from Desenzano).",
+      "lat": 45.507,
+      "lng": 10.539,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Ottella Winery",
+      "category": "dining",
+      "description": "Lugana wine tastings near Peschiera — indoor room, ideal on rainy days.",
+      "lat": 45.428,
+      "lng": 10.698,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Isola del Garda",
+      "category": "culture",
+      "description": "Private island villa boat tours May–October — book from south-lake ports.",
+      "lat": 45.586,
+      "lng": 10.595,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Museo dell'Olio (Cisano)",
+      "category": "culture",
+      "description": "Olive Oil Museum near Bardolino — short stop on a village day.",
+      "lat": 45.542,
+      "lng": 10.732,
+      "createdBy": "TripiAgent"
+    },
+    {
+      "name": "Desenzano del Garda",
+      "category": "town",
+      "description": "Base town — Tuesday market, harbour promenade, Archaeological Museum, welcome dinner at Pace.",
+      "lat": 45.4711,
+      "lng": 10.5358,
       "createdBy": "TripiAgent"
     }
   ]

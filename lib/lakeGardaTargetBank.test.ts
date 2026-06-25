@@ -31,4 +31,38 @@ describe("lakeGardaTargetBank", () => {
     expect(ponte?.locationName).toBe("Borghetto sul Mincio");
     expect(ponte?.description).not.toMatch(/welcome dinner/i);
   });
+
+  it("includes south-lake optional towns from guide gap analysis", () => {
+    const ids = LAKE_GARDA_TEEN_TARGET_BANK.map((e) => e.id);
+    expect(ids).toContain("bank-bardolino");
+    expect(ids).toContain("bank-garda-village");
+    expect(ids).toContain("bank-limone");
+    expect(ids).toContain("bank-navigarda");
+  });
+
+  it("includes hike options for Tibetan Bridge and Paganella traverse", () => {
+    const ids = LAKE_GARDA_TEEN_TARGET_BANK.map((e) => e.id);
+    expect(ids).toContain("bank-tibetan-bridge");
+    expect(ids).toContain("bank-paganella-traverse");
+
+    const tibetan = LAKE_GARDA_TEEN_TARGET_BANK.find((e) => e.id === "bank-tibetan-bridge");
+    expect(tibetan?.locationName).toBe("Torri del Benaco");
+    expect(tibetan?.description).toMatch(/Ponte Tibetano/i);
+
+    const paganella = LAKE_GARDA_TEEN_TARGET_BANK.find(
+      (e) => e.id === "bank-paganella-traverse"
+    );
+    expect(paganella?.locationName).toBe("Molveno");
+    expect(paganella?.description).toMatch(/5–5\.5 hr/);
+  });
+
+  it("includes consolidated guide south-lake gaps", () => {
+    const ids = LAKE_GARDA_TEEN_TARGET_BANK.map((e) => e.id);
+    expect(ids).toContain("bank-salo");
+    expect(ids).toContain("bank-padenghe-beach");
+    expect(ids).toContain("bank-ottella-winery");
+    expect(ids).toContain("bank-isola-garda");
+    expect(ids).toContain("bank-olive-oil-museum");
+    expect(ids).toContain("bank-desenzano");
+  });
 });

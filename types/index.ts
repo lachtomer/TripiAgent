@@ -53,6 +53,8 @@ export interface DayGuideFood {
   mapsUrl: string;
   websiteUrl?: string;
   isPrimary?: boolean;
+  /** Links food to a day-guide location block (dual-option days) */
+  locationId?: string;
 }
 
 /** Mutually exclusive plan branch (e.g. Verona OR Monte Baldo) */

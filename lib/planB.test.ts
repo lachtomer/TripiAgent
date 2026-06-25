@@ -23,11 +23,23 @@ describe("getPlanBOptionsForDay", () => {
     expect(options[0].alternateFor).toBe("Gardaland Theme Park");
   });
 
-  it("returns paragliding backup for day 6 when Monte Baldo not scheduled", () => {
+  it("returns Monte Baldo alternates for day 6 when cable car not scheduled", () => {
     const options = getPlanBOptionsForDay(6, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
-    expect(options).toHaveLength(1);
-    expect(options[0].bankId).toBe("bank-paragliding-malcesine");
+    expect(options).toHaveLength(2);
+    expect(options.map((option) => option.bankId)).toEqual([
+      "bank-paragliding-malcesine",
+      "bank-limone",
+    ]);
     expect(options[0].alternateFor).toBe("Monte Baldo Cable Car");
+  });
+
+  it("returns Manerba hike alternates for day 4 boat day", () => {
+    const options = getPlanBOptionsForDay(4, DEFAULT_ITALY_ITINERARY, LAKE_GARDA_TEEN_TARGET_BANK);
+    expect(options).toHaveLength(2);
+    expect(options.map((option) => option.bankId)).toEqual([
+      "bank-tibetan-bridge",
+      "bank-paganella-traverse",
+    ]);
   });
 
   it("returns empty for days without a backup map", () => {
@@ -73,6 +85,13 @@ describe("getPlanBOptionsForDay", () => {
                 title: "Paragliding Tandem (Monte Baldo)",
                 description: "Booked tandem",
                 sourceAttractionId: "bank-paragliding-malcesine",
+              },
+              {
+                id: "added-limone",
+                time: "16:00",
+                title: "Limone sul Garda",
+                description: "West-shore village backup",
+                sourceAttractionId: "bank-limone",
               },
             ],
           }
