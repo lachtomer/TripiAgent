@@ -546,15 +546,16 @@ export const useTripStore = create<TripState>()(
             state.commonCheckmarks = {};
           }
 
-          // Refresh default itinerary when template version changes or cached plan is stale
+          // Refresh default itinerary only when template version changes
           const needsItineraryRefresh =
-            state.itineraryTemplateVersion !== ITINERARY_TEMPLATE_VERSION ||
-            isPersistedItineraryStale(state.itinerary);
+            state.itineraryTemplateVersion !== ITINERARY_TEMPLATE_VERSION;
 
           if (needsItineraryRefresh) {
             state.itineraryTemplateVersion = ITINERARY_TEMPLATE_VERSION;
-            state.itinerary = null;
-            state.savedAttractions = LAKE_GARDA_TEEN_TARGET_BANK;
+            if (!state.itinerary || isPersistedItineraryStale(state.itinerary)) {
+              state.itinerary = null;
+              state.savedAttractions = LAKE_GARDA_TEEN_TARGET_BANK;
+            }
           }
 
           // Migrate legacy logistics fields → booking-only shape

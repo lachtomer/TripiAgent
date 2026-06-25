@@ -727,66 +727,68 @@ export default function AttractionSearch({
               return (
                 <div
                   key={placeId}
-                  className="flex gap-3 items-center p-2.5 rounded-xl border border-outline-variant/20 bg-card hover:bg-muted/5 transition-all duration-200 group animate-in fade-in duration-200"
+                  className="flex flex-col gap-2 p-2.5 rounded-xl border border-outline-variant/20 bg-card hover:bg-muted/5 transition-all duration-200 group animate-in fade-in duration-200"
                 >
-                  {/* Thumbnail Cover Image */}
-                  <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative bg-muted border border-outline-variant/10">
-                    <Image src={coverImage} alt={place.name} fill className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    {/* Add to Bank Button */}
-                    <button
-                      onClick={handleBookmarkToggle}
-                      id={`search-bookmark-${placeId}`}
-                      aria-label={isSaved ? `Remove ${place.name}` : `Bookmark ${place.name}`}
-                      className="absolute top-0.5 start-0.5 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
-                      title={isSaved ? t.removeFromSaved : t.saveToBank}
-                    >
-                      <Bookmark
-                        className={cn(
-                          "h-3.5 w-3.5 transition-colors",
-                          isSaved
-                            ? "fill-[#006400] text-[#006400] dark:fill-[#86df72] dark:text-[#86df72]"
-                            : "text-muted-foreground"
-                        )}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Info details */}
-                  <div className="flex-1 min-w-0 space-y-0.5">
-                    <div className="flex justify-between items-start gap-1">
-                      <div className="text-start truncate flex-1 min-w-0">
-                        <PlaceNameLink
-                          placeId={placeId}
-                          name={place.name}
-                          websiteUrl={place.website_url}
-                          mapsUrl={place.maps_url}
+                  {/* Row 1: thumbnail + full-width text */}
+                  <div className="flex gap-3 items-start min-w-0">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative bg-muted border border-outline-variant/10">
+                      <Image src={coverImage} alt={place.name} fill className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <button
+                        onClick={handleBookmarkToggle}
+                        id={`search-bookmark-${placeId}`}
+                        aria-label={isSaved ? `Remove ${place.name}` : `Bookmark ${place.name}`}
+                        className="absolute top-0.5 start-0.5 bg-white/95 dark:bg-zinc-900/90 text-foreground p-1.5 rounded-lg border border-outline-variant/20 flex items-center justify-center shadow-sm cursor-pointer z-10 hover:scale-105 active:scale-95 transition-all"
+                        title={isSaved ? t.removeFromSaved : t.saveToBank}
+                      >
+                        <Bookmark
+                          className={cn(
+                            "h-3.5 w-3.5 transition-colors",
+                            isSaved
+                              ? "fill-[#006400] text-[#006400] dark:fill-[#86df72] dark:text-[#86df72]"
+                              : "text-muted-foreground"
+                          )}
                         />
-                      </div>
+                      </button>
                       {place.rating !== undefined && (
-                        <span dir="ltr" className="flex items-center gap-0.5 text-[10px] font-bold text-[#006400] dark:text-[#86df72] shrink-0">
-                          <Star className="h-2.5 w-2.5 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
+                        <span
+                          dir="ltr"
+                          className="absolute bottom-0.5 end-0.5 bg-white/90 dark:bg-[#181d16]/95 backdrop-blur-sm px-1 py-0.5 rounded text-[10px] font-bold text-[#006400] dark:text-[#86df72] border border-outline-variant/30 flex items-center gap-0.5 shadow-sm"
+                        >
+                          <Star className="h-2 w-2 fill-[#006400] dark:fill-[#86df72] text-[#006400] dark:text-[#86df72]" />
                           {place.rating.toFixed(1)}
                         </span>
                       )}
                     </div>
-                    
-                    <div className="flex items-center justify-between gap-1.5 pt-0.5" dir="ltr">
-                      <span className="text-[10px] text-muted-foreground truncate max-w-[130px]">
-                        {place.types?.[0]?.replace(/_/g, " ") || (searchType === "restaurant" ? t.dining : t.attractions)}
-                      </span>
-                      {place.open_now !== undefined && (
-                        <span className={cn("text-[9px] font-extrabold uppercase tracking-wide", place.open_now ? "text-[#006400] dark:text-[#86df72]" : "text-destructive")}>
-                          {place.open_now ? t.openState : t.closedState}
-                        </span>
-                      )}
-                    </div>
 
-                    {place.address && (
-                      <div dir="ltr" className="text-start flex items-center gap-0.5 mt-0.5 truncate">
-                        <MapPin className="h-2.5 w-2.5 shrink-0 text-muted-foreground" />
-                        <span className="text-[9px] text-muted-foreground truncate">{place.address}</span>
+                    <div className="flex-1 min-w-0 space-y-1 overflow-hidden">
+                      <PlaceNameLink
+                        placeId={placeId}
+                        name={place.name}
+                        websiteUrl={place.website_url}
+                        mapsUrl={place.maps_url}
+                        variant="search"
+                      />
+
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5" dir="ltr">
+                        <span className="text-xs text-muted-foreground line-clamp-1">
+                          {place.types?.[0]?.replace(/_/g, " ") || (searchType === "restaurant" ? t.dining : t.attractions)}
+                        </span>
+                        {place.open_now !== undefined && (
+                          <>
+                            <span className="text-muted-foreground/50 text-xs" aria-hidden="true">·</span>
+                            <span className={cn("text-xs font-extrabold uppercase tracking-wide shrink-0", place.open_now ? "text-[#006400] dark:text-[#86df72]" : "text-destructive")}>
+                              {place.open_now ? t.openState : t.closedState}
+                            </span>
+                          </>
+                        )}
                       </div>
-                    )}
+
+                      {place.address && (
+                        <div dir="ltr" className="text-start flex items-start gap-1">
+                          <MapPin className="h-3 w-3 shrink-0 text-muted-foreground mt-0.5" />
+                          <span className="text-xs text-muted-foreground leading-snug line-clamp-2">{place.address}</span>
+                        </div>
+                      )}
 
                     {/* Active trip warning badges */}
                     {(() => {
@@ -840,9 +842,10 @@ export default function AttractionSearch({
                       </div>
                     )}
                   </div>
+                  </div>
 
-                  <div className="flex items-center gap-1 shrink-0 relative">
-                    {/* Direct Timeline Binding Dropdown */}
+                  {/* Row 2: actions */}
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/10 relative">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -850,17 +853,18 @@ export default function AttractionSearch({
                       }}
                       id={`direct-add-${placeId}`}
                       className={cn(
-                        "h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none",
+                        "h-9 flex-1 max-w-[50%] rounded-lg border border-outline-variant/30 flex items-center justify-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none",
                         openDropdownId === placeId && "border-[#006400] text-[#006400] dark:border-[#86df72] dark:text-[#86df72] bg-[#006400]/5 dark:bg-[#86df72]/5"
                       )}
                       title={t.scheduleTo}
                     >
-                      <CalendarPlus className="h-4 w-4" />
+                      <CalendarPlus className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{t.scheduleTo}</span>
                     </button>
 
                     {openDropdownId === placeId && (
                       <div
-                        className="absolute end-0 top-9.5 z-50 bg-card border border-outline-variant/40 rounded-xl shadow-lg p-2 min-w-[130px] space-y-1 animate-in fade-in slide-in-from-top-1 duration-150"
+                        className="absolute end-0 bottom-10 z-50 bg-card border border-outline-variant/40 rounded-xl shadow-lg p-2 min-w-[130px] space-y-1 animate-in fade-in slide-in-from-bottom-1 duration-150"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <p className="text-[9px] font-extrabold text-muted-foreground px-2 py-0.5 uppercase tracking-wide">{t.scheduleTo}</p>
@@ -871,7 +875,7 @@ export default function AttractionSearch({
                               id={`direct-add-day-${day.dayNumber}-${placeId}`}
                               onClick={() => {
                                 addActivity(day.dayNumber, {
-                                  time: "12:00", // Default activity time
+                                  time: "12:00",
                                   title: place.name,
                                   description: place.formatted_address || place.address || `Recommended spot in Italy`,
                                   locationName: place.name,
@@ -891,13 +895,13 @@ export default function AttractionSearch({
                       </div>
                     )}
 
-                    {/* Ask AI Trigger Button */}
                     <button
                       onClick={() => handlePlaceTap(place)}
-                      className="h-8.5 w-8.5 rounded-lg border border-outline-variant/30 flex items-center justify-center text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none"
+                      className="h-9 flex-1 max-w-[50%] rounded-lg border border-outline-variant/30 flex items-center justify-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-[#006400] hover:border-[#006400]/30 dark:hover:text-[#86df72] dark:hover:border-[#86df72]/30 active:scale-95 transition-all cursor-pointer focus:outline-none"
                       title={t.askAiGuide}
                     >
-                      <Sparkles className="h-4 w-4" />
+                      <Sparkles className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{t.askAiGuide}</span>
                     </button>
                   </div>
                 </div>

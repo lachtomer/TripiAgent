@@ -12,7 +12,9 @@ export interface PlaceNameLinkProps {
   mapsUrl?: string;
   className?: string;
   /** Typography variant for surrounding layout */
-  variant?: "sm" | "md";
+  variant?: "sm" | "md" | "search";
+  /** Lines before ellipsis; defaults to 2 for `search`, 1 otherwise */
+  lineClamp?: 1 | 2;
 }
 
 export default function PlaceNameLink({
@@ -22,16 +24,27 @@ export default function PlaceNameLink({
   mapsUrl,
   className,
   variant = "sm",
+  lineClamp,
 }: PlaceNameLinkProps) {
   const { t } = useTranslation();
   const href = resolvePlaceHref(websiteUrl, mapsUrl);
   const slug = placeTestIdSlug(placeId);
   const testId = href ? `place-name-link-${slug}` : `place-name-text-${slug}`;
 
+  const resolvedClamp = lineClamp ?? (variant === "search" ? 2 : 1);
+  const clampClass = resolvedClamp === 2 ? "line-clamp-2" : "truncate";
+  const isMultiLine = resolvedClamp === 2;
+
   const textClass =
     variant === "md"
-      ? "font-semibold text-sm text-foreground leading-tight truncate"
-      : "font-bold text-xs text-foreground truncate";
+      ? `font-semibold text-sm text-foreground leading-tight ${clampClass}`
+      : variant === "search"
+        ? `font-bold text-sm text-foreground leading-snug ${clampClass}`
+        : `font-bold text-xs text-foreground ${clampClass}`;
+
+  const layoutClass = isMultiLine
+    ? "flex w-full min-w-0 items-start gap-1 overflow-hidden"
+    : "inline-flex min-h-11 items-center max-w-full gap-1";
 
   const label = `${name} (${t.viewOfficialSite}, ${t.opensInNewTab})`;
 
@@ -41,9 +54,9 @@ export default function PlaceNameLink({
         dir="ltr"
         data-place-id={placeId}
         data-testid={testId}
-        className={cn("inline-flex min-h-11 items-center max-w-full", textClass, className)}
+        className={cn(layoutClass, textClass, className)}
       >
-        {name}
+        <span className={cn(clampClass, isMultiLine && "flex-1 min-w-0 break-words")}>{name}</span>
       </span>
     );
   }
@@ -59,14 +72,17 @@ export default function PlaceNameLink({
       aria-label={label}
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        "inline-flex min-h-11 items-center gap-1 max-w-full",
+        layoutClass,
         "text-[#006400] dark:text-[#86df72] hover:underline underline-offset-2",
         textClass,
         className
       )}
     >
-      <span className="truncate">{name}</span>
-      <ExternalLink className="h-3 w-3 shrink-0 opacity-80" aria-hidden="true" />
+      <span className={cn(clampClass, isMultiLine && "flex-1 min-w-0 break-words")}>{name}</span>
+      <ExternalLink
+        className={cn("h-3 w-3 shrink-0 opacity-80", isMultiLine && "mt-0.5")}
+        aria-hidden="true"
+      />
     </a>
   );
 }
