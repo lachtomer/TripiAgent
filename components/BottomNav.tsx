@@ -7,19 +7,24 @@ import { cn } from "@/lib/utils";
 import { useTripStore } from "@/stores/tripStore";
 import { useTranslation } from "@/lib/translations";
 
+const ALL_NAV_ITEMS = [
+  { key: "home",      labelKey: "home" as const,      href: "/",          icon: Home },
+  { key: "calendar",  labelKey: "calendar" as const,  href: "/itinerary", icon: Calendar },
+  { key: "chat",      labelKey: "chat" as const,      href: "/chat",      icon: MessageCircle },
+  { key: "pack",      labelKey: "pack" as const,      href: "/pack",      icon: Luggage },
+  { key: "locations", labelKey: "locations" as const, href: "/locations", icon: MapPin },
+  { key: "bookings",  labelKey: "bookings" as const,  href: "/bookings",  icon: FileText },
+];
+
 export default function BottomNav() {
   const pathname = usePathname();
   const unreadChat = useTripStore((s) => s.unreadChat);
+  const tripMode = useTripStore((s) => s.tripMode);
   const { t } = useTranslation();
 
-  const navItems = [
-    { key: "home",      label: t.home,      href: "/",          icon: Home },
-    { key: "calendar",  label: t.calendar,  href: "/itinerary", icon: Calendar },
-    { key: "chat",      label: t.chat,      href: "/chat",      icon: MessageCircle },
-    { key: "pack",      label: t.pack,      href: "/pack",      icon: Luggage },
-    { key: "locations", label: t.locations, href: "/locations", icon: MapPin },
-    { key: "bookings",  label: t.bookings,  href: "/bookings",  icon: FileText },
-  ];
+  const navItems = ALL_NAV_ITEMS.filter(
+    (item) => item.key !== "pack" || tripMode !== "in-trip"
+  ).map((item) => ({ ...item, label: t[item.labelKey] }));
 
   return (
     <nav

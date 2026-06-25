@@ -11,11 +11,22 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
   test.beforeEach(async ({ page }) => {
     await signInAs(page);
   });
-  test("1. Nav bar has exactly 6 tabs", async ({ page }) => {
+  test("1. Nav bar has exactly 6 tabs in planning mode", async ({ page }) => {
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");
     const tabs = page.locator("[id^='nav-link-']");
     await expect(tabs).toHaveCount(6);
+    await expect(page.locator("#nav-link-pack")).toBeVisible();
+  });
+
+  test("1b. Nav bar hides Pack tab in in-trip mode", async ({ page }) => {
+    await page.goto(`${BASE}/`);
+    await page.waitForLoadState("networkidle");
+    await page.getByText("In-Trip (Traveling)").click();
+    await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 10000 });
+    const tabs = page.locator("[id^='nav-link-']");
+    await expect(tabs).toHaveCount(5);
+    await expect(page.locator("#nav-link-pack")).not.toBeVisible();
   });
 
   test("2. Home tab is active on /", async ({ page }) => {
