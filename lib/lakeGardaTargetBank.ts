@@ -204,8 +204,8 @@ export const LAKE_GARDA_TEEN_TARGET_BANK: SavedAttraction[] = [
   {
     id: "bank-dining-ponte",
     name: "Trattoria del Ponte",
-    description: "Welcome dinner — lake fish and local pasta in Monzambano. Backup if dining in the Mincio valley.",
-    locationName: "Monzambano",
+    description: "Lakeside trattoria on the Mincio — lake fish and tortellini. Day 3 Borghetto backup if you skip the main valley loop.",
+    locationName: "Borghetto sul Mincio",
     lat: 45.337,
     lng: 10.528,
     upvotes: [],

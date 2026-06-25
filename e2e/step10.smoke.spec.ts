@@ -113,7 +113,7 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
     await page.waitForLoadState("networkidle");
 
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByRole("heading", { name: "Bookings" })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Logistics & Bookings" })).toBeVisible({ timeout: 10000 });
     await expect(page.getByTestId("flight-leg-outbound")).toContainText("18:55");
     await expect(page.getByTestId("flight-leg-return")).toContainText("13:05");
 

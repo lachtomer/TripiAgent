@@ -90,6 +90,6 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
     await page.goto(`${BASE}/bookings`);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("[data-testid='bookings-page']")).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("text=Bookings").first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=Logistics & Bookings").first()).toBeVisible({ timeout: 5000 });
   });
 });

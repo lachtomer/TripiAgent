@@ -106,7 +106,7 @@ test.describe("Step 15 — English UI & LTR", () => {
 
 
 
-    const bookingsHeading = page.getByRole("heading", { name: "Bookings", exact: true });
+    const bookingsHeading = page.getByRole("heading", { name: "Logistics & Bookings", exact: true });
 
     await expect(bookingsHeading).toBeVisible({ timeout: 15000 });
 

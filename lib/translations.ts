@@ -4,7 +4,7 @@ export const translations = {
     home: "Home",
     calendar: "Calendar",
     locations: "Locations",
-    bookings: "Bookings",
+    bookings: "Logistics",
     explore: "Explore",
     chat: "Chat",
     itinerary: "Itinerary",
@@ -77,7 +77,7 @@ export const translations = {
     saveBookings: "Save Bookings",
     detailsSaved: "Booking Details Saved",
     loadingBookings: "Loading bookings...",
-    logisticsPageTitle: "Bookings",
+    logisticsPageTitle: "Logistics & Bookings",
     logisticsPageSubtitle: "Flight times, confirmation codes, and reservations to verify",
 
     // SavedAttractionsList
@@ -244,7 +244,7 @@ export const translations = {
     home: "בית",
     calendar: "תכנון",
     locations: "יעדים",
-    bookings: "הזמנות",
+    bookings: "לוגיסטיקה",
     explore: "חקור",
     chat: "צ'אט",
     itinerary: "מסלול",
@@ -317,7 +317,7 @@ export const translations = {
     saveBookings: "שמור הזמנות",
     detailsSaved: "פרטי ההזמנות נשמרו",
     loadingBookings: "טוען הזמנות...",
-    logisticsPageTitle: "הזמנות",
+    logisticsPageTitle: "לוגיסטיקה והזמנות",
     logisticsPageSubtitle: "זמני טיסה, קודי אישור והזמנות לאימות לפני הנסיעה",
 
     // SavedAttractionsList
