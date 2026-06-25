@@ -35,6 +35,13 @@ function buildGoogleMapsSearchUrl(query: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
+/** Google Maps text search for an itinerary activity location (name only, not coords). */
+export function buildActivityLocationMapsUrl(locationName: string): string | null {
+  const query = locationName.trim();
+  if (!query) return null;
+  return buildGoogleMapsSearchUrl(query);
+}
+
 function isPersistedPlaceId(id: string): boolean {
   return !id.startsWith("bank-") && !id.startsWith("custom-poi-");
 }

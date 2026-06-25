@@ -33,6 +33,7 @@ import type { Activity } from "@/types";
 import { DEFAULT_ITALY_ITINERARY } from "@/lib/defaultItalyItinerary";
 import { isPersistedItineraryStale } from "@/lib/itineraryTemplate";
 import { useTranslation } from "@/lib/translations";
+import { buildActivityLocationMapsUrl } from "@/lib/urlSafety";
 
 export { DEFAULT_ITALY_ITINERARY };
 
@@ -728,17 +729,28 @@ export default function ItineraryCard() {
 
                                     <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                       <div className="flex items-center gap-3">
-                                        {act.locationName && (
-                                          <button
-                                            id={`activity-location-tag-${act.id}`}
-                                            onClick={() => handleAskAI(act)}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-[#006400] dark:text-[#86df72] hover:underline focus:outline-none bg-[#006400]/5 dark:bg-[#86df72]/10 px-2.5 py-1 rounded-lg border border-[#006400]/10 dark:border-[#86df72]/10 cursor-pointer"
-                                            aria-label={`Ask AI about ${act.title} in ${act.locationName}`}
-                                          >
-                                            <MapPin className="h-3 w-3 shrink-0" />
-                                            <span dir="ltr" className="text-start">{act.locationName}</span>
-                                          </button>
-                                        )}
+                                        {act.locationName && (() => {
+                                          const mapsUrl = buildActivityLocationMapsUrl(act.locationName);
+                                          if (!mapsUrl) return null;
+                                          const mapsLabel = t.openLocationInGoogleMaps.replace(
+                                            "{location}",
+                                            act.locationName
+                                          );
+                                          return (
+                                            <a
+                                              id={`activity-location-tag-${act.id}`}
+                                              data-testid={`activity-location-link-${act.id}`}
+                                              href={mapsUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center gap-1 text-[10px] font-bold text-[#006400] dark:text-[#86df72] hover:underline focus:outline-none bg-[#006400]/5 dark:bg-[#86df72]/10 px-2.5 py-1 rounded-lg border border-[#006400]/10 dark:border-[#86df72]/10 cursor-pointer"
+                                              aria-label={`${mapsLabel} (${t.opensInNewTab})`}
+                                            >
+                                              <MapPin className="h-3 w-3 shrink-0" />
+                                              <span dir="ltr" className="text-start">{act.locationName}</span>
+                                            </a>
+                                          );
+                                        })()}
                                         
                                         <button
                                           id={`ask-ai-link-${act.id}`}

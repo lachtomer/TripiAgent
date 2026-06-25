@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { isSafeExternalUrl, resolvePlaceHref, placeTestIdSlug, resolveSavedAttractionLinks } from "./urlSafety";
+import {
+  isSafeExternalUrl,
+  resolvePlaceHref,
+  placeTestIdSlug,
+  resolveSavedAttractionLinks,
+  buildActivityLocationMapsUrl,
+} from "./urlSafety";
 
 describe("urlSafety", () => {
   it("allows http and https URLs", () => {
@@ -66,6 +72,20 @@ describe("urlSafety", () => {
       locationName: "Limone",
     });
     expect(links.mapsUrl).toContain("query=Limone%20Ferry%20Port%2C%20Limone");
+  });
+
+  it("buildActivityLocationMapsUrl encodes location name for Google Maps search", () => {
+    expect(buildActivityLocationMapsUrl("Verona")).toBe(
+      "https://www.google.com/maps/search/?api=1&query=Verona"
+    );
+    expect(buildActivityLocationMapsUrl("Monzambano, Lake Garda")).toBe(
+      "https://www.google.com/maps/search/?api=1&query=Monzambano%2C%20Lake%20Garda"
+    );
+  });
+
+  it("buildActivityLocationMapsUrl returns null for empty input", () => {
+    expect(buildActivityLocationMapsUrl("")).toBe(null);
+    expect(buildActivityLocationMapsUrl("   ")).toBe(null);
   });
 
   it("resolveSavedAttractionLinks preserves explicit URLs when present", () => {
