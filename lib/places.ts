@@ -90,7 +90,7 @@ async function fetchPlaceDetails(
   }
 }
 
-async function enrichPlacesWithDetails(
+export async function enrichPlacesWithDetails(
   places: PlaceDetail[],
   apiKey: string
 ): Promise<PlaceDetail[]> {

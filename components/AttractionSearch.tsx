@@ -20,6 +20,7 @@ import {
   parseKeywordInLocation,
   parseNameWithArea,
   isLocationBrowseCandidate,
+  LOCATION_BROWSE_RADIUS_KM,
 } from "@/lib/searchIntent";
 
 const LOCALITY_TYPES = new Set([
@@ -377,7 +378,14 @@ export default function AttractionSearch({
       const probe = await geocodeQuery(queryStr);
 
       if (isLocationBrowseCandidate(queryStr, probe)) {
-        await fetchPlacesNearCoords(probe.lat, probe.lng, probe.cityName);
+        setSelectedRadius(LOCATION_BROWSE_RADIUS_KM);
+        await fetchPlacesNearCoords(
+          probe.lat,
+          probe.lng,
+          probe.cityName,
+          undefined,
+          LOCATION_BROWSE_RADIUS_KM
+        );
         return;
       }
 
@@ -396,7 +404,14 @@ export default function AttractionSearch({
       );
 
       if (!textFound && searchType === "restaurant" && probeLooksLikeLocality(probe)) {
-        await fetchPlacesNearCoords(probe.lat, probe.lng, probe.cityName);
+        setSelectedRadius(LOCATION_BROWSE_RADIUS_KM);
+        await fetchPlacesNearCoords(
+          probe.lat,
+          probe.lng,
+          probe.cityName,
+          undefined,
+          LOCATION_BROWSE_RADIUS_KM
+        );
       }
     } catch (err) {
       console.error("Search failed:", err);

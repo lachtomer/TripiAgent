@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PlacesQuerySchema } from "@/lib/schemas";
-import { getProgressiveNearbyPlaces, PlaceDetail } from "@/lib/places";
+import {
+  getProgressiveNearbyPlaces,
+  getGoogleNearbyPlaces,
+  enrichPlacesWithDetails,
+  PlaceDetail,
+} from "@/lib/places";
 
 if (process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -63,7 +68,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const placesData = await getProgressiveNearbyPlaces(lat, lng, type, apiKey, keyword);
+    const placesData =
+      radius > 5000
+        ? await enrichPlacesWithDetails(
+            await getGoogleNearbyPlaces(lat, lng, radius, type, apiKey, keyword),
+            apiKey
+          )
+        : await getProgressiveNearbyPlaces(lat, lng, type, apiKey, keyword);
 
     // Save to cache
     placesCache.set(cacheKey, {

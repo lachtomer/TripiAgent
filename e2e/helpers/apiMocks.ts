@@ -274,3 +274,56 @@ export async function mockVeronaLocationBrowse(page: Page) {
     });
   });
 }
+
+export async function mockLakeGardaLocationBrowse(
+  page: Page,
+  hooks?: { onNearbyRequest?: (url: string) => void }
+) {
+  await page.route("**/api/geocode**", async (route) => {
+    const url = new URL(route.request().url());
+    const query = (url.searchParams.get("query") ?? "").toLowerCase();
+    if (query === "lake garda") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          lat: 45.605,
+          lng: 10.521,
+          cityName: "Lake Garda",
+          matchedName: "Lake Garda",
+          placeTypes: ["natural_feature", "political"],
+        }),
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.route("**/api/places**", async (route) => {
+    if (route.request().url().includes("/places/text")) {
+      await route.continue();
+      return;
+    }
+    hooks?.onNearbyRequest?.(route.request().url());
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([
+        {
+          place_id: "mock-gardaland-nearby",
+          name: "Gardaland",
+          rating: 4.7,
+          maps_url: "https://www.google.com/maps/search/?api=1&query_place_id=mock-gardaland-nearby",
+        },
+      ]),
+    });
+  });
+
+  await page.route("**/api/weather**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ condition: "Clear", temp: 22 }),
+    });
+  });
+}

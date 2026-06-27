@@ -3,6 +3,7 @@ import { GET } from "./route";
 import { NextRequest } from "next/server";
 import { getGoogleNearbyPlaces, getProgressiveNearbyPlaces } from "@/lib/places";
 import { PlacesResponseSchema } from "@/lib/schemas";
+import type { PlaceDetail } from "@/lib/places";
 
 // Mock the Google Places helper functions
 vi.mock("@/lib/places", async () => {
@@ -11,6 +12,7 @@ vi.mock("@/lib/places", async () => {
     ...actual,
     getGoogleNearbyPlaces: vi.fn(),
     getProgressiveNearbyPlaces: vi.fn(),
+    enrichPlacesWithDetails: vi.fn(async (places: PlaceDetail[]) => places),
   };
 });
 
@@ -159,6 +161,30 @@ describe("GET /api/places", () => {
     expect(response.status).toBe(500);
     const data = await response.json();
     expect(data.error).toBe("Server API configuration missing");
+  });
+
+  it("should use direct nearby call when radius exceeds 5000m", async () => {
+    const mockPlaces = [{ place_id: "p1", name: "Gardaland", rating: 4.7 }];
+    vi.mocked(getGoogleNearbyPlaces).mockResolvedValue(mockPlaces);
+    vi.mocked(getProgressiveNearbyPlaces).mockResolvedValue([]);
+
+    const request = new NextRequest(
+      "http://localhost:9001/api/places?lat=45.6050&lng=10.5210&radius=50000&type=tourist_attraction"
+    );
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data).toEqual(mockPlaces);
+    expect(getGoogleNearbyPlaces).toHaveBeenCalledWith(
+      45.605,
+      10.521,
+      50000,
+      "tourist_attraction",
+      "mock-google-key",
+      undefined
+    );
+    expect(getProgressiveNearbyPlaces).not.toHaveBeenCalled();
   });
 
   it("should return enriched payload through real getProgressiveNearbyPlaces pipeline", async () => {

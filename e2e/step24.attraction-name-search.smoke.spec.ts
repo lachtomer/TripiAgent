@@ -7,6 +7,7 @@ import {
   mockGardalandTextSearch,
   mockGardalandTextSearchEmpty,
   mockVeronaLocationBrowse,
+  mockLakeGardaLocationBrowse,
 } from "./helpers/apiMocks";
 import { signInAs } from "./helpers/authFixture";
 
@@ -83,5 +84,40 @@ test.describe("Step 24 — Attraction name search", () => {
     await searchBtn.click();
 
     await expect(page.locator("[data-testid='search-empty-hint']")).toBeVisible({ timeout: 15000 });
+  });
+
+  test("4. Lake Garda region browse uses nearby API at 50km, not text search", async ({ page }) => {
+    test.setTimeout(60000);
+    const textSearchUrls: string[] = [];
+    const nearbyUrls: string[] = [];
+
+    await page.route("**/api/places/text**", async (route) => {
+      textSearchUrls.push(route.request().url());
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "No places found for this name" }),
+      });
+    });
+
+    await mockLakeGardaLocationBrowse(page, {
+      onNearbyRequest: (url) => nearbyUrls.push(url),
+    });
+
+    await page.goto(BASE);
+    await page.waitForLoadState("networkidle");
+
+    const searchInput = page.locator("#attraction-search-input");
+    await searchInput.fill("Lake Garda");
+
+    const searchBtn = page.locator("#attraction-search-btn");
+    await expect(searchBtn).toBeEnabled({ timeout: 10000 });
+    await searchBtn.click();
+
+    await expect(page.locator("[data-place-id]").filter({ hasText: "Gardaland" })).toBeVisible({
+      timeout: 15000,
+    });
+    expect(textSearchUrls).toHaveLength(0);
+    expect(nearbyUrls.some((url) => url.includes("radius=50000"))).toBe(true);
   });
 });

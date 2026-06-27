@@ -32,6 +32,9 @@ const LOCALITY_TYPES = new Set([
   "political",
 ]);
 
+/** Default radius (km) for city/region location-browse searches. */
+export const LOCATION_BROWSE_RADIUS_KM = 50;
+
 /** Top Italy destinations + Lake Garda towns for location-browse detection. */
 export const ITALY_CITY_ALLOWLIST: ReadonlySet<string> = new Set([
   "milan",
@@ -113,7 +116,11 @@ export function parseKeywordInLocation(query: string): KeywordInLocationSplit | 
 export function parseNameWithArea(query: string): NameWithAreaSplit | null {
   if (parseKeywordInLocation(query)) return null;
 
-  const tokens = query.trim().split(/\s+/);
+  const trimmed = query.trim();
+  // Whole query is a known browse area — defer to location_browse, not name+area.
+  if (isKnownArea(trimmed)) return null;
+
+  const tokens = trimmed.split(/\s+/);
   if (tokens.length < 2) return null;
 
   if (tokens.length >= 3) {
@@ -144,15 +151,17 @@ export function isLocationBrowseCandidate(query: string, probe: GeocodeProbe): b
 
   const types = probe.placeTypes ?? [];
   const hasLocalityType = types.some((t) => LOCALITY_TYPES.has(t));
-  if (!hasLocalityType) return false;
 
   const normalized = normalizeSearchText(query);
   const cityNorm = normalizeSearchText(probe.cityName);
   const matchedNorm = probe.matchedName ? normalizeSearchText(probe.matchedName) : "";
+  const isAllowlistedArea = ITALY_CITY_ALLOWLIST.has(normalized);
+
+  if (!hasLocalityType && !isAllowlistedArea) return false;
 
   return (
     normalized === cityNorm ||
     normalized === matchedNorm ||
-    ITALY_CITY_ALLOWLIST.has(normalized)
+    isAllowlistedArea
   );
 }
