@@ -3,7 +3,7 @@
  * Run with: npx playwright test e2e/step20.nav-home-redesign.spec.ts
  */
 import { test, expect } from "@playwright/test";
-import { signInAs } from "./helpers/authFixture";
+import { signInAs, seedTripMode } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
@@ -12,6 +12,7 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
     await signInAs(page);
   });
   test("1. Nav bar has exactly 6 tabs in planning mode", async ({ page }) => {
+    await seedTripMode(page, "planning");
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");
     const tabs = page.locator("[id^='nav-link-']");
@@ -20,9 +21,10 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
   });
 
   test("1b. Nav bar hides Pack tab in in-trip mode", async ({ page }) => {
+    await seedTripMode(page, "planning");
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");
-    await page.getByText("In-Trip (Traveling)").click();
+    await page.getByTestId("trip-mode-switcher").getByText("In-Trip (Traveling)").click();
     await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 10000 });
     const tabs = page.locator("[id^='nav-link-']");
     await expect(tabs).toHaveCount(5);
@@ -37,6 +39,7 @@ test.describe("Step 20 — Nav Redesign & Home Screen", () => {
 
   test("3. All 6 tabs navigate to correct routes", async ({ page }) => {
     test.setTimeout(60000);
+    await seedTripMode(page, "planning");
     await page.goto(`${BASE}/`);
     await page.waitForLoadState("networkidle");
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTripStore } from "@/stores/tripStore";
 import { LocationCoords } from "@/types";
 
@@ -7,8 +7,10 @@ export function useLocation() {
   const [error, setError] = useState<string | null>(null);
 
   const storeLocation = useTripStore((state) => state.location);
+  const tripMode = useTripStore((state) => state.tripMode);
   const setLocation = useTripStore((state) => state.setLocation);
   const setManualCity = useTripStore((state) => state.setManualCity);
+  const prevTripModeRef = useRef(tripMode);
 
   const fetchCityName = async (lat: number, lng: number): Promise<string> => {
     const res = await fetch(`/api/geocode?lat=${lat}&lng=${lng}`);
@@ -78,15 +80,28 @@ export function useLocation() {
     );
   }, [setLocation, storeLocation]);
 
-  // Run on mount if location is prompt or unconfigured
+  // In-trip only: request GPS on mount (prompt) and when entering in-trip
   useEffect(() => {
-    if (!storeLocation || storeLocation.permissionState === "prompt") {
+    if (tripMode !== "in-trip") {
+      prevTripModeRef.current = tripMode;
+      return;
+    }
+
+    const enteredInTrip = prevTripModeRef.current !== "in-trip";
+    prevTripModeRef.current = tripMode;
+
+    const shouldRequest =
+      enteredInTrip ||
+      !storeLocation ||
+      storeLocation.permissionState === "prompt";
+
+    if (shouldRequest) {
       const timer = setTimeout(() => {
-        getPosition();
+        void getPosition();
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [storeLocation, getPosition]);
+  }, [tripMode, storeLocation, getPosition]);
 
   return {
     location: storeLocation || { coords: null, cityName: null, permissionState: "prompt" },

@@ -3,7 +3,7 @@
  * Run with: npx playwright test e2e/step4f.smoke.spec.ts --headed
  */
 import { test, expect, Page } from "@playwright/test";
-import { signInAs } from "./helpers/authFixture";
+import { signInAs, seedTripMode } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 
@@ -28,13 +28,14 @@ test.describe("Step 4f — Home page", () => {
   });
 
   test("2. LocationPermissionBanner visible when location not granted", async ({ page }) => {
+    await seedTripMode(page, "planning");
     await page.goto(BASE);
     // Switch to In-Trip mode so the location permission banner is rendered
-    await page.click("text=In-Trip (Traveling)");
+    await page.getByTestId("trip-mode-switcher").getByText("In-Trip (Traveling)").click();
     // Banner should be visible (prompt or denied state)
-    const banner = page.locator("text=Allow location").or(
-      page.locator("text=Location access denied")
-    );
+    const banner = page
+      .getByText("Enable location for better local picks")
+      .or(page.getByText("Location access denied"));
     await expect(banner.first()).toBeVisible({ timeout: 5000 });
   });
 

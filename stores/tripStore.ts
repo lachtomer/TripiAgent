@@ -582,6 +582,14 @@ export const useTripStore = create<TripState>()(
               legacy.accommodationBalanceDue ?? initialLogistics.accommodationBalanceDue,
           };
 
+          // Auto in-trip once trip start date is reached
+          if (state.tripStartDate && state.tripMode === "planning") {
+            const today = new Date().toISOString().slice(0, 10);
+            if (today >= state.tripStartDate) {
+              state.tripMode = "in-trip";
+            }
+          }
+
           // Feature 009: pin locale to "en" — coerce any legacy "he" value
           if ((state.locale as string) !== "en") {
             state.locale = "en";

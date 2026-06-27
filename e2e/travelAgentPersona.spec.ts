@@ -14,8 +14,12 @@ const BASE = process.env.BASE_URL || "http://localhost:9001";
 
 async function ensureInTripMode(page: import("@playwright/test").Page) {
   await page.waitForFunction(() => localStorage.getItem("tripiagent-trip-storage") !== null);
+  if (await page.getByTestId("in-trip-badge").isVisible().catch(() => false)) {
+    await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 15000 });
+    return;
+  }
   for (let attempt = 0; attempt < 3; attempt++) {
-    await page.getByText("In-Trip (Traveling)").click();
+    await page.getByTestId("trip-mode-switcher").getByText("In-Trip (Traveling)").click();
     try {
       await expect(page.getByTestId(/today-planner/)).toBeVisible({ timeout: 4000 });
       return;

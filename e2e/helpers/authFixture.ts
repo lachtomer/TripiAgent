@@ -29,3 +29,29 @@ export async function signInAs(page: Page, userName = "Tomer"): Promise<void> {
     }
   );
 }
+
+const TRIP_STORAGE_KEY = "tripiagent-trip-storage";
+
+/**
+ * Seeds tripMode in Zustand persist storage before page load.
+ * Must be called BEFORE page.goto().
+ */
+export async function seedTripMode(
+  page: Page,
+  tripMode: "planning" | "in-trip"
+): Promise<void> {
+  await page.addInitScript(
+    ({ key, mode }) => {
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : { state: {}, version: 0 };
+      parsed.state = {
+        ...parsed.state,
+        tripMode: mode,
+        // Prevent onRehydrate auto in-trip migration during planning-mode E2E
+        ...(mode === "planning" ? { tripStartDate: "2099-01-01" } : {}),
+      };
+      localStorage.setItem(key, JSON.stringify(parsed));
+    },
+    { key: TRIP_STORAGE_KEY, mode: tripMode }
+  );
+}

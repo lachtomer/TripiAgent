@@ -4,7 +4,7 @@
  */
 import { test, expect, type Page } from "@playwright/test";
 import { mockNearbyTopPicks } from "./helpers/apiMocks";
-import { signInAs } from "./helpers/authFixture";
+import { signInAs, seedTripMode } from "./helpers/authFixture";
 
 const BASE = "http://localhost:9001";
 const STORAGE_KEY = "tripiagent-trip-storage";
@@ -97,8 +97,9 @@ test.describe("Step 10 — Saved Attractions & Phase 2 Logistics", () => {
   });
 
   test("3. Today Planner is visible and interactive on Home page", async ({ page }) => {
+    await seedTripMode(page, "planning");
     await page.goto(BASE);
-    await page.click("text=In-Trip (Traveling)");
+    await page.getByTestId("trip-mode-switcher").getByText("In-Trip (Traveling)").click();
 
     await expect(page.locator("text=Today's Planner")).toBeVisible();
 

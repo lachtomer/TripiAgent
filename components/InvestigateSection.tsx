@@ -19,9 +19,9 @@ export default function InvestigateSection() {
   const { location: userLocation } = useLocation();
   const { t } = useTranslation();
 
-  const [mode, setMode] = useState<InvestigateMode>(
-    tripMode === "in-trip" ? "around-me" : "target"
-  );
+  const autoMode: InvestigateMode = tripMode === "in-trip" ? "around-me" : "target";
+  const [modeOverride, setModeOverride] = useState<InvestigateMode | null>(null);
+  const mode = modeOverride ?? autoMode;
 
   const [geocodedTarget, setGeocodedTarget] = useState<{
     lat: number;
@@ -147,7 +147,7 @@ export default function InvestigateSection() {
             <button
               key={m}
               data-testid={m === "target" ? "investigate-target-btn" : "investigate-aroundme-btn"}
-              onClick={() => setMode(m)}
+              onClick={() => setModeOverride(m)}
               className={cn(
                 "flex-1 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none",
                 mode === m
